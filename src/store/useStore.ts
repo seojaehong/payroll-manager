@@ -1,0 +1,152 @@
+import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
+import { Business, Worker, Employment, Report, ExcelMapping } from '@/types';
+
+// 쿠우쿠우 부평점 초기 데이터
+const initialBusiness: Business = {
+  id: 'biz-kukuku-bupyeong',
+  name: '쿠우쿠우 부평점',
+  bizNo: '630-40-91109',
+  gwanriNo: '79516010160',
+  gyGwanriNo: '79516010160',
+  sjGwanriNo: '79516010160',
+  npsGwanriNo: '20008864199',
+  nhicGwanriNo: '77588907',
+  address: '인천 부평구 부흥로 264, 9층 (부평동, 동아웰빙타운)',
+  tel: '010-9959-2647',
+  defaultJikjong: '532',
+  defaultWorkHours: 40,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+};
+
+// 엑셀 매핑 초기 데이터
+const initialMapping: ExcelMapping = {
+  businessId: 'biz-kukuku-bupyeong',
+  sheetName: '임금대장',
+  headerRow: 4,
+  dataStartRow: 6,
+  columns: {
+    name: 2,
+    residentNo: 4,
+    joinDate: 5,
+    leaveDate: 6,
+    wage: 7,
+  },
+};
+
+interface AppState {
+  // 초기화 여부
+  initialized: boolean;
+  initializeData: () => void;
+
+  // 사업장
+  businesses: Business[];
+  addBusiness: (business: Business) => void;
+  updateBusiness: (id: string, data: Partial<Business>) => void;
+  deleteBusiness: (id: string) => void;
+
+  // 근로자
+  workers: Worker[];
+  addWorker: (worker: Worker) => void;
+  updateWorker: (id: string, data: Partial<Worker>) => void;
+  deleteWorker: (id: string) => void;
+
+  // 고용 관계
+  employments: Employment[];
+  addEmployment: (employment: Employment) => void;
+  updateEmployment: (id: string, data: Partial<Employment>) => void;
+  deleteEmployment: (id: string) => void;
+
+  // 신고 이력
+  reports: Report[];
+  addReport: (report: Report) => void;
+
+  // 엑셀 매핑
+  excelMappings: ExcelMapping[];
+  setExcelMapping: (mapping: ExcelMapping) => void;
+}
+
+export const useStore = create<AppState>()(
+  persist(
+    (set, get) => ({
+      // 초기화
+      initialized: false,
+      initializeData: () => {
+        const state = get();
+        if (!state.initialized && state.businesses.length === 0) {
+          set({
+            initialized: true,
+            businesses: [initialBusiness],
+            excelMappings: [initialMapping],
+          });
+        } else if (!state.initialized) {
+          set({ initialized: true });
+        }
+      },
+
+      // 사업장
+      businesses: [],
+      addBusiness: (business) =>
+        set((state) => ({ businesses: [...state.businesses, business] })),
+      updateBusiness: (id, data) =>
+        set((state) => ({
+          businesses: state.businesses.map((b) =>
+            b.id === id ? { ...b, ...data, updatedAt: new Date() } : b
+          ),
+        })),
+      deleteBusiness: (id) =>
+        set((state) => ({
+          businesses: state.businesses.filter((b) => b.id !== id),
+        })),
+
+      // 근로자
+      workers: [],
+      addWorker: (worker) =>
+        set((state) => ({ workers: [...state.workers, worker] })),
+      updateWorker: (id, data) =>
+        set((state) => ({
+          workers: state.workers.map((w) =>
+            w.id === id ? { ...w, ...data, updatedAt: new Date() } : w
+          ),
+        })),
+      deleteWorker: (id) =>
+        set((state) => ({
+          workers: state.workers.filter((w) => w.id !== id),
+        })),
+
+      // 고용 관계
+      employments: [],
+      addEmployment: (employment) =>
+        set((state) => ({ employments: [...state.employments, employment] })),
+      updateEmployment: (id, data) =>
+        set((state) => ({
+          employments: state.employments.map((e) =>
+            e.id === id ? { ...e, ...data, updatedAt: new Date() } : e
+          ),
+        })),
+      deleteEmployment: (id) =>
+        set((state) => ({
+          employments: state.employments.filter((e) => e.id !== id),
+        })),
+
+      // 신고 이력
+      reports: [],
+      addReport: (report) =>
+        set((state) => ({ reports: [...state.reports, report] })),
+
+      // 엑셀 매핑
+      excelMappings: [],
+      setExcelMapping: (mapping) =>
+        set((state) => ({
+          excelMappings: [
+            ...state.excelMappings.filter((m) => m.businessId !== mapping.businessId),
+            mapping,
+          ],
+        })),
+    }),
+    {
+      name: 'payroll-manager-storage',
+    }
+  )
+);
