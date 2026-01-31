@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { Business, Worker, Employment, Report, ExcelMapping, MonthlyWage } from '@/types';
+import * as firestore from '@/lib/firestore';
 
 // 초기 사업장 데이터
 const initialBusinesses: Business[] = [
@@ -264,9 +265,14 @@ const initialMappings: ExcelMapping[] = [
 ];
 
 interface AppState {
-  // 초기화 여부
+  // 초기화 및 동기화
   initialized: boolean;
+  syncing: boolean;
+  lastSyncAt: Date | null;
+  syncError: string | null;
   initializeData: () => void;
+  syncToCloud: () => Promise<void>;
+  loadFromCloud: () => Promise<void>;
 
   // 사업장
   businesses: Business[];
@@ -304,8 +310,12 @@ interface AppState {
 export const useStore = create<AppState>()(
   persist(
     (set, get) => ({
-      // 초기화
+      // 초기화 및 동기화
       initialized: false,
+      syncing: false,
+      lastSyncAt: null,
+      syncError: null,
+
       initializeData: () => {
         const state = get();
         if (!state.initialized && state.businesses.length === 0) {
@@ -315,7 +325,6 @@ export const useStore = create<AppState>()(
             excelMappings: initialMappings,
           });
         } else if (!state.initialized) {
-          // 기존 데이터가 있으면 새 사업장들만 추가
           const existingIds = new Set(state.businesses.map((b) => b.id));
           const newBusinesses = initialBusinesses.filter((b) => !existingIds.has(b.id));
           if (newBusinesses.length > 0) {
@@ -329,61 +338,169 @@ export const useStore = create<AppState>()(
         }
       },
 
+      // Firebase에서 데이터 로드
+      loadFromCloud: async () => {
+        set({ syncing: true, syncError: null });
+        try {
+          const data = await firestore.syncAllData();
+
+          // 클라우드에 데이터가 있으면 로드
+          if (data.businesses.length > 0 || data.workers.length > 0) {
+            set({
+              businesses: data.businesses.length > 0 ? data.businesses : get().businesses,
+              workers: data.workers,
+              employments: data.employments,
+              reports: data.reports,
+              monthlyWages: data.monthlyWages,
+              excelMappings: data.excelMappings.length > 0 ? data.excelMappings : get().excelMappings,
+              syncing: false,
+              lastSyncAt: new Date(),
+              syncError: null,
+            });
+          } else {
+            // 클라우드가 비어있으면 로컬 데이터 업로드
+            await get().syncToCloud();
+          }
+        } catch (error) {
+          console.error('Firebase 로드 실패:', error);
+          set({ syncing: false, syncError: String(error) });
+        }
+      },
+
+      // Firebase에 데이터 저장
+      syncToCloud: async () => {
+        const state = get();
+        set({ syncing: true, syncError: null });
+
+        try {
+          // 모든 데이터를 Firebase에 저장
+          const savePromises: Promise<void>[] = [];
+
+          // 사업장 저장
+          state.businesses.forEach((biz) => {
+            savePromises.push(firestore.saveBusiness(biz));
+          });
+
+          // 근로자 저장
+          if (state.workers.length > 0) {
+            savePromises.push(firestore.saveWorkers(state.workers));
+          }
+
+          // 고용관계 저장
+          if (state.employments.length > 0) {
+            savePromises.push(firestore.saveEmployments(state.employments));
+          }
+
+          // 월별 급여 저장
+          if (state.monthlyWages.length > 0) {
+            savePromises.push(firestore.saveMonthlyWages(state.monthlyWages));
+          }
+
+          // 신고이력 저장
+          state.reports.forEach((report) => {
+            savePromises.push(firestore.saveReport(report));
+          });
+
+          // 엑셀 매핑 저장
+          state.excelMappings.forEach((mapping) => {
+            savePromises.push(firestore.saveExcelMapping(mapping));
+          });
+
+          await Promise.all(savePromises);
+
+          set({ syncing: false, lastSyncAt: new Date(), syncError: null });
+        } catch (error) {
+          console.error('Firebase 저장 실패:', error);
+          set({ syncing: false, syncError: String(error) });
+          throw error;
+        }
+      },
+
       // 사업장
       businesses: [],
-      addBusiness: (business) =>
-        set((state) => ({ businesses: [...state.businesses, business] })),
-      updateBusiness: (id, data) =>
-        set((state) => ({
-          businesses: state.businesses.map((b) =>
-            b.id === id ? { ...b, ...data, updatedAt: new Date() } : b
-          ),
-        })),
-      deleteBusiness: (id) =>
+      addBusiness: (business) => {
+        set((state) => ({ businesses: [...state.businesses, business] }));
+        // 비동기로 Firebase에 저장
+        firestore.saveBusiness(business).catch(console.error);
+      },
+      updateBusiness: (id, data) => {
+        const state = get();
+        const updated = state.businesses.find((b) => b.id === id);
+        if (updated) {
+          const newBusiness = { ...updated, ...data, updatedAt: new Date() };
+          set((state) => ({
+            businesses: state.businesses.map((b) => (b.id === id ? newBusiness : b)),
+          }));
+          firestore.saveBusiness(newBusiness).catch(console.error);
+        }
+      },
+      deleteBusiness: (id) => {
         set((state) => ({
           businesses: state.businesses.filter((b) => b.id !== id),
-        })),
+        }));
+        firestore.deleteBusiness(id).catch(console.error);
+      },
 
       // 근로자
       workers: [],
-      addWorker: (worker) =>
-        set((state) => ({ workers: [...state.workers, worker] })),
-      updateWorker: (id, data) =>
-        set((state) => ({
-          workers: state.workers.map((w) =>
-            w.id === id ? { ...w, ...data, updatedAt: new Date() } : w
-          ),
-        })),
-      deleteWorker: (id) =>
+      addWorker: (worker) => {
+        set((state) => ({ workers: [...state.workers, worker] }));
+        firestore.saveWorker(worker).catch(console.error);
+      },
+      updateWorker: (id, data) => {
+        const state = get();
+        const updated = state.workers.find((w) => w.id === id);
+        if (updated) {
+          const newWorker = { ...updated, ...data, updatedAt: new Date() };
+          set((state) => ({
+            workers: state.workers.map((w) => (w.id === id ? newWorker : w)),
+          }));
+          firestore.saveWorker(newWorker).catch(console.error);
+        }
+      },
+      deleteWorker: (id) => {
         set((state) => ({
           workers: state.workers.filter((w) => w.id !== id),
-        })),
+        }));
+      },
 
       // 고용 관계
       employments: [],
-      addEmployment: (employment) =>
-        set((state) => ({ employments: [...state.employments, employment] })),
-      updateEmployment: (id, data) =>
-        set((state) => ({
-          employments: state.employments.map((e) =>
-            e.id === id ? { ...e, ...data, updatedAt: new Date() } : e
-          ),
-        })),
-      deleteEmployment: (id) =>
+      addEmployment: (employment) => {
+        set((state) => ({ employments: [...state.employments, employment] }));
+        firestore.saveEmployment(employment).catch(console.error);
+      },
+      updateEmployment: (id, data) => {
+        const state = get();
+        const updated = state.employments.find((e) => e.id === id);
+        if (updated) {
+          const newEmployment = { ...updated, ...data, updatedAt: new Date() };
+          set((state) => ({
+            employments: state.employments.map((e) => (e.id === id ? newEmployment : e)),
+          }));
+          firestore.saveEmployment(newEmployment).catch(console.error);
+        }
+      },
+      deleteEmployment: (id) => {
         set((state) => ({
           employments: state.employments.filter((e) => e.id !== id),
-        })),
+        }));
+      },
 
       // 신고 이력
       reports: [],
-      addReport: (report) =>
-        set((state) => ({ reports: [...state.reports, report] })),
+      addReport: (report) => {
+        set((state) => ({ reports: [...state.reports, report] }));
+        firestore.saveReport(report).catch(console.error);
+      },
 
       // 월별 급여 이력
       monthlyWages: [],
-      addMonthlyWage: (wage) =>
-        set((state) => ({ monthlyWages: [...state.monthlyWages, wage] })),
-      addMonthlyWages: (wages) =>
+      addMonthlyWage: (wage) => {
+        set((state) => ({ monthlyWages: [...state.monthlyWages, wage] }));
+        firestore.saveMonthlyWages([wage]).catch(console.error);
+      },
+      addMonthlyWages: (wages) => {
         set((state) => ({
           monthlyWages: [
             ...state.monthlyWages.filter(
@@ -391,7 +508,9 @@ export const useStore = create<AppState>()(
             ),
             ...wages,
           ],
-        })),
+        }));
+        firestore.saveMonthlyWages(wages).catch(console.error);
+      },
       getMonthlyWagesByEmployment: (employmentId, year) => {
         const state = get();
         return state.monthlyWages.filter((mw) => {
@@ -403,13 +522,15 @@ export const useStore = create<AppState>()(
 
       // 엑셀 매핑
       excelMappings: [],
-      setExcelMapping: (mapping) =>
+      setExcelMapping: (mapping) => {
         set((state) => ({
           excelMappings: [
             ...state.excelMappings.filter((m) => m.businessId !== mapping.businessId),
             mapping,
           ],
-        })),
+        }));
+        firestore.saveExcelMapping(mapping).catch(console.error);
+      },
     }),
     {
       name: 'payroll-manager-storage',

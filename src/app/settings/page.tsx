@@ -287,12 +287,53 @@ export default function SettingsPage() {
           </p>
         </div>
 
-        {/* bkend.ai 연동 (향후) */}
-        <div className="glass p-6 opacity-60">
-          <h2 className="text-lg font-semibold text-white mb-4">bkend.ai 연동 (준비 중)</h2>
-          <p className="text-sm text-white/40">
-            클라우드 동기화 기능은 추후 지원 예정입니다.
-          </p>
+        {/* Firebase 클라우드 동기화 */}
+        <div className="glass p-6">
+          <h2 className="text-lg font-semibold text-white mb-4">Firebase 클라우드 동기화</h2>
+          <div className="space-y-4">
+            <div className="flex items-center gap-4">
+              <div className={`w-3 h-3 rounded-full ${store.syncing ? 'bg-yellow-400 animate-pulse' : store.syncError ? 'bg-red-400' : 'bg-green-400'}`} />
+              <span className="text-white/60">
+                {store.syncing ? '동기화 중...' : store.syncError ? `오류: ${store.syncError}` : store.lastSyncAt ? `마지막 동기화: ${new Date(store.lastSyncAt).toLocaleString('ko-KR')}` : '동기화 필요'}
+              </span>
+            </div>
+
+            <div className="flex gap-4">
+              <button
+                onClick={async () => {
+                  try {
+                    await store.loadFromCloud();
+                    alert('클라우드에서 데이터를 불러왔습니다.');
+                  } catch (e) {
+                    alert('불러오기 실패: ' + String(e));
+                  }
+                }}
+                disabled={store.syncing}
+                className="btn-secondary disabled:opacity-50"
+              >
+                클라우드에서 불러오기
+              </button>
+              <button
+                onClick={async () => {
+                  try {
+                    await store.syncToCloud();
+                    alert('클라우드에 저장되었습니다.');
+                  } catch (e) {
+                    alert('저장 실패: ' + String(e));
+                  }
+                }}
+                disabled={store.syncing}
+                className="btn-primary disabled:opacity-50"
+              >
+                클라우드에 저장하기
+              </button>
+            </div>
+
+            <p className="text-sm text-white/40">
+              Firebase Firestore를 사용하여 데이터를 클라우드에 저장합니다.
+              <br />데이터 변경 시 자동으로 동기화됩니다.
+            </p>
+          </div>
         </div>
       </div>
     </div>
