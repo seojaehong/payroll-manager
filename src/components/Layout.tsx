@@ -9,6 +9,7 @@ const navItems = [
   { href: '/', label: '대시보드', icon: '📊' },
   { href: '/businesses', label: '사업장 관리', icon: '🏢' },
   { href: '/workers', label: '근로자 관리', icon: '👥' },
+  { href: '/wages', label: '급여 이력', icon: '💰' },
   { href: '/reports', label: '신고서 생성', icon: '📝' },
   { href: '/import', label: '엑셀 Import', icon: '📥' },
   { href: '/settings', label: '설정', icon: '⚙️' },

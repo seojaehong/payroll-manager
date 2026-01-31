@@ -1,7 +1,7 @@
 'use client';
 
 import { useStore } from '@/store/useStore';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 
@@ -10,23 +10,84 @@ export default function ReportsPage() {
   const [selectedBusiness, setSelectedBusiness] = useState('');
   const [reportType, setReportType] = useState<'ACQUIRE' | 'LOSE'>('ACQUIRE');
   const [targetMonth, setTargetMonth] = useState(new Date().toISOString().slice(0, 7));
+  const [selectedWorkerIds, setSelectedWorkerIds] = useState<Set<string>>(new Set());
+  const [showAllWorkers, setShowAllWorkers] = useState(false);
 
-  const getTargetWorkers = () => {
+  // 전체 근로자 목록 (선택 가능)
+  const allWorkers = useMemo(() => {
+    if (!selectedBusiness) return [];
+    const businessEmployments = employments.filter((e) => e.businessId === selectedBusiness);
+    return businessEmployments.map((e) => ({
+      employment: e,
+      worker: workers.find((w) => w.id === e.workerId)!,
+    })).filter(({ worker }) => worker);
+  }, [selectedBusiness, employments, workers]);
+
+  // 자동 필터된 대상자 (기존 로직)
+  const autoFilteredWorkers = useMemo(() => {
     if (!selectedBusiness) return [];
     const businessEmployments = employments.filter((e) => e.businessId === selectedBusiness);
 
     if (reportType === 'ACQUIRE') {
       return businessEmployments
-        .filter((e) => e.joinDate.startsWith(targetMonth) && e.status === 'ACTIVE')
-        .map((e) => ({ employment: e, worker: workers.find((w) => w.id === e.workerId)! }));
+        .filter((e) => e.joinDate && e.joinDate.startsWith(targetMonth) && e.status === 'ACTIVE')
+        .map((e) => ({ employment: e, worker: workers.find((w) => w.id === e.workerId)! }))
+        .filter(({ worker }) => worker);
     } else {
       return businessEmployments
         .filter((e) => e.leaveDate?.startsWith(targetMonth))
-        .map((e) => ({ employment: e, worker: workers.find((w) => w.id === e.workerId)! }));
+        .map((e) => ({ employment: e, worker: workers.find((w) => w.id === e.workerId)! }))
+        .filter(({ worker }) => worker);
     }
+  }, [selectedBusiness, employments, workers, reportType, targetMonth]);
+
+  // 표시할 근로자 목록
+  const displayWorkers = showAllWorkers ? allWorkers : autoFilteredWorkers;
+
+  // 선택된 근로자만 필터
+  const targetWorkers = displayWorkers.filter(({ worker }) => selectedWorkerIds.has(worker.id));
+
+  // 자동 필터 적용 시 선택 초기화
+  const handleFilterChange = () => {
+    const newSelected = new Set(autoFilteredWorkers.map(({ worker }) => worker.id));
+    setSelectedWorkerIds(newSelected);
   };
 
-  const targetWorkers = getTargetWorkers();
+  // 사업장/유형/월 변경 시 자동 선택
+  const handleBusinessChange = (bizId: string) => {
+    setSelectedBusiness(bizId);
+    setSelectedWorkerIds(new Set());
+    setShowAllWorkers(false);
+  };
+
+  const handleTypeChange = (type: 'ACQUIRE' | 'LOSE') => {
+    setReportType(type);
+    setTimeout(handleFilterChange, 0);
+  };
+
+  const handleMonthChange = (month: string) => {
+    setTargetMonth(month);
+    setTimeout(handleFilterChange, 0);
+  };
+
+  // 체크박스 토글
+  const toggleWorker = (workerId: string) => {
+    setSelectedWorkerIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(workerId)) next.delete(workerId);
+      else next.add(workerId);
+      return next;
+    });
+  };
+
+  // 전체 선택/해제
+  const toggleAll = () => {
+    if (selectedWorkerIds.size === displayWorkers.length) {
+      setSelectedWorkerIds(new Set());
+    } else {
+      setSelectedWorkerIds(new Set(displayWorkers.map(({ worker }) => worker.id)));
+    }
+  };
 
   const generateAcquireExcel = () => {
     const business = businesses.find((b) => b.id === selectedBusiness);
@@ -140,7 +201,7 @@ export default function ReportsPage() {
             <label className="block text-sm font-medium text-white/60 mb-2">신고 유형</label>
             <select
               value={reportType}
-              onChange={(e) => setReportType(e.target.value as 'ACQUIRE' | 'LOSE')}
+              onChange={(e) => handleTypeChange(e.target.value as 'ACQUIRE' | 'LOSE')}
               className="w-full input-glass px-4 py-3"
             >
               <option value="ACQUIRE">취득신고 (입사)</option>
@@ -152,7 +213,7 @@ export default function ReportsPage() {
             <input
               type="month"
               value={targetMonth}
-              onChange={(e) => setTargetMonth(e.target.value)}
+              onChange={(e) => handleMonthChange(e.target.value)}
               className="w-full input-glass px-4 py-3"
             />
           </div>
@@ -160,7 +221,7 @@ export default function ReportsPage() {
             <label className="block text-sm font-medium text-white/60 mb-2">사업장</label>
             <select
               value={selectedBusiness}
-              onChange={(e) => setSelectedBusiness(e.target.value)}
+              onChange={(e) => handleBusinessChange(e.target.value)}
               className="w-full input-glass px-4 py-3"
             >
               <option value="">사업장 선택</option>
@@ -169,59 +230,103 @@ export default function ReportsPage() {
           </div>
         </div>
 
-        <div className="flex gap-4">
+        <div className="flex gap-4 items-center">
           <button
             onClick={handleGenerate}
             disabled={!selectedBusiness || targetWorkers.length === 0}
             className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {reportType === 'ACQUIRE' ? '취득' : '상실'}신고 엑셀 생성
+            {reportType === 'ACQUIRE' ? '취득' : '상실'}신고 엑셀 생성 ({targetWorkers.length}명)
           </button>
+          <label className="flex items-center gap-2 text-white/60 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={showAllWorkers}
+              onChange={(e) => setShowAllWorkers(e.target.checked)}
+              className="w-4 h-4 rounded bg-white/10 border-white/20"
+            />
+            <span className="text-sm">전체 근로자 표시</span>
+          </label>
         </div>
       </div>
 
       <div className="glass p-6">
-        <h2 className="text-lg font-semibold text-white mb-4">
-          대상 근로자 ({targetWorkers.length}명)
-        </h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-semibold text-white">
+            {showAllWorkers ? '전체' : '대상'} 근로자 ({displayWorkers.length}명)
+            {selectedWorkerIds.size > 0 && <span className="text-blue-400 ml-2">/ 선택: {selectedWorkerIds.size}명</span>}
+          </h2>
+          {displayWorkers.length > 0 && (
+            <button onClick={toggleAll} className="btn-secondary text-sm">
+              {selectedWorkerIds.size === displayWorkers.length ? '전체 해제' : '전체 선택'}
+            </button>
+          )}
+        </div>
         {!selectedBusiness ? (
           <p className="text-white/40 text-center py-12">사업장을 선택하세요</p>
-        ) : targetWorkers.length === 0 ? (
+        ) : displayWorkers.length === 0 ? (
           <p className="text-white/40 text-center py-12">
-            {targetMonth}에 {reportType === 'ACQUIRE' ? '입사' : '퇴사'}한 근로자가 없습니다
+            {showAllWorkers ? '등록된 근로자가 없습니다' : `${targetMonth}에 ${reportType === 'ACQUIRE' ? '입사' : '퇴사'}한 근로자가 없습니다`}
           </p>
         ) : (
-          <table className="w-full table-glass">
-            <thead>
-              <tr className="text-left">
-                <th className="px-4 py-3">이름</th>
-                <th className="px-4 py-3">주민등록번호</th>
-                <th className="px-4 py-3">{reportType === 'ACQUIRE' ? '입사일' : '퇴사일'}</th>
-                <th className="px-4 py-3">월평균보수</th>
-                <th className="px-4 py-3">4대보험</th>
-              </tr>
-            </thead>
-            <tbody>
-              {targetWorkers.map(({ worker, employment }) => (
-                <tr key={worker.id}>
-                  <td className="px-4 py-3 text-white">{worker.name}</td>
-                  <td className="px-4 py-3 text-white/60 font-mono">{worker.residentNo.slice(0, 6)}-*******</td>
-                  <td className="px-4 py-3 text-white/60">
-                    {reportType === 'ACQUIRE' ? employment.joinDate : employment.leaveDate}
-                  </td>
-                  <td className="px-4 py-3 text-white/60">{employment.monthlyWage.toLocaleString()}원</td>
-                  <td className="px-4 py-3">
-                    <div className="flex gap-1">
-                      {employment.gyYn && <span className="badge badge-info">고용</span>}
-                      {employment.sjYn && <span className="badge badge-warning">산재</span>}
-                      {employment.npsYn && <span className="badge badge-success">연금</span>}
-                      {employment.nhicYn && <span className="badge" style={{background: 'rgba(168,85,247,0.2)', color: '#a855f7'}}>건강</span>}
-                    </div>
-                  </td>
+          <div className="overflow-auto max-h-[500px]">
+            <table className="w-full table-glass">
+              <thead className="sticky top-0 bg-black/50">
+                <tr className="text-left">
+                  <th className="px-4 py-3 w-12">
+                    <input
+                      type="checkbox"
+                      checked={selectedWorkerIds.size === displayWorkers.length && displayWorkers.length > 0}
+                      onChange={toggleAll}
+                      className="w-4 h-4 rounded bg-white/10 border-white/20"
+                    />
+                  </th>
+                  <th className="px-4 py-3">이름</th>
+                  <th className="px-4 py-3">주민등록번호</th>
+                  <th className="px-4 py-3">입사일</th>
+                  <th className="px-4 py-3">퇴사일</th>
+                  <th className="px-4 py-3">월평균보수</th>
+                  <th className="px-4 py-3">상태</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {displayWorkers.map(({ worker, employment }) => {
+                  const isSelected = selectedWorkerIds.has(worker.id);
+                  const isAutoTarget = autoFilteredWorkers.some(({ worker: w }) => w.id === worker.id);
+                  return (
+                    <tr
+                      key={worker.id}
+                      className={`cursor-pointer transition-colors ${isSelected ? 'bg-blue-500/10' : 'hover:bg-white/5'}`}
+                      onClick={() => toggleWorker(worker.id)}
+                    >
+                      <td className="px-4 py-3">
+                        <input
+                          type="checkbox"
+                          checked={isSelected}
+                          onChange={() => toggleWorker(worker.id)}
+                          onClick={(e) => e.stopPropagation()}
+                          className="w-4 h-4 rounded bg-white/10 border-white/20"
+                        />
+                      </td>
+                      <td className="px-4 py-3 text-white">
+                        {worker.name}
+                        {isAutoTarget && <span className="ml-2 text-xs text-green-400">(자동)</span>}
+                      </td>
+                      <td className="px-4 py-3 text-white/60 font-mono">{worker.residentNo.slice(0, 6)}-*******</td>
+                      <td className="px-4 py-3 text-white/60">{employment.joinDate || '-'}</td>
+                      <td className="px-4 py-3 text-white/60">{employment.leaveDate || '-'}</td>
+                      <td className="px-4 py-3 text-white/60">{employment.monthlyWage.toLocaleString()}원</td>
+                      <td className="px-4 py-3">
+                        <span className={`badge ${employment.status === 'ACTIVE' ? 'badge-success' : 'badge-gray'}`}>
+                          {employment.status === 'ACTIVE' ? '재직' : '퇴사'}
+                        </span>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
     </div>

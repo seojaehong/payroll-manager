@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { Business, Worker, Employment, Report, ExcelMapping } from '@/types';
+import { Business, Worker, Employment, Report, ExcelMapping, MonthlyWage } from '@/types';
 
 // 쿠우쿠우 부평점 초기 데이터
 const initialBusiness: Business = {
@@ -61,6 +61,12 @@ interface AppState {
   // 신고 이력
   reports: Report[];
   addReport: (report: Report) => void;
+
+  // 월별 급여 이력
+  monthlyWages: MonthlyWage[];
+  addMonthlyWage: (wage: MonthlyWage) => void;
+  addMonthlyWages: (wages: MonthlyWage[]) => void;
+  getMonthlyWagesByEmployment: (employmentId: string, year?: number) => MonthlyWage[];
 
   // 엑셀 매핑
   excelMappings: ExcelMapping[];
@@ -134,6 +140,28 @@ export const useStore = create<AppState>()(
       reports: [],
       addReport: (report) =>
         set((state) => ({ reports: [...state.reports, report] })),
+
+      // 월별 급여 이력
+      monthlyWages: [],
+      addMonthlyWage: (wage) =>
+        set((state) => ({ monthlyWages: [...state.monthlyWages, wage] })),
+      addMonthlyWages: (wages) =>
+        set((state) => ({
+          monthlyWages: [
+            ...state.monthlyWages.filter(
+              (mw) => !wages.some((w) => w.employmentId === mw.employmentId && w.yearMonth === mw.yearMonth)
+            ),
+            ...wages,
+          ],
+        })),
+      getMonthlyWagesByEmployment: (employmentId, year) => {
+        const state = get();
+        return state.monthlyWages.filter((mw) => {
+          if (mw.employmentId !== employmentId) return false;
+          if (year && !mw.yearMonth.startsWith(String(year))) return false;
+          return true;
+        });
+      },
 
       // 엑셀 매핑
       excelMappings: [],

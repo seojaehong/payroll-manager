@@ -1,0 +1,246 @@
+'use client';
+
+import { useStore } from '@/store/useStore';
+import { useState, useMemo } from 'react';
+import { MonthlyWage } from '@/types';
+
+export default function WagesPage() {
+  const { businesses, workers, employments, monthlyWages, addMonthlyWages } = useStore();
+  const [selectedBusiness, setSelectedBusiness] = useState('');
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear() - 1); // 기본 전년도
+  const [editingWages, setEditingWages] = useState<Record<string, Record<string, number>>>({});
+
+  // 선택된 사업장의 근로자 목록
+  const businessWorkers = useMemo(() => {
+    if (!selectedBusiness) return [];
+    return employments
+      .filter((e) => e.businessId === selectedBusiness)
+      .map((e) => ({
+        employment: e,
+        worker: workers.find((w) => w.id === e.workerId)!,
+      }))
+      .filter(({ worker }) => worker);
+  }, [selectedBusiness, employments, workers]);
+
+  // 해당 년도 월 목록 (1~12월)
+  const months = Array.from({ length: 12 }, (_, i) => {
+    const month = String(i + 1).padStart(2, '0');
+    return `${selectedYear}-${month}`;
+  });
+
+  // 기존 급여 데이터 로드
+  const getWageValue = (employmentId: string, yearMonth: string): number | undefined => {
+    // 수정 중인 값 우선
+    if (editingWages[employmentId]?.[yearMonth] !== undefined) {
+      return editingWages[employmentId][yearMonth];
+    }
+    // 저장된 값
+    const saved = monthlyWages.find(
+      (mw) => mw.employmentId === employmentId && mw.yearMonth === yearMonth
+    );
+    return saved?.totalWage;
+  };
+
+  // 값 변경
+  const handleWageChange = (employmentId: string, yearMonth: string, value: string) => {
+    const numValue = parseInt(value.replace(/,/g, '')) || 0;
+    setEditingWages((prev) => ({
+      ...prev,
+      [employmentId]: {
+        ...(prev[employmentId] || {}),
+        [yearMonth]: numValue,
+      },
+    }));
+  };
+
+  // 저장
+  const handleSave = () => {
+    const newWages: MonthlyWage[] = [];
+
+    Object.entries(editingWages).forEach(([employmentId, monthData]) => {
+      Object.entries(monthData).forEach(([yearMonth, totalWage]) => {
+        if (totalWage > 0) {
+          newWages.push({
+            id: `${employmentId}-${yearMonth}`,
+            employmentId,
+            yearMonth,
+            totalWage,
+            createdAt: new Date(),
+          });
+        }
+      });
+    });
+
+    if (newWages.length > 0) {
+      addMonthlyWages(newWages);
+      setEditingWages({});
+      alert(`${newWages.length}건의 급여 데이터가 저장되었습니다.`);
+    }
+  };
+
+  // 입사/퇴사일 기준으로 해당 월에 근무했는지 확인
+  const isWorkedMonth = (employment: typeof businessWorkers[0]['employment'], yearMonth: string) => {
+    const [year, month] = yearMonth.split('-').map(Number);
+    const monthStart = new Date(year, month - 1, 1);
+    const monthEnd = new Date(year, month, 0);
+
+    const joinDate = employment.joinDate ? new Date(employment.joinDate) : null;
+    const leaveDate = employment.leaveDate ? new Date(employment.leaveDate) : null;
+
+    // 입사 전이면 X
+    if (joinDate && joinDate > monthEnd) return false;
+    // 퇴사 후면 X
+    if (leaveDate && leaveDate < monthStart) return false;
+
+    return true;
+  };
+
+  // 변경사항 있는지 확인
+  const hasChanges = Object.keys(editingWages).length > 0;
+
+  // 통계
+  const stats = useMemo(() => {
+    let totalRecords = 0;
+    let missingRecords = 0;
+
+    businessWorkers.forEach(({ employment }) => {
+      months.forEach((yearMonth) => {
+        if (isWorkedMonth(employment, yearMonth)) {
+          totalRecords++;
+          if (!getWageValue(employment.id, yearMonth)) {
+            missingRecords++;
+          }
+        }
+      });
+    });
+
+    return { totalRecords, missingRecords, completedRecords: totalRecords - missingRecords };
+  }, [businessWorkers, months, monthlyWages, editingWages]);
+
+  return (
+    <div>
+      <h1 className="text-3xl font-semibold text-white mb-2">월별 급여 이력</h1>
+      <p className="text-white/40 mb-8">상실신고 보수총액 계산을 위한 실제 급여 데이터를 입력합니다</p>
+
+      <div className="glass p-6 mb-6">
+        <div className="grid grid-cols-3 gap-4 mb-6">
+          <div>
+            <label className="block text-sm font-medium text-white/60 mb-2">사업장</label>
+            <select
+              value={selectedBusiness}
+              onChange={(e) => setSelectedBusiness(e.target.value)}
+              className="w-full input-glass px-4 py-3"
+            >
+              <option value="">사업장 선택</option>
+              {businesses.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-white/60 mb-2">연도</label>
+            <select
+              value={selectedYear}
+              onChange={(e) => setSelectedYear(Number(e.target.value))}
+              className="w-full input-glass px-4 py-3"
+            >
+              {[2023, 2024, 2025, 2026].map((y) => (
+                <option key={y} value={y}>{y}년</option>
+              ))}
+            </select>
+          </div>
+          <div className="flex items-end">
+            <button
+              onClick={handleSave}
+              disabled={!hasChanges}
+              className="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              저장 {hasChanges && `(${Object.values(editingWages).reduce((a, b) => a + Object.keys(b).length, 0)}건)`}
+            </button>
+          </div>
+        </div>
+
+        {selectedBusiness && (
+          <div className="grid grid-cols-3 gap-4 text-center">
+            <div className="glass p-4">
+              <p className="text-white/40 text-sm">전체</p>
+              <p className="text-2xl font-bold text-white">{stats.totalRecords}</p>
+            </div>
+            <div className="glass p-4">
+              <p className="text-white/40 text-sm">입력 완료</p>
+              <p className="text-2xl font-bold text-green-400">{stats.completedRecords}</p>
+            </div>
+            <div className="glass p-4">
+              <p className="text-white/40 text-sm">미입력</p>
+              <p className="text-2xl font-bold text-red-400">{stats.missingRecords}</p>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {selectedBusiness && (
+        <div className="glass p-6 overflow-auto">
+          <table className="w-full table-glass text-sm">
+            <thead className="sticky top-0 bg-black/80">
+              <tr>
+                <th className="px-3 py-2 text-left sticky left-0 bg-black/80 z-10">이름</th>
+                <th className="px-3 py-2 text-left sticky left-[80px] bg-black/80 z-10">입사일</th>
+                {months.map((m) => (
+                  <th key={m} className="px-3 py-2 text-center min-w-[100px]">
+                    {m.split('-')[1]}월
+                  </th>
+                ))}
+                <th className="px-3 py-2 text-right">합계</th>
+              </tr>
+            </thead>
+            <tbody>
+              {businessWorkers.map(({ worker, employment }) => {
+                const yearTotal = months.reduce((sum, m) => {
+                  if (!isWorkedMonth(employment, m)) return sum;
+                  return sum + (getWageValue(employment.id, m) || 0);
+                }, 0);
+
+                return (
+                  <tr key={worker.id} className="hover:bg-white/5">
+                    <td className="px-3 py-2 text-white sticky left-0 bg-black/50">{worker.name}</td>
+                    <td className="px-3 py-2 text-white/60 sticky left-[80px] bg-black/50 text-xs">
+                      {employment.joinDate || '-'}
+                    </td>
+                    {months.map((yearMonth) => {
+                      const worked = isWorkedMonth(employment, yearMonth);
+                      const value = getWageValue(employment.id, yearMonth);
+                      const isEdited = editingWages[employment.id]?.[yearMonth] !== undefined;
+
+                      return (
+                        <td key={yearMonth} className="px-1 py-1">
+                          {worked ? (
+                            <input
+                              type="text"
+                              value={value?.toLocaleString() || ''}
+                              onChange={(e) => handleWageChange(employment.id, yearMonth, e.target.value)}
+                              placeholder="0"
+                              className={`w-full px-2 py-1 text-right text-sm rounded bg-white/5 border ${
+                                isEdited
+                                  ? 'border-blue-500/50 bg-blue-500/10'
+                                  : value
+                                  ? 'border-green-500/30'
+                                  : 'border-red-500/30'
+                              } focus:outline-none focus:border-blue-500`}
+                            />
+                          ) : (
+                            <span className="text-white/20 text-center block">-</span>
+                          )}
+                        </td>
+                      );
+                    })}
+                    <td className="px-3 py-2 text-right text-white font-medium">
+                      {yearTotal > 0 ? yearTotal.toLocaleString() : '-'}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  );
+}

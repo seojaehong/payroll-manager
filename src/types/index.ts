@@ -63,6 +63,16 @@ export interface WageHistory {
   createdAt: Date;
 }
 
+// 월별 급여 이력 (상실신고 보수총액 계산용)
+export interface MonthlyWage {
+  id: string;
+  employmentId: string;
+  yearMonth: string;  // YYYY-MM 형식
+  totalWage: number;  // 해당 월 실제 보수총액
+  workDays?: number;  // 근무일수
+  createdAt: Date;
+}
+
 // 신고 이력
 export interface Report {
   id: string;
