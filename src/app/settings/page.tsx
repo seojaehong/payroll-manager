@@ -11,6 +11,7 @@ export default function SettingsPage() {
       workers: store.workers,
       employments: store.employments,
       reports: store.reports,
+      monthlyWages: store.monthlyWages,
       excelMappings: store.excelMappings,
       exportedAt: new Date().toISOString(),
     };
@@ -32,11 +33,14 @@ export default function SettingsPage() {
       try {
         const data = JSON.parse(event.target?.result as string);
 
-        if (confirm(`백업 데이터를 불러오시겠습니까?\n- 사업장: ${data.businesses?.length || 0}개\n- 근로자: ${data.workers?.length || 0}명\n\n기존 데이터가 덮어씌워집니다.`)) {
+        if (confirm(`백업 데이터를 불러오시겠습니까?\n- 사업장: ${data.businesses?.length || 0}개\n- 근로자: ${data.workers?.length || 0}명\n- 월별 급여: ${data.monthlyWages?.length || 0}건\n\n기존 데이터가 덮어씌워집니다.`)) {
           data.businesses?.forEach((b: unknown) => store.addBusiness(b as Parameters<typeof store.addBusiness>[0]));
           data.workers?.forEach((w: unknown) => store.addWorker(w as Parameters<typeof store.addWorker>[0]));
           data.employments?.forEach((e: unknown) => store.addEmployment(e as Parameters<typeof store.addEmployment>[0]));
           data.reports?.forEach((r: unknown) => store.addReport(r as Parameters<typeof store.addReport>[0]));
+          if (data.monthlyWages?.length) {
+            store.addMonthlyWages(data.monthlyWages as Parameters<typeof store.addMonthlyWages>[0]);
+          }
           data.excelMappings?.forEach((m: unknown) => store.setExcelMapping(m as Parameters<typeof store.setExcelMapping>[0]));
 
           alert('백업 데이터를 불러왔습니다.');
