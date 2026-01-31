@@ -1,36 +1,62 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Neuro-Coach (급여 관리 시스템)
 
-## Getting Started
+노무사 업무 자동화 및 급여 관리 시스템
 
-First, run the development server:
+## 프로젝트 구조
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+```
+neuro-coach/
+├── payroll-manager/        # 급여 관리 시스템 (Next.js + TypeScript)
+├── tistory_uploader.py     # 티스토리 자동 발행 (Selenium)
+├── comwel-auto-extension/  # 근로복지공단 Chrome 확장
+└── docs/                   # 문서
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## payroll-manager
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+급여 관리 핵심 시스템
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+cd payroll-manager
+npm install
+npm run dev
+```
 
-## Learn More
+### 주요 기능
+- 사업장/근로자 관리
+- 급여 계산 및 명세서 생성
+- 퇴직금 계산 (2025/2026년 세법)
+- 엑셀 임포트 (사업장별 컬럼 매핑 저장)
+- 4대보험 신고서 생성
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 티스토리 자동 발행
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+pip install selenium webdriver-manager markdown
+python tistory_post.py --login  # 최초 로그인
+python tistory_post.py 내글.md --title "제목" --category "AI"
+```
 
-## Deploy on Vercel
+### 옵션
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+| 옵션 | 설명 |
+|------|------|
+| `--title`, `-t` | 글 제목 |
+| `--category`, `-c` | 카테고리명 |
+| `--tags` | 태그 (쉼표 구분) |
+| `--private` | 비공개 발행 |
+| `--login` | 로그인만 (쿠키 저장) |
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## 개발 환경
+
+- Node.js 18+
+- Python 3.10+
+- Firebase (Firestore)
+
+---
+
+*Built with Claude Code*

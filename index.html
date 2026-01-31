@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>뉴로 코치</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- 홈 화면 -->
+    <div id="home-screen" class="screen active">
+        <div class="container glass-card">
+            <header>
+                <h1>🧠 뉴로 코치</h1>
+            </header>
+            <main>
+                <h2>안녕하세요, 홍이님</h2>
+                <p>지금 몸 상태를 체크하겠습니다</p>
+                <button id="startBtn" class="main-btn">상태 체크 시작</button>
+                <button id="specBtn" class="secondary-btn" style="margin-top: 12px; max-width: 320px;">📄 명세서 생성</button>
+            </main>
+            <footer>
+                <div class="stats">
+                    <div class="footer-left">오늘의 기록: <span id="todayCount">0</span>/3</div>
+                    <div class="footer-right">연속 실행: 🔥 <span id="streakCount">0</span>일</div>
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- 감각 선택 화면 -->
+    <div id="select-screen" class="screen hidden">
+        <div class="container glass-card">
+            <header>
+                <h1>🧠 뉴로 코치</h1>
+                <h2>어느 부위가 불편한가요?</h2>
+            </header>
+
+            <main class="select-buttons">
+                <button class="body-part-btn" data-part="head">
+                    <span class="emoji">😣</span>
+                    <div class="text-content">
+                        <span class="part-name">머리</span>
+                        <span class="symptoms">무겁다 / 복잡하다</span>
+                    </div>
+                </button>
+
+                <button class="body-part-btn" data-part="chest">
+                    <span class="emoji">💓</span>
+                    <div class="text-content">
+                        <span class="part-name">가슴</span>
+                        <span class="symptoms">답답하다 / 두근거린다</span>
+                    </div>
+                </button>
+
+                <button class="body-part-btn" data-part="stomach">
+                    <span class="emoji">🫁</span>
+                    <div class="text-content">
+                        <span class="part-name">배</span>
+                        <span class="symptoms">불편하다 / 긴장된다</span>
+                    </div>
+                </button>
+
+                <button class="body-part-btn" data-part="legs">
+                    <span class="emoji">🦵</span>
+                    <div class="text-content">
+                        <span class="part-name">다리</span>
+                        <span class="symptoms">무겁다 / 힘없다</span>
+                    </div>
+                </button>
+            </main>
+
+            <footer>
+                <button class="back-btn" id="backBtn">← 뒤로</button>
+            </footer>
+        </div>
+    </div>
+
+    <!-- 리셋 제안 화면 -->
+    <div id="reset-screen" class="screen hidden">
+        <div class="container glass-card">
+            <header>
+                <h1>🧠 뉴로 코치</h1>
+                <h2 id="state-message">몸이 무겁고 움직이기 싫은 상태시군요</h2>
+            </header>
+
+            <main>
+                <div class="reset-box">
+                    <h3>🚿 리셋 행동</h3>
+                    <p id="reset-action">찬물로 손목을 10초 씻어보세요</p>
+                </div>
+
+                <div class="button-group">
+                    <button id="startResetBtn" class="main-btn">지금 할게요</button>
+                    <button id="lowerBtn" class="secondary-btn">50% 낮추기</button>
+                </div>
+            </main>
+
+            <footer>
+                <button class="back-btn" id="resetBackBtn">← 뒤로</button>
+            </footer>
+        </div>
+    </div>
+
+    <!-- 타이머 화면 -->
+    <div id="timer-screen" class="screen hidden">
+        <div class="container glass-card">
+            <header>
+                <h1>🧠 뉴로 코치</h1>
+                <h2>리셋 행동 진행 중</h2>
+            </header>
+
+            <main>
+                <div class="timer-container">
+                    <svg class="timer-ring" width="280" height="280">
+                        <circle class="timer-ring-bg" cx="140" cy="140" r="120"></circle>
+                        <circle class="timer-ring-progress" cx="140" cy="140" r="120" id="timerProgress"></circle>
+                    </svg>
+                    <div class="timer-display">
+                        <span id="timerMinutes">2</span>:<span id="timerSeconds">00</span>
+                    </div>
+                </div>
+
+                <div class="reset-action-display">
+                    <p id="timer-action-text">찬물로 손목을 10초 씻어보세요</p>
+                </div>
+
+                <div class="button-group">
+                    <button id="completeBtn" class="main-btn">완료했어요</button>
+                    <button id="failBtn" class="secondary-btn">못했어요</button>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- 완료 화면 -->
+    <div id="complete-screen" class="screen hidden">
+        <div class="container glass-card">
+            <header>
+                <h1>✅ 완료!</h1>
+                <h2>훌륭해요, 홍이님!</h2>
+            </header>
+
+            <main>
+                <div class="complete-emoji">🎉</div>
+
+                <div class="feedback-box">
+                    <h3>기분이 어떤가요?</h3>
+                    <div class="button-group">
+                        <button id="positiveFeedbackBtn" class="main-btn">조금 나아졌어요</button>
+                        <button id="neutralFeedbackBtn" class="secondary-btn">별로 안 변했어요</button>
+                    </div>
+                </div>
+
+                <div class="stats-display">
+                    <div class="stat-item">
+                        <div class="stat-label">오늘의 기록</div>
+                        <div class="stat-value"><span id="completeTodayCount">1</span>/3</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">연속 실행</div>
+                        <div class="stat-value">🔥 <span id="completeStreakCount">1</span>일</div>
+                    </div>
+                </div>
+            </main>
+
+            <footer>
+                <button class="main-btn" id="homeBtn">홈으로 돌아가기</button>
+            </footer>
+        </div>
+    </div>
+
+    <!-- 명세서 생성 화면 -->
+    <div id="spec-screen" class="screen hidden">
+        <div class="container spec-container glass-card">
+            <header>
+                <h1>📄 급여명세서 생성</h1>
+                <h2>골든킥태권도</h2>
+            </header>
+
+            <main class="spec-main">
+                <div class="spec-form-section">
+                    <form id="specForm">
+                        <div class="form-section-title">기본 정보
+                            <input type="file" id="yamlFileInput" accept=".yaml,.yml" style="display: none;">
+                            <button type="button" id="loadYamlBtn" class="add-btn">YAML 불러오기</button>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="incomeType">소득 구분</label>
+                            <select id="incomeType" required>
+                                <option value="employment">근로소득</option>
+                                <option value="business">사업소득</option>
+                            </select>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="year">연도</label>
+                                <input type="number" id="year" placeholder="2024" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="month">월</label>
+                                <input type="number" id="month" min="1" max="12" placeholder="3" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="position">직위/부서</label>
+                                <input type="text" id="position" placeholder="사범" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="employeeName">성명</label>
+                                <input type="text" id="employeeName" placeholder="안은솔" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="workDays">당월 근무일</label>
+                                <input type="number" id="workDays" placeholder="31" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="paymentDate">급여지급일</label>
+                                <input type="text" id="paymentDate" placeholder="매월 말일" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="baseAmount">세금신고액</label>
+                                <input type="text" id="baseAmount" placeholder="1,500,000" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="hireDate">입사일</label>
+                                <input type="date" id="hireDate" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="attendDays">출근일수</label>
+                                <input type="number" id="attendDays" placeholder="31">
+                            </div>
+                            <div class="form-group" id="dependentsGroup">
+                                <label for="dependents">공제대상가족 수 (본인포함)</label>
+                                <input type="number" id="dependents" min="1" max="11" value="1" placeholder="1">
+                            </div>
+                        </div>
+
+                        <div class="form-section-title">세전 지급항목
+                            <button type="button" id="addPayItemBtn" class="add-btn">+ 항목 추가</button>
+                        </div>
+
+                        <div id="payItemsContainer">
+                            <div class="pay-item">
+                                <input type="text" class="pay-item-name" placeholder="월지급총액" required>
+                                <input type="text" class="pay-item-amount" placeholder="1,500,000" required>
+                                <button type="button" class="remove-item-btn">×</button>
+                            </div>
+                            <div class="pay-item">
+                                <input type="text" class="pay-item-name" placeholder="신고차액" required>
+                                <input type="text" class="pay-item-amount" placeholder="1,600,000" required>
+                                <button type="button" class="remove-item-btn">×</button>
+                            </div>
+                        </div>
+
+                        <div class="form-section-title">공제 항목
+                            <button type="button" id="autoCalcBtn" class="add-btn">자동계산</button>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="incomeTax">소득세 (자동계산)</label>
+                                <input type="text" id="incomeTax" placeholder="0" value="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="localTax">지방소득세 (자동계산)</label>
+                                <input type="text" id="localTax" placeholder="0" value="0">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="nationalPension">국민연금 (4.75%)</label>
+                                <input type="text" id="nationalPension" placeholder="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="healthInsurance">건강보험 (3.595%)</label>
+                                <input type="text" id="healthInsurance" placeholder="0">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="employmentInsurance">고용보험 (0.9%)</label>
+                                <input type="text" id="employmentInsurance" placeholder="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="longTermCare">장기요양보험 (건보의 13.14%)</label>
+                                <input type="text" id="longTermCare" placeholder="0">
+                            </div>
+                        </div>
+
+                        <div class="form-section-title" style="margin-top: 10px; font-size: 14px; color: #64748B;">
+                            <input type="checkbox" id="customRates" style="margin-right: 5px;">
+                            <label for="customRates" style="font-weight: normal; cursor: pointer;">요율 직접 입력</label>
+                        </div>
+
+                        <div id="ratesSection" style="display: none;">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="pensionRate">국민연금 요율 (%)</label>
+                                    <input type="number" id="pensionRate" step="0.01" value="4.75">
+                                </div>
+                                <div class="form-group">
+                                    <label for="healthRate">건강보험 요율 (%)</label>
+                                    <input type="number" id="healthRate" step="0.001" value="3.595">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="employmentRate">고용보험 요율 (%)</label>
+                                    <input type="number" id="employmentRate" step="0.01" value="0.9">
+                                </div>
+                                <div class="form-group">
+                                    <label for="longTermRate">장기요양 요율 (%)</label>
+                                    <input type="number" id="longTermRate" step="0.01" value="13.14">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-section-title" style="margin-top: 10px; font-size: 14px; color: #64748B;">
+                            <input type="checkbox" id="durunuri" style="margin-right: 5px;">
+                            <label for="durunuri" style="font-weight: normal; cursor: pointer;">두루누리 지원 (국민연금, 고용보험 80% 지원)</label>
+                        </div>
+
+                        <button type="submit" class="main-btn">미리보기 생성</button>
+                    </form>
+                </div>
+
+                <div class="spec-preview-section" id="previewSection" style="display: none;">
+                    <h3>미리보기</h3>
+                    <div class="salary-preview" id="specPreview">
+                        <div class="salary-title" id="previewTitle">[2024년 3월] 급여 명세서</div>
+
+                        <table class="salary-table">
+                            <tr>
+                                <th>직위/부서</th>
+                                <th>성명</th>
+                                <th colspan="2">당월 근무일</th>
+                                <th colspan="2">급여지급일</th>
+                            </tr>
+                            <tr>
+                                <td id="previewPosition">사범</td>
+                                <td id="previewName">안은솔</td>
+                                <td colspan="2" id="previewWorkDays">31</td>
+                                <td colspan="2" id="previewPaymentDate">매월 말일</td>
+                            </tr>
+                            <tr>
+                                <th rowspan="2">세금신고액</th>
+                                <th rowspan="2">입사일</th>
+                                <th colspan="2" rowspan="2">출근일수</th>
+                                <th colspan="2" rowspan="2">실지급액</th>
+                            </tr>
+                            <tr></tr>
+                            <tr>
+                                <td id="previewBaseAmount">1,500,000</td>
+                                <td id="previewHireDate">2024-03-01</td>
+                                <td id="previewAttendDays" colspan="2">31</td>
+                                <td id="previewNetAmount" colspan="2" style="font-weight: bold;">3,100,000원</td>
+                            </tr>
+                        </table>
+
+                        <table class="salary-table" style="margin-top: 20px;" id="previewPayTable">
+                            <tbody id="previewPayItemsBody">
+                                <tr>
+                                    <th rowspan="4" style="width: 50px; writing-mode: vertical-rl; text-orientation: upright;">지급사항</th>
+                                    <td style="text-align: left;">월지급총액</td>
+                                    <td colspan="5" style="text-align: right;">1,500,000</td>
+                                </tr>
+                                <tr>
+                                    <td style="text-align: left;">신고차액</td>
+                                    <td colspan="5" style="text-align: right;">1,600,000</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="4" style="text-align: right; font-weight: bold;">지급총액</td>
+                                    <td id="previewTotalPay" style="text-align: right; font-weight: bold;">3,100,000</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <table class="salary-table" style="margin-top: 10px;">
+                            <tr>
+                                <th rowspan="7" style="width: 50px; writing-mode: vertical-rl; text-orientation: upright;">공제사항</th>
+                                <td>소득세</td>
+                                <td id="previewIncomeTax">-</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>지방소득세</td>
+                                <td id="previewLocalTax">-</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>국민연금</td>
+                                <td id="previewNationalPension">67,500</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>건강보험</td>
+                                <td id="previewHealthInsurance">53,170</td>
+                                <td>고용보험</td>
+                                <td id="previewEmploymentInsurance">13,500</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>장기요양보험</td>
+                                <td id="previewLongTermCare">6,880</td>
+                                <td colspan="2" style="text-align: right; font-weight: bold;">공제총액</td>
+                                <td id="previewTotalDeduct" style="text-align: right; font-weight: bold;">141,050</td>
+                            </tr>
+                            <tr>
+                                <td colspan="3"></td>
+                                <td style="text-align: right; font-weight: bold;">실수령액</td>
+                                <td id="previewFinalAmount" style="text-align: right; font-weight: bold; font-size: 16px;">2,958,950</td>
+                            </tr>
+                        </table>
+
+                        <div class="salary-footer">
+                            귀하의 노고에 감사드립니다. <strong>&lt;골든킥태권도&gt;</strong>
+                        </div>
+                    </div>
+
+                    <div class="button-group">
+                        <button id="exportPdfBtn" class="main-btn">📄 PDF로 다운로드</button>
+                        <button id="exportImageBtn" class="secondary-btn">🖼️ 이미지로 다운로드</button>
+                        <button id="exportYamlBtn" class="secondary-btn">📝 YAML로 내보내기</button>
+                    </div>
+                </div>
+            </main>
+
+            <footer>
+                <button class="back-btn" id="specBackBtn">← 뒤로</button>
+            </footer>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
