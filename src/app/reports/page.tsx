@@ -6,7 +6,7 @@ import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 
 export default function ReportsPage() {
-  const { businesses, workers, employments, addReport } = useStore();
+  const { businesses, workers, employments, monthlyWages, addReport } = useStore();
   const [selectedBusiness, setSelectedBusiness] = useState('');
   const [reportType, setReportType] = useState<'ACQUIRE' | 'LOSE'>('ACQUIRE');
   const [targetMonth, setTargetMonth] = useState(new Date().toISOString().slice(0, 7));
@@ -135,9 +135,104 @@ export default function ReportsPage() {
     alert(`${fileName} 파일이 생성되었습니다.`);
   };
 
+  // 급여 데이터 누락 확인
+  const getMissingWageData = (employmentId: string, leaveDate: string, joinDate: string) => {
+    const leaveYear = parseInt(leaveDate.slice(0, 4));
+    const leaveMonth = parseInt(leaveDate.slice(5, 7));
+    const joinYear = parseInt(joinDate.slice(0, 4));
+    const joinMonth = parseInt(joinDate.slice(5, 7));
+    const prevYear = leaveYear - 1;
+
+    const missing: string[] = [];
+    const empWages = monthlyWages.filter((mw) => mw.employmentId === employmentId);
+
+    // 당해년도 체크 (1월 ~ 퇴사월)
+    for (let m = 1; m <= leaveMonth; m++) {
+      // 입사 전 월은 제외
+      if (leaveYear === joinYear && m < joinMonth) continue;
+      const ym = `${leaveYear}-${String(m).padStart(2, '0')}`;
+      if (!empWages.find((w) => w.yearMonth === ym)) {
+        missing.push(ym);
+      }
+    }
+
+    // 전년도 체크 (입사월 또는 1월 ~ 12월)
+    const prevStartMonth = prevYear === joinYear ? joinMonth : 1;
+    // 입사가 전년도 이전이면 전년도 전체 체크
+    if (joinYear <= prevYear) {
+      for (let m = prevStartMonth; m <= 12; m++) {
+        const ym = `${prevYear}-${String(m).padStart(2, '0')}`;
+        if (!empWages.find((w) => w.yearMonth === ym)) {
+          missing.push(ym);
+        }
+      }
+    }
+
+    return missing;
+  };
+
+  // 실제 보수 계산
+  const calculateWages = (employmentId: string, leaveDate: string, joinDate: string) => {
+    const leaveYear = parseInt(leaveDate.slice(0, 4));
+    const leaveMonth = parseInt(leaveDate.slice(5, 7));
+    const joinYear = parseInt(joinDate.slice(0, 4));
+    const joinMonth = parseInt(joinDate.slice(5, 7));
+    const prevYear = leaveYear - 1;
+
+    const empWages = monthlyWages.filter((mw) => mw.employmentId === employmentId);
+
+    // 당해년도 계산
+    let currentYearTotal = 0;
+    let currentYearMonths = 0;
+    for (let m = 1; m <= leaveMonth; m++) {
+      if (leaveYear === joinYear && m < joinMonth) continue;
+      const ym = `${leaveYear}-${String(m).padStart(2, '0')}`;
+      const wage = empWages.find((w) => w.yearMonth === ym);
+      if (wage) {
+        currentYearTotal += wage.totalWage;
+        currentYearMonths++;
+      }
+    }
+
+    // 전년도 계산
+    let prevYearTotal = 0;
+    let prevYearMonths = 0;
+    if (joinYear <= prevYear) {
+      const prevStartMonth = prevYear === joinYear ? joinMonth : 1;
+      for (let m = prevStartMonth; m <= 12; m++) {
+        const ym = `${prevYear}-${String(m).padStart(2, '0')}`;
+        const wage = empWages.find((w) => w.yearMonth === ym);
+        if (wage) {
+          prevYearTotal += wage.totalWage;
+          prevYearMonths++;
+        }
+      }
+    }
+
+    return { currentYearTotal, currentYearMonths, prevYearTotal, prevYearMonths };
+  };
+
   const generateLoseExcel = () => {
     const business = businesses.find((b) => b.id === selectedBusiness);
     if (!business || targetWorkers.length === 0) return alert('대상 근로자가 없습니다.');
+
+    // 급여 데이터 누락 확인
+    const missingData: { name: string; missing: string[] }[] = [];
+    targetWorkers.forEach(({ worker, employment }) => {
+      if (!employment.leaveDate || !employment.joinDate) return;
+      const missing = getMissingWageData(employment.id, employment.leaveDate, employment.joinDate);
+      if (missing.length > 0) {
+        missingData.push({ name: worker.name, missing });
+      }
+    });
+
+    if (missingData.length > 0) {
+      const msg = missingData
+        .map(({ name, missing }) => `${name}: ${missing.slice(0, 5).join(', ')}${missing.length > 5 ? ` 외 ${missing.length - 5}건` : ''}`)
+        .join('\n');
+      alert(`급여 데이터가 누락되었습니다.\n[급여 이력] 메뉴에서 먼저 입력해주세요.\n\n${msg}`);
+      return;
+    }
 
     const header = [
       '성명', '주민등록번호', '지역번호', '국번', '뒷번호',
@@ -150,21 +245,23 @@ export default function ReportsPage() {
     const dataRows = targetWorkers.map(({ worker, employment }) => {
       const dt = employment.leaveDate?.replace(/-/g, '') || '';
       const phone = worker.phone?.split('-') || ['', '', ''];
-      const jY = parseInt(employment.joinDate.slice(0, 4));
-      const lY = parseInt(employment.leaveDate?.slice(0, 4) || new Date().getFullYear().toString());
-      const jM = parseInt(employment.joinDate.slice(5, 7));
-      const lM = parseInt(employment.leaveDate?.slice(5, 7) || (new Date().getMonth() + 1).toString());
-      const months = Math.min((lY - jY) * 12 + (lM - jM) + 1, 12);
-      const wage = employment.monthlyWage * months;
+
+      const { currentYearTotal, currentYearMonths, prevYearTotal, prevYearMonths } =
+        calculateWages(employment.id, employment.leaveDate!, employment.joinDate);
 
       return [
         worker.name, worker.residentNo, phone[0], phone[1], phone[2],
+        // 연금
         employment.npsYn ? dt : '', employment.npsYn ? (employment.leaveReason || '11') : '', '',
+        // 건강 (당해/전년 분리)
         employment.nhicYn ? dt : '', employment.nhicYn ? (employment.leaveReason || '11') : '',
-        employment.nhicYn ? wage : '', employment.nhicYn ? months : '', '', '',
+        employment.nhicYn ? currentYearTotal : '', employment.nhicYn ? currentYearMonths : '',
+        employment.nhicYn ? prevYearTotal : '', employment.nhicYn ? prevYearMonths : '',
+        // 고용 (당해/전년 분리)
         employment.gyYn ? dt : '', employment.gyYn ? (employment.leaveReason || '11') : '', '',
-        employment.gyYn ? wage : '', '',
-        employment.sjYn ? dt : '', employment.sjYn ? wage : '', ''
+        employment.gyYn ? currentYearTotal : '', employment.gyYn ? prevYearTotal : '',
+        // 산재 (당해/전년 분리)
+        employment.sjYn ? dt : '', employment.sjYn ? currentYearTotal : '', employment.sjYn ? prevYearTotal : ''
       ];
     });
 
