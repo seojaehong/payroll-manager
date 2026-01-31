@@ -12,6 +12,8 @@ export default function WagesPage() {
   const [editingWages, setEditingWages] = useState<Record<string, Record<string, number>>>({});
   const [importMonth, setImportMonth] = useState('');
   const [importPreview, setImportPreview] = useState<{ name: string; residentNo: string; wage: number; matched: boolean }[]>([]);
+  const [bulkImportFiles, setBulkImportFiles] = useState<{ file: File; yearMonth: string; preview: { name: string; residentNo: string; wage: number; matched: boolean }[] }[]>([]);
+  const [bulkImporting, setBulkImporting] = useState(false);
   const [statusFilter, setStatusFilter] = useState<'ALL' | 'ACTIVE' | 'INACTIVE'>('ACTIVE');
   const [sortBy, setSortBy] = useState<'joinDate' | 'name'>('joinDate');
 
@@ -176,6 +178,113 @@ export default function WagesPage() {
     e.target.value = ''; // 같은 파일 다시 선택 가능하도록
   }, [selectedBusiness, excelMappings, workers]);
 
+  // 다중 파일 일괄 업로드 핸들러
+  const handleBulkImport = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0 || !selectedBusiness) return;
+
+    setBulkImporting(true);
+    const mapping = excelMappings.find((m) => m.businessId === selectedBusiness);
+    const sheetName = mapping?.sheetName || '임금대장';
+    const dataStartRow = mapping?.dataStartRow || 6;
+    const nameCol = mapping?.columns.name || 2;
+    const residentNoCol = mapping?.columns.residentNo || 4;
+    const wageCol = 20;
+
+    const processedFiles: typeof bulkImportFiles = [];
+
+    for (const file of Array.from(files)) {
+      // 파일명에서 년월 추출 (예: 쿠우쿠우부평점_202501.xlsx)
+      const fileNameMatch = file.name.match(/(\d{4})(\d{2})/);
+      if (!fileNameMatch) continue;
+
+      const yearMonth = `${fileNameMatch[1]}-${fileNameMatch[2]}`;
+
+      const data = await new Promise<ArrayBuffer>((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (event) => resolve(event.target?.result as ArrayBuffer);
+        reader.readAsArrayBuffer(file);
+      });
+
+      const wb = XLSX.read(data, { type: 'array' });
+      const ws = wb.Sheets[sheetName];
+      if (!ws) continue;
+
+      const jsonData = XLSX.utils.sheet_to_json(ws, { header: 1 }) as unknown[][];
+      const preview: typeof importPreview = [];
+
+      for (let i = dataStartRow - 1; i < jsonData.length; i++) {
+        const row = jsonData[i];
+        if (!row || !row[nameCol - 1]) continue;
+
+        const name = String(row[nameCol - 1] || '').trim();
+        let residentNo = String(row[residentNoCol - 1] || '').replace(/-/g, '').trim();
+        if (residentNo.length < 13 && !isNaN(Number(residentNo))) {
+          residentNo = residentNo.padStart(13, '0');
+        }
+        const wageRaw = row[wageCol - 1];
+        const wage = typeof wageRaw === 'number' ? Math.round(wageRaw) : parseInt(String(wageRaw).replace(/,/g, '')) || 0;
+
+        if (name && wage > 0) {
+          const matchedWorker = workers.find((w) => w.residentNo === residentNo);
+          preview.push({ name, residentNo, wage, matched: !!matchedWorker });
+        }
+      }
+
+      if (preview.length > 0) {
+        processedFiles.push({ file, yearMonth, preview });
+      }
+    }
+
+    setBulkImportFiles(processedFiles.sort((a, b) => a.yearMonth.localeCompare(b.yearMonth)));
+    setBulkImporting(false);
+    e.target.value = '';
+  }, [selectedBusiness, excelMappings, workers]);
+
+  // 다중 파일 일괄 임포트 실행
+  const executeBulkImport = () => {
+    if (bulkImportFiles.length === 0) return;
+
+    const newWages: MonthlyWage[] = [];
+    let totalMatched = 0;
+    let totalUnmatched = 0;
+
+    bulkImportFiles.forEach(({ yearMonth, preview }) => {
+      preview.forEach((row) => {
+        const worker = workers.find((w) => w.residentNo === row.residentNo);
+        if (!worker) {
+          totalUnmatched++;
+          return;
+        }
+
+        const employment = employments.find(
+          (e) => e.workerId === worker.id && e.businessId === selectedBusiness
+        );
+        if (!employment) {
+          totalUnmatched++;
+          return;
+        }
+
+        newWages.push({
+          id: `${employment.id}-${yearMonth}`,
+          employmentId: employment.id,
+          yearMonth,
+          totalWage: row.wage,
+          createdAt: new Date(),
+        });
+        totalMatched++;
+      });
+    });
+
+    if (newWages.length > 0) {
+      addMonthlyWages(newWages);
+      alert(`일괄 임포트 완료!\n- 파일 수: ${bulkImportFiles.length}개\n- 성공: ${totalMatched}건\n- 미매칭: ${totalUnmatched}건`);
+      setBulkImportFiles([]);
+    } else {
+      alert('매칭된 데이터가 없습니다.');
+    }
+  };
+
   // 임포트 실행
   const executeImport = () => {
     if (!importMonth || importPreview.length === 0) {
@@ -320,10 +429,52 @@ export default function WagesPage() {
         )}
       </div>
 
-      {/* 엑셀 임포트 섹션 */}
+      {/* 다중 파일 일괄 업로드 섹션 */}
       {selectedBusiness && (
         <div className="glass p-6 mb-6">
-          <h2 className="text-lg font-semibold text-white mb-4">엑셀에서 급여 임포트</h2>
+          <h2 className="text-lg font-semibold text-white mb-4">다중 파일 일괄 업로드</h2>
+          <p className="text-white/40 text-sm mb-4">파일명에 년월 포함 필수 (예: 쿠우쿠우부평점_202501.xlsx)</p>
+          <div className="grid grid-cols-3 gap-4 items-end">
+            <div className="col-span-2">
+              <label className="block text-sm font-medium text-white/60 mb-2">급여대장 엑셀 파일 (다중 선택)</label>
+              <input
+                type="file"
+                accept=".xlsx,.xls"
+                multiple
+                onChange={handleBulkImport}
+                disabled={bulkImporting}
+                className="w-full input-glass px-4 py-3 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-purple-500/20 file:text-purple-400 hover:file:bg-purple-500/30 disabled:opacity-50"
+              />
+            </div>
+            <div>
+              <button
+                onClick={executeBulkImport}
+                disabled={bulkImportFiles.length === 0}
+                className="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {bulkImporting ? '처리 중...' : `일괄 임포트 (${bulkImportFiles.length}개 파일)`}
+              </button>
+            </div>
+          </div>
+
+          {bulkImportFiles.length > 0 && (
+            <div className="mt-4 grid grid-cols-4 gap-2">
+              {bulkImportFiles.map(({ file, yearMonth, preview }) => (
+                <div key={yearMonth} className="glass p-3 text-sm">
+                  <p className="text-white font-medium">{yearMonth}</p>
+                  <p className="text-white/60 text-xs truncate">{file.name}</p>
+                  <p className="text-green-400">{preview.filter(p => p.matched).length}명 매칭</p>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* 단일 파일 임포트 섹션 */}
+      {selectedBusiness && (
+        <div className="glass p-6 mb-6">
+          <h2 className="text-lg font-semibold text-white mb-4">단일 파일 임포트</h2>
           <div className="grid grid-cols-4 gap-4 items-end">
             <div className="col-span-2">
               <label className="block text-sm font-medium text-white/60 mb-2">급여대장 엑셀 파일</label>
