@@ -12,6 +12,17 @@ import {
 } from 'firebase/firestore';
 import { Business, Worker, Employment, Report, MonthlyWage, ExcelMapping, RetirementCalculation } from '@/types';
 
+// Firestore writeBatch 500건 제한 처리를 위한 청크 유틸리티
+const BATCH_LIMIT = 500;
+
+function chunkArray<T>(array: T[], size: number): T[][] {
+  const chunks: T[][] = [];
+  for (let i = 0; i < array.length; i += size) {
+    chunks.push(array.slice(i, i + size));
+  }
+  return chunks;
+}
+
 // 컬렉션 이름
 const COLLECTIONS = {
   businesses: 'businesses',
@@ -93,16 +104,19 @@ export async function saveWorker(worker: Worker): Promise<void> {
 }
 
 export async function saveWorkers(workers: Worker[]): Promise<void> {
-  const batch = writeBatch(db);
-  workers.forEach((worker) => {
-    const ref = doc(db, COLLECTIONS.workers, worker.id);
-    batch.set(ref, {
-      ...worker,
-      createdAt: toTimestamp(worker.createdAt),
-      updatedAt: toTimestamp(worker.updatedAt),
+  const chunks = chunkArray(workers, BATCH_LIMIT);
+  for (const chunk of chunks) {
+    const batch = writeBatch(db);
+    chunk.forEach((worker) => {
+      const ref = doc(db, COLLECTIONS.workers, worker.id);
+      batch.set(ref, {
+        ...worker,
+        createdAt: toTimestamp(worker.createdAt),
+        updatedAt: toTimestamp(worker.updatedAt),
+      });
     });
-  });
-  await batch.commit();
+    await batch.commit();
+  }
 }
 
 // === 고용관계 ===
@@ -128,16 +142,19 @@ export async function saveEmployment(employment: Employment): Promise<void> {
 }
 
 export async function saveEmployments(employments: Employment[]): Promise<void> {
-  const batch = writeBatch(db);
-  employments.forEach((emp) => {
-    const ref = doc(db, COLLECTIONS.employments, emp.id);
-    batch.set(ref, removeUndefined({
-      ...emp,
-      createdAt: toTimestamp(emp.createdAt),
-      updatedAt: toTimestamp(emp.updatedAt),
-    }));
-  });
-  await batch.commit();
+  const chunks = chunkArray(employments, BATCH_LIMIT);
+  for (const chunk of chunks) {
+    const batch = writeBatch(db);
+    chunk.forEach((emp) => {
+      const ref = doc(db, COLLECTIONS.employments, emp.id);
+      batch.set(ref, removeUndefined({
+        ...emp,
+        createdAt: toTimestamp(emp.createdAt),
+        updatedAt: toTimestamp(emp.updatedAt),
+      }));
+    });
+    await batch.commit();
+  }
 }
 
 // === 월별 급여 ===
@@ -170,15 +187,18 @@ export async function getMonthlyWagesByEmployment(employmentId: string): Promise
 }
 
 export async function saveMonthlyWages(wages: MonthlyWage[]): Promise<void> {
-  const batch = writeBatch(db);
-  wages.forEach((wage) => {
-    const ref = doc(db, COLLECTIONS.monthlyWages, wage.id);
-    batch.set(ref, {
-      ...wage,
-      createdAt: toTimestamp(wage.createdAt),
+  const chunks = chunkArray(wages, BATCH_LIMIT);
+  for (const chunk of chunks) {
+    const batch = writeBatch(db);
+    chunk.forEach((wage) => {
+      const ref = doc(db, COLLECTIONS.monthlyWages, wage.id);
+      batch.set(ref, {
+        ...wage,
+        createdAt: toTimestamp(wage.createdAt),
+      });
     });
-  });
-  await batch.commit();
+    await batch.commit();
+  }
 }
 
 // === 신고 이력 ===
