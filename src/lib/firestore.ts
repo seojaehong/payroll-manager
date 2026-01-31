@@ -36,6 +36,13 @@ const fromTimestamp = (ts: Timestamp | undefined) => {
   return ts.toDate();
 };
 
+// undefined 값 제거 (Firestore는 undefined를 허용하지 않음)
+const removeUndefined = <T extends Record<string, unknown>>(obj: T): T => {
+  return Object.fromEntries(
+    Object.entries(obj).filter(([, v]) => v !== undefined)
+  ) as T;
+};
+
 // === 사업장 ===
 export async function getBusinesses(): Promise<Business[]> {
   const snapshot = await getDocs(collection(db, COLLECTIONS.businesses));
@@ -112,22 +119,22 @@ export async function getEmployments(): Promise<Employment[]> {
 }
 
 export async function saveEmployment(employment: Employment): Promise<void> {
-  await setDoc(doc(db, COLLECTIONS.employments, employment.id), {
+  await setDoc(doc(db, COLLECTIONS.employments, employment.id), removeUndefined({
     ...employment,
     createdAt: toTimestamp(employment.createdAt),
     updatedAt: toTimestamp(employment.updatedAt),
-  });
+  }));
 }
 
 export async function saveEmployments(employments: Employment[]): Promise<void> {
   const batch = writeBatch(db);
   employments.forEach((emp) => {
     const ref = doc(db, COLLECTIONS.employments, emp.id);
-    batch.set(ref, {
+    batch.set(ref, removeUndefined({
       ...emp,
       createdAt: toTimestamp(emp.createdAt),
       updatedAt: toTimestamp(emp.updatedAt),
-    });
+    }));
   });
   await batch.commit();
 }

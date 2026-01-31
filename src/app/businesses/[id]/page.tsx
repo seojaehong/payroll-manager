@@ -344,11 +344,38 @@ function WorkersTab({
   businessEmployments: { employment: Employment; worker: Worker }[];
   businessId: string;
 }) {
-  const [showInactive, setShowInactive] = useState(false);
+  const [statusFilter, setStatusFilter] = useState<'ALL' | 'ACTIVE' | 'INACTIVE'>('ACTIVE');
+  const [sortBy, setSortBy] = useState<'joinDate' | 'name'>('joinDate');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
-  const filtered = showInactive
-    ? businessEmployments
-    : businessEmployments.filter(({ employment }) => employment.status === 'ACTIVE');
+  const filtered = useMemo(() => {
+    let result = businessEmployments;
+
+    // 상태 필터
+    if (statusFilter === 'ACTIVE') {
+      result = result.filter(({ employment }) => employment.status === 'ACTIVE');
+    } else if (statusFilter === 'INACTIVE') {
+      result = result.filter(({ employment }) => employment.status === 'INACTIVE');
+    }
+
+    // 정렬
+    result = [...result].sort((a, b) => {
+      let compare = 0;
+      if (sortBy === 'joinDate') {
+        const dateA = a.employment.joinDate || '';
+        const dateB = b.employment.joinDate || '';
+        compare = dateA.localeCompare(dateB);
+      } else {
+        compare = a.worker.name.localeCompare(b.worker.name, 'ko');
+      }
+      return sortOrder === 'asc' ? compare : -compare;
+    });
+
+    return result;
+  }, [businessEmployments, statusFilter, sortBy, sortOrder]);
+
+  const activeCount = businessEmployments.filter(({ employment }) => employment.status === 'ACTIVE').length;
+  const inactiveCount = businessEmployments.filter(({ employment }) => employment.status === 'INACTIVE').length;
 
   return (
     <div>
@@ -356,19 +383,61 @@ function WorkersTab({
         <h3 className="text-lg font-semibold text-white">
           근로자 목록 ({filtered.length}명)
         </h3>
-        <label className="flex items-center gap-2 text-white/60 cursor-pointer">
-          <input
-            type="checkbox"
-            checked={showInactive}
-            onChange={(e) => setShowInactive(e.target.checked)}
-            className="w-4 h-4 rounded"
-          />
-          <span className="text-sm">퇴사자 포함</span>
-        </label>
+        <div className="flex items-center gap-4">
+          {/* 상태 필터 */}
+          <div className="flex gap-1 bg-white/5 rounded-lg p-1">
+            <button
+              onClick={() => setStatusFilter('ACTIVE')}
+              className={`px-3 py-1.5 rounded-md text-sm transition-all ${
+                statusFilter === 'ACTIVE' ? 'bg-green-500/20 text-green-400' : 'text-white/50 hover:text-white/80'
+              }`}
+            >
+              재직 ({activeCount})
+            </button>
+            <button
+              onClick={() => setStatusFilter('INACTIVE')}
+              className={`px-3 py-1.5 rounded-md text-sm transition-all ${
+                statusFilter === 'INACTIVE' ? 'bg-white/20 text-white' : 'text-white/50 hover:text-white/80'
+              }`}
+            >
+              퇴사 ({inactiveCount})
+            </button>
+            <button
+              onClick={() => setStatusFilter('ALL')}
+              className={`px-3 py-1.5 rounded-md text-sm transition-all ${
+                statusFilter === 'ALL' ? 'bg-blue-500/20 text-blue-400' : 'text-white/50 hover:text-white/80'
+              }`}
+            >
+              전체
+            </button>
+          </div>
+          {/* 정렬 */}
+          <div className="flex gap-1 bg-white/5 rounded-lg p-1">
+            <button
+              onClick={() => { setSortBy('joinDate'); setSortOrder('desc'); }}
+              className={`px-3 py-1.5 rounded-md text-sm transition-all ${
+                sortBy === 'joinDate' ? 'bg-white/10 text-white' : 'text-white/50 hover:text-white/80'
+              }`}
+            >
+              입사일순
+            </button>
+            <button
+              onClick={() => { setSortBy('name'); setSortOrder('asc'); }}
+              className={`px-3 py-1.5 rounded-md text-sm transition-all ${
+                sortBy === 'name' ? 'bg-white/10 text-white' : 'text-white/50 hover:text-white/80'
+              }`}
+            >
+              이름순
+            </button>
+          </div>
+        </div>
       </div>
 
       {filtered.length === 0 ? (
-        <p className="text-center text-white/40 py-12">등록된 근로자가 없습니다</p>
+        <p className="text-center text-white/40 py-12">
+          {statusFilter === 'ACTIVE' ? '재직 중인 근로자가 없습니다' :
+           statusFilter === 'INACTIVE' ? '퇴사한 근로자가 없습니다' : '등록된 근로자가 없습니다'}
+        </p>
       ) : (
         <table className="w-full table-glass">
           <thead>
