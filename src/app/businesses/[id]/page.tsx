@@ -547,7 +547,7 @@ function WagesTab({
       const dataStartRow = mapping?.dataStartRow || 6;
       const nameCol = mapping?.columns?.name || 2;
       const residentNoCol = mapping?.columns?.residentNo || 4;
-      const wageCol = 20;
+      const wageCol = mapping?.columns?.wage || 20;
 
       const ws = wb.Sheets[sheetName];
       if (!ws) {
