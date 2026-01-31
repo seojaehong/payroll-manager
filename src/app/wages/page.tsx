@@ -1,14 +1,17 @@
 'use client';
 
 import { useStore } from '@/store/useStore';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { MonthlyWage } from '@/types';
+import * as XLSX from 'xlsx';
 
 export default function WagesPage() {
-  const { businesses, workers, employments, monthlyWages, addMonthlyWages } = useStore();
+  const { businesses, workers, employments, monthlyWages, addMonthlyWages, excelMappings } = useStore();
   const [selectedBusiness, setSelectedBusiness] = useState('');
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear() - 1); // 기본 전년도
   const [editingWages, setEditingWages] = useState<Record<string, Record<string, number>>>({});
+  const [importMonth, setImportMonth] = useState('');
+  const [importPreview, setImportPreview] = useState<{ name: string; residentNo: string; wage: number; matched: boolean }[]>([]);;
 
   // 선택된 사업장의 근로자 목록
   const businessWorkers = useMemo(() => {
@@ -75,6 +78,118 @@ export default function WagesPage() {
       addMonthlyWages(newWages);
       setEditingWages({});
       alert(`${newWages.length}건의 급여 데이터가 저장되었습니다.`);
+    }
+  };
+
+  // 엑셀 임포트 핸들러
+  const handleExcelImport = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !selectedBusiness) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const data = event.target?.result;
+      const wb = XLSX.read(data, { type: 'binary' });
+
+      // 매핑 설정 가져오기
+      const mapping = excelMappings.find((m) => m.businessId === selectedBusiness);
+      const sheetName = mapping?.sheetName || '임금대장';
+      const dataStartRow = mapping?.dataStartRow || 6;
+      const nameCol = mapping?.columns.name || 2;
+      const residentNoCol = mapping?.columns.residentNo || 4;
+      const wageCol = 20; // 임금총액 열 (고정)
+
+      const ws = wb.Sheets[sheetName];
+      if (!ws) {
+        alert(`'${sheetName}' 시트를 찾을 수 없습니다.`);
+        return;
+      }
+
+      const jsonData = XLSX.utils.sheet_to_json(ws, { header: 1 }) as unknown[][];
+
+      // 파일명에서 년월 추출 시도 (예: 쿠우쿠우부평점_202501.xlsx)
+      const fileNameMatch = file.name.match(/(\d{4})(\d{2})/);
+      if (fileNameMatch) {
+        setImportMonth(`${fileNameMatch[1]}-${fileNameMatch[2]}`);
+      }
+
+      const preview: typeof importPreview = [];
+      for (let i = dataStartRow - 1; i < jsonData.length; i++) {
+        const row = jsonData[i];
+        if (!row || !row[nameCol - 1]) continue;
+
+        const name = String(row[nameCol - 1] || '').trim();
+        let residentNo = String(row[residentNoCol - 1] || '').replace(/-/g, '').trim();
+        if (residentNo.length < 13 && !isNaN(Number(residentNo))) {
+          residentNo = residentNo.padStart(13, '0');
+        }
+        const wageRaw = row[wageCol - 1];
+        const wage = typeof wageRaw === 'number'
+          ? Math.round(wageRaw)
+          : parseInt(String(wageRaw).replace(/,/g, '')) || 0;
+
+        if (name && wage > 0) {
+          // 근로자 매칭
+          const matchedWorker = workers.find((w) => w.residentNo === residentNo);
+          preview.push({
+            name,
+            residentNo,
+            wage,
+            matched: !!matchedWorker,
+          });
+        }
+      }
+
+      setImportPreview(preview);
+    };
+
+    reader.readAsBinaryString(file);
+    e.target.value = ''; // 같은 파일 다시 선택 가능하도록
+  }, [selectedBusiness, excelMappings, workers]);
+
+  // 임포트 실행
+  const executeImport = () => {
+    if (!importMonth || importPreview.length === 0) {
+      alert('임포트할 월을 선택하고 데이터를 확인하세요.');
+      return;
+    }
+
+    const newWages: MonthlyWage[] = [];
+    let matchedCount = 0;
+    let unmatchedCount = 0;
+
+    importPreview.forEach((row) => {
+      const worker = workers.find((w) => w.residentNo === row.residentNo);
+      if (!worker) {
+        unmatchedCount++;
+        return;
+      }
+
+      const employment = employments.find(
+        (e) => e.workerId === worker.id && e.businessId === selectedBusiness
+      );
+      if (!employment) {
+        unmatchedCount++;
+        return;
+      }
+
+      newWages.push({
+        id: `${employment.id}-${importMonth}`,
+        employmentId: employment.id,
+        yearMonth: importMonth,
+        totalWage: row.wage,
+        createdAt: new Date(),
+      });
+      matchedCount++;
+    });
+
+    if (newWages.length > 0) {
+      addMonthlyWages(newWages);
+      alert(`임포트 완료!\n- 성공: ${matchedCount}명\n- 미매칭: ${unmatchedCount}명`);
+      setImportPreview([]);
+      setImportMonth('');
+    } else {
+      alert('매칭된 근로자가 없습니다. 먼저 [엑셀 Import]에서 근로자를 등록하세요.');
     }
   };
 
@@ -175,6 +290,73 @@ export default function WagesPage() {
           </div>
         )}
       </div>
+
+      {/* 엑셀 임포트 섹션 */}
+      {selectedBusiness && (
+        <div className="glass p-6 mb-6">
+          <h2 className="text-lg font-semibold text-white mb-4">엑셀에서 급여 임포트</h2>
+          <div className="grid grid-cols-4 gap-4 items-end">
+            <div className="col-span-2">
+              <label className="block text-sm font-medium text-white/60 mb-2">급여대장 엑셀 파일</label>
+              <input
+                type="file"
+                accept=".xlsx,.xls"
+                onChange={handleExcelImport}
+                className="w-full input-glass px-4 py-3 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-blue-500/20 file:text-blue-400 hover:file:bg-blue-500/30"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-white/60 mb-2">적용 월</label>
+              <input
+                type="month"
+                value={importMonth}
+                onChange={(e) => setImportMonth(e.target.value)}
+                className="w-full input-glass px-4 py-3"
+              />
+            </div>
+            <div>
+              <button
+                onClick={executeImport}
+                disabled={importPreview.length === 0 || !importMonth}
+                className="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                임포트 실행 ({importPreview.filter((p) => p.matched).length}명)
+              </button>
+            </div>
+          </div>
+
+          {importPreview.length > 0 && (
+            <div className="mt-4 max-h-48 overflow-auto">
+              <table className="w-full table-glass text-sm">
+                <thead className="sticky top-0 bg-black/80">
+                  <tr>
+                    <th className="px-3 py-2 text-left">이름</th>
+                    <th className="px-3 py-2 text-left">주민번호</th>
+                    <th className="px-3 py-2 text-right">급여</th>
+                    <th className="px-3 py-2 text-center">매칭</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {importPreview.map((row, i) => (
+                    <tr key={i} className={row.matched ? '' : 'opacity-50'}>
+                      <td className="px-3 py-2 text-white">{row.name}</td>
+                      <td className="px-3 py-2 text-white/60 font-mono">{row.residentNo.slice(0, 6)}-***</td>
+                      <td className="px-3 py-2 text-right text-white/80">{row.wage.toLocaleString()}</td>
+                      <td className="px-3 py-2 text-center">
+                        {row.matched ? (
+                          <span className="text-green-400">O</span>
+                        ) : (
+                          <span className="text-red-400">X</span>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      )}
 
       {selectedBusiness && (
         <div className="glass p-6 overflow-auto">
