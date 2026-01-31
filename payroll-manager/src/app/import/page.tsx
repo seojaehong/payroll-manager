@@ -14,7 +14,7 @@ interface ImportRow {
 }
 
 export default function ImportPage() {
-  const { businesses, workers, addWorker, addEmployment, excelMappings, setExcelMapping } = useStore();
+  const { businesses, workers, addWorkers, addEmployments, excelMappings, setExcelMapping } = useStore();
   const [selectedBusiness, setSelectedBusiness] = useState('');
   const [previewData, setPreviewData] = useState<ImportRow[]>([]);
   const [fileName, setFileName] = useState('');
@@ -142,12 +142,15 @@ export default function ImportPage() {
       return;
     }
 
-    let importedCount = 0;
+    // 중복 체크를 위한 Set (O(1) 조회)
+    const existingResidentNos = new Set(workers.map((w) => w.residentNo));
+
+    const newWorkers: Worker[] = [];
+    const newEmployments: Employment[] = [];
     let skippedCount = 0;
 
     previewData.forEach((row) => {
-      const existingWorker = workers.find((w) => w.residentNo === row.residentNo);
-      if (existingWorker) {
+      if (existingResidentNos.has(row.residentNo)) {
         skippedCount++;
         return;
       }
@@ -155,16 +158,16 @@ export default function ImportPage() {
       const workerId = crypto.randomUUID();
       const employmentId = crypto.randomUUID();
 
-      const newWorker: Worker = {
+      newWorkers.push({
         id: workerId,
         name: row.name,
         residentNo: row.residentNo,
         nationality: '100',
         createdAt: new Date(),
         updatedAt: new Date(),
-      };
+      });
 
-      const newEmployment: Employment = {
+      newEmployments.push({
         id: employmentId,
         workerId,
         businessId: selectedBusiness,
@@ -180,14 +183,19 @@ export default function ImportPage() {
         nhicYn: true,
         createdAt: new Date(),
         updatedAt: new Date(),
-      };
+      });
 
-      addWorker(newWorker);
-      addEmployment(newEmployment);
-      importedCount++;
+      // 중복 방지를 위해 Set에 추가
+      existingResidentNos.add(row.residentNo);
     });
 
-    alert(`Import 완료!\n- 추가: ${importedCount}명\n- 중복 스킵: ${skippedCount}명`);
+    // 배치로 한번에 저장
+    if (newWorkers.length > 0) {
+      addWorkers(newWorkers);
+      addEmployments(newEmployments);
+    }
+
+    alert(`Import 완료!\n- 추가: ${newWorkers.length}명\n- 중복 스킵: ${skippedCount}명`);
     setPreviewData([]);
   };
 

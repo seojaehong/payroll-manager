@@ -284,12 +284,14 @@ interface AppState {
   // 근로자
   workers: Worker[];
   addWorker: (worker: Worker) => void;
+  addWorkers: (workers: Worker[]) => void;
   updateWorker: (id: string, data: Partial<Worker>) => void;
   deleteWorker: (id: string) => void;
 
   // 고용 관계
   employments: Employment[];
   addEmployment: (employment: Employment) => void;
+  addEmployments: (employments: Employment[]) => void;
   updateEmployment: (id: string, data: Partial<Employment>) => void;
   deleteEmployment: (id: string) => void;
 
@@ -467,6 +469,10 @@ export const useStore = create<AppState>()(
         set((state) => ({ workers: [...state.workers, worker] }));
         firestore.saveWorker(worker).catch(console.error);
       },
+      addWorkers: (workers) => {
+        set((state) => ({ workers: [...state.workers, ...workers] }));
+        firestore.saveWorkers(workers).catch(console.error);
+      },
       updateWorker: (id, data) => {
         const state = get();
         const updated = state.workers.find((w) => w.id === id);
@@ -489,6 +495,10 @@ export const useStore = create<AppState>()(
       addEmployment: (employment) => {
         set((state) => ({ employments: [...state.employments, employment] }));
         firestore.saveEmployment(employment).catch(console.error);
+      },
+      addEmployments: (employments) => {
+        set((state) => ({ employments: [...state.employments, ...employments] }));
+        firestore.saveEmployments(employments).catch(console.error);
       },
       updateEmployment: (id, data) => {
         const state = get();
