@@ -359,8 +359,8 @@ export default function WagesPage() {
       )}
 
       {selectedBusiness && (
-        <div className="glass p-6 overflow-auto">
-          <table className="w-full table-glass text-sm">
+        <div className="glass p-6 overflow-x-auto max-w-full">
+          <table className="table-glass text-sm min-w-max">
             <thead className="sticky top-0 bg-black/80">
               <tr>
                 <th className="px-3 py-2 text-left sticky left-0 bg-black/80 z-10">이름</th>
