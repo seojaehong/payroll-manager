@@ -22,9 +22,19 @@ const COLLECTIONS = {
   excelMappings: 'excelMappings',
 } as const;
 
-// Date <-> Timestamp 변환
-const toTimestamp = (date: Date) => Timestamp.fromDate(date);
-const fromTimestamp = (ts: Timestamp) => ts.toDate();
+// Date <-> Timestamp 변환 (문자열도 처리)
+const toTimestamp = (date: Date | string) => {
+  if (typeof date === 'string') {
+    return Timestamp.fromDate(new Date(date));
+  }
+  return Timestamp.fromDate(date);
+};
+const fromTimestamp = (ts: Timestamp | undefined) => {
+  if (!ts || typeof ts.toDate !== 'function') {
+    return new Date();
+  }
+  return ts.toDate();
+};
 
 // === 사업장 ===
 export async function getBusinesses(): Promise<Business[]> {
