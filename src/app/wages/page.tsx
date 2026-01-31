@@ -11,19 +11,48 @@ export default function WagesPage() {
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear() - 1); // 기본 전년도
   const [editingWages, setEditingWages] = useState<Record<string, Record<string, number>>>({});
   const [importMonth, setImportMonth] = useState('');
-  const [importPreview, setImportPreview] = useState<{ name: string; residentNo: string; wage: number; matched: boolean }[]>([]);;
+  const [importPreview, setImportPreview] = useState<{ name: string; residentNo: string; wage: number; matched: boolean }[]>([]);
+  const [statusFilter, setStatusFilter] = useState<'ALL' | 'ACTIVE' | 'INACTIVE'>('ACTIVE');
+  const [sortBy, setSortBy] = useState<'joinDate' | 'name'>('joinDate');
 
   // 선택된 사업장의 근로자 목록
   const businessWorkers = useMemo(() => {
     if (!selectedBusiness) return [];
-    return employments
+    let result = employments
       .filter((e) => e.businessId === selectedBusiness)
       .map((e) => ({
         employment: e,
         worker: workers.find((w) => w.id === e.workerId)!,
       }))
       .filter(({ worker }) => worker);
-  }, [selectedBusiness, employments, workers]);
+
+    // 상태 필터
+    if (statusFilter === 'ACTIVE') {
+      result = result.filter(({ employment }) => employment.status === 'ACTIVE');
+    } else if (statusFilter === 'INACTIVE') {
+      result = result.filter(({ employment }) => employment.status === 'INACTIVE');
+    }
+
+    // 정렬
+    result = [...result].sort((a, b) => {
+      if (sortBy === 'joinDate') {
+        return (b.employment.joinDate || '').localeCompare(a.employment.joinDate || '');
+      }
+      return a.worker.name.localeCompare(b.worker.name, 'ko');
+    });
+
+    return result;
+  }, [selectedBusiness, employments, workers, statusFilter, sortBy]);
+
+  // 전체 인원 수 (필터 전)
+  const totalCounts = useMemo(() => {
+    if (!selectedBusiness) return { active: 0, inactive: 0 };
+    const bizEmps = employments.filter(e => e.businessId === selectedBusiness);
+    return {
+      active: bizEmps.filter(e => e.status === 'ACTIVE').length,
+      inactive: bizEmps.filter(e => e.status === 'INACTIVE').length,
+    };
+  }, [selectedBusiness, employments]);
 
   // 해당 년도 월 목록 (1~12월)
   const months = Array.from({ length: 12 }, (_, i) => {
@@ -360,6 +389,61 @@ export default function WagesPage() {
 
       {selectedBusiness && (
         <div className="glass p-6 overflow-x-auto max-w-full">
+          {/* 필터 및 정렬 */}
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-white">
+              급여 목록 ({businessWorkers.length}명)
+            </h3>
+            <div className="flex items-center gap-4">
+              {/* 상태 필터 */}
+              <div className="flex gap-1 bg-white/5 rounded-lg p-1">
+                <button
+                  onClick={() => setStatusFilter('ACTIVE')}
+                  className={`px-3 py-1.5 rounded-md text-sm transition-all ${
+                    statusFilter === 'ACTIVE' ? 'bg-green-500/20 text-green-400' : 'text-white/50 hover:text-white/80'
+                  }`}
+                >
+                  재직 ({totalCounts.active})
+                </button>
+                <button
+                  onClick={() => setStatusFilter('INACTIVE')}
+                  className={`px-3 py-1.5 rounded-md text-sm transition-all ${
+                    statusFilter === 'INACTIVE' ? 'bg-white/20 text-white' : 'text-white/50 hover:text-white/80'
+                  }`}
+                >
+                  퇴사 ({totalCounts.inactive})
+                </button>
+                <button
+                  onClick={() => setStatusFilter('ALL')}
+                  className={`px-3 py-1.5 rounded-md text-sm transition-all ${
+                    statusFilter === 'ALL' ? 'bg-blue-500/20 text-blue-400' : 'text-white/50 hover:text-white/80'
+                  }`}
+                >
+                  전체
+                </button>
+              </div>
+              {/* 정렬 */}
+              <div className="flex gap-1 bg-white/5 rounded-lg p-1">
+                <button
+                  onClick={() => setSortBy('joinDate')}
+                  className={`px-3 py-1.5 rounded-md text-sm transition-all ${
+                    sortBy === 'joinDate' ? 'bg-white/10 text-white' : 'text-white/50 hover:text-white/80'
+                  }`}
+                >
+                  입사일순
+                </button>
+                <button
+                  onClick={() => setSortBy('name')}
+                  className={`px-3 py-1.5 rounded-md text-sm transition-all ${
+                    sortBy === 'name' ? 'bg-white/10 text-white' : 'text-white/50 hover:text-white/80'
+                  }`}
+                >
+                  이름순
+                </button>
+              </div>
+            </div>
+          </div>
+
           <table className="table-glass text-sm min-w-max">
             <thead className="sticky top-0 bg-black/80">
               <tr>
