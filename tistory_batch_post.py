@@ -229,7 +229,7 @@ def main():
             html_content = convert_md_to_html(md_content)
 
             # 발행
-            if post_article(driver, post['title'], html_content, post['tags'], private=True):
+            if post_article(driver, post['title'], html_content, post['tags'], private=False):
                 success_count += 1
 
             # 쿨다운
