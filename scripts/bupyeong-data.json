@@ -1,0 +1,4965 @@
+{
+  "workers": [
+    {
+      "id": "worker-bupyeong-1769834593533-0",
+      "name": "황지현",
+      "residentNo": "830907-1247317",
+      "createdAt": "2026-01-31T04:43:13.533Z",
+      "updatedAt": "2026-01-31T04:43:13.534Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834593534-1",
+      "name": "우남곤",
+      "residentNo": "920922-1052317",
+      "createdAt": "2026-01-31T04:43:13.534Z",
+      "updatedAt": "2026-01-31T04:43:13.534Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834593534-2",
+      "name": "박은규",
+      "residentNo": "870923-1243215",
+      "createdAt": "2026-01-31T04:43:13.534Z",
+      "updatedAt": "2026-01-31T04:43:13.534Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834593534-3",
+      "name": "김영학",
+      "residentNo": "980304-1184819",
+      "createdAt": "2026-01-31T04:43:13.534Z",
+      "updatedAt": "2026-01-31T04:43:13.534Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834593534-4",
+      "name": "piao jing",
+      "residentNo": "830729-6100013",
+      "createdAt": "2026-01-31T04:43:13.534Z",
+      "updatedAt": "2026-01-31T04:43:13.534Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834593535-5",
+      "name": "김일",
+      "residentNo": "880407-5100111",
+      "createdAt": "2026-01-31T04:43:13.535Z",
+      "updatedAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834593535-6",
+      "name": "박옥순",
+      "residentNo": "630526-2252859",
+      "createdAt": "2026-01-31T04:43:13.535Z",
+      "updatedAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834593535-7",
+      "name": "유재민",
+      "residentNo": "921103-1085422",
+      "createdAt": "2026-01-31T04:43:13.535Z",
+      "updatedAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834593535-8",
+      "name": "정찬순",
+      "residentNo": "610416-2622413",
+      "createdAt": "2026-01-31T04:43:13.535Z",
+      "updatedAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834593535-9",
+      "name": "노정미",
+      "residentNo": "770417-2538424",
+      "createdAt": "2026-01-31T04:43:13.535Z",
+      "updatedAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834593535-10",
+      "name": "김성환",
+      "residentNo": "970504-1019024",
+      "createdAt": "2026-01-31T04:43:13.535Z",
+      "updatedAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834593535-11",
+      "name": "윤익상",
+      "residentNo": "980623-1169826",
+      "createdAt": "2026-01-31T04:43:13.535Z",
+      "updatedAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834593535-12",
+      "name": "강수정",
+      "residentNo": "970726-2155815",
+      "createdAt": "2026-01-31T04:43:13.535Z",
+      "updatedAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834593535-13",
+      "name": "장준수",
+      "residentNo": "890417-1709714",
+      "createdAt": "2026-01-31T04:43:13.535Z",
+      "updatedAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834593535-14",
+      "name": "이동우",
+      "residentNo": "921210-1025716",
+      "createdAt": "2026-01-31T04:43:13.535Z",
+      "updatedAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834593535-15",
+      "name": "강정애",
+      "residentNo": "621005-6100899",
+      "createdAt": "2026-01-31T04:43:13.535Z",
+      "updatedAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834593535-16",
+      "name": "김도형",
+      "residentNo": "020924-3279824",
+      "createdAt": "2026-01-31T04:43:13.535Z",
+      "updatedAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834593535-17",
+      "name": "김예찬",
+      "residentNo": "980906-1156429",
+      "createdAt": "2026-01-31T04:43:13.535Z",
+      "updatedAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834593535-18",
+      "name": "김금희",
+      "residentNo": "700318-2018314",
+      "createdAt": "2026-01-31T04:43:13.535Z",
+      "updatedAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834593535-19",
+      "name": "서헌규",
+      "residentNo": "921204-1748215",
+      "createdAt": "2026-01-31T04:43:13.535Z",
+      "updatedAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834593535-20",
+      "name": "신정철",
+      "residentNo": "850711-1231311",
+      "createdAt": "2026-01-31T04:43:13.535Z",
+      "updatedAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834593535-21",
+      "name": "김선월",
+      "residentNo": "631004-6320198",
+      "createdAt": "2026-01-31T04:43:13.535Z",
+      "updatedAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834593535-22",
+      "name": "장기숙",
+      "residentNo": "620608-6100373",
+      "createdAt": "2026-01-31T04:43:13.535Z",
+      "updatedAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834593535-23",
+      "name": "차신지",
+      "residentNo": "980831-2154614",
+      "createdAt": "2026-01-31T04:43:13.535Z",
+      "updatedAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834593535-24",
+      "name": "유용복",
+      "residentNo": "880621-1065632",
+      "createdAt": "2026-01-31T04:43:13.535Z",
+      "updatedAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834593535-25",
+      "name": "김수정",
+      "residentNo": "000524-4200123",
+      "createdAt": "2026-01-31T04:43:13.535Z",
+      "updatedAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834593535-26",
+      "name": "손동훈",
+      "residentNo": "970512-1320927",
+      "createdAt": "2026-01-31T04:43:13.535Z",
+      "updatedAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834593535-27",
+      "name": "한혜원",
+      "residentNo": "981102-2157112",
+      "createdAt": "2026-01-31T04:43:13.535Z",
+      "updatedAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834593535-28",
+      "name": "안동화",
+      "residentNo": "700928-6101893",
+      "createdAt": "2026-01-31T04:43:13.535Z",
+      "updatedAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834593535-29",
+      "name": "홍이준",
+      "residentNo": "030827-3033011",
+      "createdAt": "2026-01-31T04:43:13.535Z",
+      "updatedAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834593535-30",
+      "name": "박경찬",
+      "residentNo": "010321-3152616",
+      "createdAt": "2026-01-31T04:43:13.535Z",
+      "updatedAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834593535-31",
+      "name": "양혜진",
+      "residentNo": "010913-4150118",
+      "createdAt": "2026-01-31T04:43:13.535Z",
+      "updatedAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834593535-32",
+      "name": "박대순",
+      "residentNo": "001228-3157718",
+      "createdAt": "2026-01-31T04:43:13.535Z",
+      "updatedAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834593535-33",
+      "name": "최동혁",
+      "residentNo": "010205-3213724",
+      "createdAt": "2026-01-31T04:43:13.535Z",
+      "updatedAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834593535-34",
+      "name": "방창배",
+      "residentNo": "030306-3156310",
+      "createdAt": "2026-01-31T04:43:13.535Z",
+      "updatedAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834593535-35",
+      "name": "주혜원",
+      "residentNo": "050722-4155113",
+      "createdAt": "2026-01-31T04:43:13.535Z",
+      "updatedAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834593535-36",
+      "name": "이보연",
+      "residentNo": "051012-4156211",
+      "createdAt": "2026-01-31T04:43:13.535Z",
+      "updatedAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834593535-37",
+      "name": "최정우",
+      "residentNo": "040325-3185918",
+      "createdAt": "2026-01-31T04:43:13.535Z",
+      "updatedAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834593535-38",
+      "name": "정서희",
+      "residentNo": "050104-4157321",
+      "createdAt": "2026-01-31T04:43:13.535Z",
+      "updatedAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834593535-39",
+      "name": "이예린",
+      "residentNo": "060804-4149414",
+      "createdAt": "2026-01-31T04:43:13.535Z",
+      "updatedAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834593535-40",
+      "name": "임지웅",
+      "residentNo": "050222-3155615",
+      "createdAt": "2026-01-31T04:43:13.535Z",
+      "updatedAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834593535-41",
+      "name": "이민성",
+      "residentNo": "060606-3156019",
+      "createdAt": "2026-01-31T04:43:13.535Z",
+      "updatedAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834593535-42",
+      "name": "강준은",
+      "residentNo": "040612-3184329",
+      "createdAt": "2026-01-31T04:43:13.535Z",
+      "updatedAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834593535-43",
+      "name": "문서연",
+      "residentNo": "030923-4151819",
+      "createdAt": "2026-01-31T04:43:13.535Z",
+      "updatedAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834593535-44",
+      "name": "김도현",
+      "residentNo": "000107-315611",
+      "createdAt": "2026-01-31T04:43:13.535Z",
+      "updatedAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834593535-45",
+      "name": "이윤서",
+      "residentNo": "030303-4158113",
+      "createdAt": "2026-01-31T04:43:13.535Z",
+      "updatedAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834593535-46",
+      "name": "김아영",
+      "residentNo": "041227-4082114",
+      "createdAt": "2026-01-31T04:43:13.535Z",
+      "updatedAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834593539-47",
+      "name": "정영수",
+      "residentNo": "041127-3222537",
+      "createdAt": "2026-01-31T04:43:13.539Z",
+      "updatedAt": "2026-01-31T04:43:13.539Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834593539-48",
+      "name": "김소연",
+      "residentNo": "040409-4155010",
+      "createdAt": "2026-01-31T04:43:13.539Z",
+      "updatedAt": "2026-01-31T04:43:13.539Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834593539-49",
+      "name": "김유림",
+      "residentNo": "061001-4149213",
+      "createdAt": "2026-01-31T04:43:13.539Z",
+      "updatedAt": "2026-01-31T04:43:13.539Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834593539-50",
+      "name": "최지훈",
+      "residentNo": "020814-3156211",
+      "createdAt": "2026-01-31T04:43:13.539Z",
+      "updatedAt": "2026-01-31T04:43:13.539Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834593539-51",
+      "name": "이강욱",
+      "residentNo": "060816-3159016",
+      "createdAt": "2026-01-31T04:43:13.539Z",
+      "updatedAt": "2026-01-31T04:43:13.539Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834593539-52",
+      "name": "곽민우",
+      "residentNo": "991015-1158434",
+      "createdAt": "2026-01-31T04:43:13.539Z",
+      "updatedAt": "2026-01-31T04:43:13.539Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834594005-53",
+      "name": "최장현",
+      "residentNo": "930114-1064818",
+      "createdAt": "2026-01-31T04:43:14.005Z",
+      "updatedAt": "2026-01-31T04:43:14.005Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834594005-54",
+      "name": "이준수",
+      "residentNo": "991231-1152511",
+      "createdAt": "2026-01-31T04:43:14.005Z",
+      "updatedAt": "2026-01-31T04:43:14.005Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834622030-55",
+      "name": "이부순",
+      "residentNo": "690917-2451117",
+      "createdAt": "2026-01-31T04:43:42.030Z",
+      "updatedAt": "2026-01-31T04:43:42.030Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834622030-56",
+      "name": "이귀자",
+      "residentNo": "600608-2155331",
+      "createdAt": "2026-01-31T04:43:42.030Z",
+      "updatedAt": "2026-01-31T04:43:42.030Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834622030-57",
+      "name": "김연희",
+      "residentNo": "770210-6102899",
+      "createdAt": "2026-01-31T04:43:42.030Z",
+      "updatedAt": "2026-01-31T04:43:42.030Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834622030-58",
+      "name": "최기숙",
+      "residentNo": "651015-2476612",
+      "createdAt": "2026-01-31T04:43:42.030Z",
+      "updatedAt": "2026-01-31T04:43:42.030Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834622626-59",
+      "name": "김예찬(핫)",
+      "residentNo": "980825-1156317",
+      "createdAt": "2026-01-31T04:43:42.626Z",
+      "updatedAt": "2026-01-31T04:43:42.626Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834623112-60",
+      "name": "김기훈",
+      "residentNo": "781122-1148223",
+      "createdAt": "2026-01-31T04:43:43.112Z",
+      "updatedAt": "2026-01-31T04:43:43.112Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834623614-61",
+      "name": "조윤희",
+      "residentNo": "890428-2150912",
+      "createdAt": "2026-01-31T04:43:43.614Z",
+      "updatedAt": "2026-01-31T04:43:43.614Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834624160-62",
+      "name": "나지훈",
+      "residentNo": "960115-1020619",
+      "createdAt": "2026-01-31T04:43:44.160Z",
+      "updatedAt": "2026-01-31T04:43:44.160Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834624160-63",
+      "name": "박찬호",
+      "residentNo": "951017-1216011",
+      "createdAt": "2026-01-31T04:43:44.160Z",
+      "updatedAt": "2026-01-31T04:43:44.160Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834624161-64",
+      "name": "박기호",
+      "residentNo": "010620-3156714",
+      "createdAt": "2026-01-31T04:43:44.161Z",
+      "updatedAt": "2026-01-31T04:43:44.161Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834624917-65",
+      "name": "황지현",
+      "residentNo": "830909-1247317",
+      "createdAt": "2026-01-31T04:43:44.917Z",
+      "updatedAt": "2026-01-31T04:43:44.917Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834624917-66",
+      "name": "허옥자",
+      "residentNo": "691020-6760016",
+      "createdAt": "2026-01-31T04:43:44.917Z",
+      "updatedAt": "2026-01-31T04:43:44.917Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834624917-67",
+      "name": "김태형",
+      "residentNo": "850107-1670415",
+      "createdAt": "2026-01-31T04:43:44.917Z",
+      "updatedAt": "2026-01-31T04:43:44.917Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834624917-68",
+      "name": "이주연",
+      "residentNo": "720416-2024615",
+      "createdAt": "2026-01-31T04:43:44.917Z",
+      "updatedAt": "2026-01-31T04:43:44.917Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834624917-69",
+      "name": "이금향",
+      "residentNo": "660414-6101593",
+      "createdAt": "2026-01-31T04:43:44.917Z",
+      "updatedAt": "2026-01-31T04:43:44.917Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834624917-70",
+      "name": "김린",
+      "residentNo": "861016-6100690",
+      "createdAt": "2026-01-31T04:43:44.917Z",
+      "updatedAt": "2026-01-31T04:43:44.917Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834624917-71",
+      "name": "정종훈",
+      "residentNo": "890115-5780019",
+      "createdAt": "2026-01-31T04:43:44.917Z",
+      "updatedAt": "2026-01-31T04:43:44.917Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834625499-72",
+      "name": "박성재",
+      "residentNo": "061020-3178512",
+      "createdAt": "2026-01-31T04:43:45.499Z",
+      "updatedAt": "2026-01-31T04:43:45.499Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834625499-73",
+      "name": "전용현",
+      "residentNo": "000316-3154622",
+      "createdAt": "2026-01-31T04:43:45.499Z",
+      "updatedAt": "2026-01-31T04:43:45.499Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834625499-74",
+      "name": "이송욱",
+      "residentNo": "790526-5780170",
+      "createdAt": "2026-01-31T04:43:45.499Z",
+      "updatedAt": "2026-01-31T04:43:45.499Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834625499-75",
+      "name": "황혁",
+      "residentNo": "960412-1187915",
+      "createdAt": "2026-01-31T04:43:45.499Z",
+      "updatedAt": "2026-01-31T04:43:45.499Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834625499-76",
+      "name": "이승윤",
+      "residentNo": "000218-3158527",
+      "createdAt": "2026-01-31T04:43:45.499Z",
+      "updatedAt": "2026-01-31T04:43:45.499Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834625500-77",
+      "name": "김진욱",
+      "residentNo": "961007-1798514",
+      "createdAt": "2026-01-31T04:43:45.500Z",
+      "updatedAt": "2026-01-31T04:43:45.500Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834625500-78",
+      "name": "노근희",
+      "residentNo": "000927-3054211",
+      "createdAt": "2026-01-31T04:43:45.500Z",
+      "updatedAt": "2026-01-31T04:43:45.500Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834626072-79",
+      "name": "강현경",
+      "residentNo": "951206-2158027",
+      "createdAt": "2026-01-31T04:43:46.072Z",
+      "updatedAt": "2026-01-31T04:43:46.072Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834626072-80",
+      "name": "김미숙",
+      "residentNo": "690610-2328312",
+      "createdAt": "2026-01-31T04:43:46.072Z",
+      "updatedAt": "2026-01-31T04:43:46.072Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834626650-81",
+      "name": "이승현",
+      "residentNo": "920501-1024911",
+      "createdAt": "2026-01-31T04:43:46.650Z",
+      "updatedAt": "2026-01-31T04:43:46.650Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834626650-82",
+      "name": "정지훈",
+      "residentNo": "841217-1185319",
+      "createdAt": "2026-01-31T04:43:46.650Z",
+      "updatedAt": "2026-01-31T04:43:46.650Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834627287-83",
+      "name": "정지훈",
+      "residentNo": "841217-1183319",
+      "createdAt": "2026-01-31T04:43:47.287Z",
+      "updatedAt": "2026-01-31T04:43:47.287Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834627288-84",
+      "name": "안유빈",
+      "residentNo": "001104-3466619",
+      "createdAt": "2026-01-31T04:43:47.288Z",
+      "updatedAt": "2026-01-31T04:43:47.288Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834627288-85",
+      "name": "정유진",
+      "residentNo": "000810-4155313",
+      "createdAt": "2026-01-31T04:43:47.288Z",
+      "updatedAt": "2026-01-31T04:43:47.288Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834627288-86",
+      "name": "이경숙",
+      "residentNo": "650225-2154914",
+      "createdAt": "2026-01-31T04:43:47.288Z",
+      "updatedAt": "2026-01-31T04:43:47.288Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834627288-87",
+      "name": "이경수",
+      "residentNo": "920315-1352615",
+      "createdAt": "2026-01-31T04:43:47.288Z",
+      "updatedAt": "2026-01-31T04:43:47.288Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834627288-88",
+      "name": "이은지",
+      "residentNo": "880508-2149118",
+      "createdAt": "2026-01-31T04:43:47.288Z",
+      "updatedAt": "2026-01-31T04:43:47.288Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834627288-89",
+      "name": "김제우",
+      "residentNo": "830513-1624015",
+      "createdAt": "2026-01-31T04:43:47.288Z",
+      "updatedAt": "2026-01-31T04:43:47.288Z"
+    },
+    {
+      "id": "worker-bupyeong-1769834627288-90",
+      "name": "김광신",
+      "residentNo": "730213-1350715",
+      "createdAt": "2026-01-31T04:43:47.288Z",
+      "updatedAt": "2026-01-31T04:43:47.288Z"
+    }
+  ],
+  "employments": [
+    {
+      "id": "emp-bupyeong-1769834593534-0",
+      "workerId": "worker-bupyeong-1769834593533-0",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2021-03-19",
+      "monthlyWage": 3766584,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:13.534Z",
+      "updatedAt": "2026-01-31T04:43:13.534Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834593534-1",
+      "workerId": "worker-bupyeong-1769834593534-1",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2021-12-06",
+      "monthlyWage": 2936220,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:13.534Z",
+      "updatedAt": "2026-01-31T04:43:13.534Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834593534-2",
+      "workerId": "worker-bupyeong-1769834593534-2",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2022-02-01",
+      "monthlyWage": 3575165,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:13.534Z",
+      "updatedAt": "2026-01-31T04:43:13.534Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834593534-3",
+      "workerId": "worker-bupyeong-1769834593534-3",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2022-05-11",
+      "monthlyWage": 2587328,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:13.534Z",
+      "updatedAt": "2026-01-31T04:43:13.534Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834593534-4",
+      "workerId": "worker-bupyeong-1769834593534-4",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2022-07-01",
+      "monthlyWage": 29357369999999996,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:13.534Z",
+      "updatedAt": "2026-01-31T04:43:13.534Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834593535-5",
+      "workerId": "worker-bupyeong-1769834593535-5",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2023-02-27",
+      "monthlyWage": 2990375,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:13.535Z",
+      "updatedAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834593535-6",
+      "workerId": "worker-bupyeong-1769834593535-6",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2023-03-27",
+      "monthlyWage": 2795760,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:13.535Z",
+      "updatedAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834593535-7",
+      "workerId": "worker-bupyeong-1769834593535-7",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2023-05-09",
+      "monthlyWage": 2762069,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:13.535Z",
+      "updatedAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834593535-8",
+      "workerId": "worker-bupyeong-1769834593535-8",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2023-08-03",
+      "monthlyWage": 2878933,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:13.535Z",
+      "updatedAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834593535-9",
+      "workerId": "worker-bupyeong-1769834593535-9",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2023-08-05",
+      "monthlyWage": 2654460,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:13.535Z",
+      "updatedAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834593535-10",
+      "workerId": "worker-bupyeong-1769834593535-10",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2023-12-18",
+      "monthlyWage": 3107955,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:13.535Z",
+      "updatedAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834593535-11",
+      "workerId": "worker-bupyeong-1769834593535-11",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2023-12-28",
+      "monthlyWage": 2797933,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:13.535Z",
+      "updatedAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834593535-12",
+      "workerId": "worker-bupyeong-1769834593535-12",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2024-03-18",
+      "monthlyWage": 2864289,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:13.535Z",
+      "updatedAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834593535-13",
+      "workerId": "worker-bupyeong-1769834593535-13",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2024-03-04",
+      "monthlyWage": 2976632,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:13.535Z",
+      "updatedAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834593535-14",
+      "workerId": "worker-bupyeong-1769834593535-14",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2024-05-12",
+      "monthlyWage": 3065185,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:13.535Z",
+      "updatedAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834593535-15",
+      "workerId": "worker-bupyeong-1769834593535-15",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2024-07-11",
+      "monthlyWage": 2835843,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:13.535Z",
+      "updatedAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834593535-16",
+      "workerId": "worker-bupyeong-1769834593535-16",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2024-07-05",
+      "monthlyWage": 2864289,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:13.535Z",
+      "updatedAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834593535-17",
+      "workerId": "worker-bupyeong-1769834593535-17",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2024-07-08",
+      "monthlyWage": 2905322,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:13.535Z",
+      "updatedAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834593535-18",
+      "workerId": "worker-bupyeong-1769834593535-18",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2024-07-26",
+      "monthlyWage": 2057777,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:13.535Z",
+      "updatedAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834593535-19",
+      "workerId": "worker-bupyeong-1769834593535-19",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2024-07-29",
+      "monthlyWage": 2735223,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:13.535Z",
+      "updatedAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834593535-20",
+      "workerId": "worker-bupyeong-1769834593535-20",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2024-11-04",
+      "monthlyWage": 2862766,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:13.535Z",
+      "updatedAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834593535-21",
+      "workerId": "worker-bupyeong-1769834593535-21",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2024-11-14",
+      "monthlyWage": 3037126,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:13.535Z",
+      "updatedAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834593535-22",
+      "workerId": "worker-bupyeong-1769834593535-22",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2024-12-04",
+      "monthlyWage": 2991533,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:13.535Z",
+      "updatedAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834593535-23",
+      "workerId": "worker-bupyeong-1769834593535-23",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2024-12-09",
+      "monthlyWage": 2853003,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:13.535Z",
+      "updatedAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834593535-24",
+      "workerId": "worker-bupyeong-1769834593535-24",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2024-12-23",
+      "monthlyWage": 2809290,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:13.535Z",
+      "updatedAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834593535-25",
+      "workerId": "worker-bupyeong-1769834593535-25",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2025-01-01",
+      "monthlyWage": 2912366,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:13.535Z",
+      "updatedAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834593535-26",
+      "workerId": "worker-bupyeong-1769834593535-26",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2025-01-01",
+      "monthlyWage": 2997072,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:13.535Z",
+      "updatedAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834593535-27",
+      "workerId": "worker-bupyeong-1769834593535-27",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2025-01-15",
+      "monthlyWage": 1773610,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:13.535Z",
+      "updatedAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834593535-28",
+      "workerId": "worker-bupyeong-1769834593535-28",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2025-01-25",
+      "monthlyWage": 736670,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:13.535Z",
+      "updatedAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834593535-29",
+      "workerId": "worker-bupyeong-1769834593535-29",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2025-01-01",
+      "monthlyWage": 1926270,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:13.535Z",
+      "updatedAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834593535-30",
+      "workerId": "worker-bupyeong-1769834593535-30",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2025-01-01",
+      "monthlyWage": 1787020,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:13.535Z",
+      "updatedAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834593535-31",
+      "workerId": "worker-bupyeong-1769834593535-31",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2025-01-01",
+      "monthlyWage": 1525930,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:13.535Z",
+      "updatedAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834593535-32",
+      "workerId": "worker-bupyeong-1769834593535-32",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2025-01-01",
+      "monthlyWage": 1659380,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:13.535Z",
+      "updatedAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834593535-33",
+      "workerId": "worker-bupyeong-1769834593535-33",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2025-01-01",
+      "monthlyWage": 1021160,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:13.535Z",
+      "updatedAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834593535-34",
+      "workerId": "worker-bupyeong-1769834593535-34",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2025-01-01",
+      "monthlyWage": 1827630,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:13.535Z",
+      "updatedAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834593535-35",
+      "workerId": "worker-bupyeong-1769834593535-35",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2025-01-01",
+      "monthlyWage": 1566540,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:13.535Z",
+      "updatedAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834593535-36",
+      "workerId": "worker-bupyeong-1769834593535-36",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2025-01-01",
+      "monthlyWage": 1067570,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:13.535Z",
+      "updatedAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834593535-37",
+      "workerId": "worker-bupyeong-1769834593535-37",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2025-01-01",
+      "monthlyWage": 197270,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:13.535Z",
+      "updatedAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834593535-38",
+      "workerId": "worker-bupyeong-1769834593535-38",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2025-01-01",
+      "monthlyWage": 1148800,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:13.535Z",
+      "updatedAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834593535-39",
+      "workerId": "worker-bupyeong-1769834593535-39",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2025-01-01",
+      "monthlyWage": 510580,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:13.535Z",
+      "updatedAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834593535-40",
+      "workerId": "worker-bupyeong-1769834593535-40",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2025-01-01",
+      "monthlyWage": 510580,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:13.535Z",
+      "updatedAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834593535-41",
+      "workerId": "worker-bupyeong-1769834593535-41",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2025-01-01",
+      "monthlyWage": 1392480,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:13.535Z",
+      "updatedAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834593535-42",
+      "workerId": "worker-bupyeong-1769834593535-42",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2025-01-01",
+      "monthlyWage": 1856640,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:13.535Z",
+      "updatedAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834593535-43",
+      "workerId": "worker-bupyeong-1769834593535-43",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2025-01-01",
+      "monthlyWage": 1154600,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:13.535Z",
+      "updatedAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834593535-44",
+      "workerId": "worker-bupyeong-1769834593535-44",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2025-01-01",
+      "monthlyWage": 881910,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:13.535Z",
+      "updatedAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834593535-45",
+      "workerId": "worker-bupyeong-1769834593535-45",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2025-01-01",
+      "monthlyWage": 1154600,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:13.535Z",
+      "updatedAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834593535-46",
+      "workerId": "worker-bupyeong-1769834593535-46",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2025-01-01",
+      "monthlyWage": 794880,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:13.535Z",
+      "updatedAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834593539-47",
+      "workerId": "worker-bupyeong-1769834593539-47",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2025-01-01",
+      "monthlyWage": 203070,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:13.539Z",
+      "updatedAt": "2026-01-31T04:43:13.539Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834593539-48",
+      "workerId": "worker-bupyeong-1769834593539-48",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2025-01-01",
+      "monthlyWage": 1154600,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:13.539Z",
+      "updatedAt": "2026-01-31T04:43:13.539Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834593539-49",
+      "workerId": "worker-bupyeong-1769834593539-49",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2025-01-01",
+      "monthlyWage": 2094530,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:13.539Z",
+      "updatedAt": "2026-01-31T04:43:13.539Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834593539-50",
+      "workerId": "worker-bupyeong-1769834593539-50",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2025-01-01",
+      "monthlyWage": 945730,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:13.539Z",
+      "updatedAt": "2026-01-31T04:43:13.539Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834593539-51",
+      "workerId": "worker-bupyeong-1769834593539-51",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2025-01-01",
+      "monthlyWage": 980540,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:13.539Z",
+      "updatedAt": "2026-01-31T04:43:13.539Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834593539-52",
+      "workerId": "worker-bupyeong-1769834593539-52",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2025-01-01",
+      "monthlyWage": 98640,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:13.539Z",
+      "updatedAt": "2026-01-31T04:43:13.539Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834594005-53",
+      "workerId": "worker-bupyeong-1769834594005-53",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2025-02-05",
+      "monthlyWage": 2803680,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:14.005Z",
+      "updatedAt": "2026-01-31T04:43:14.005Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834594005-54",
+      "workerId": "worker-bupyeong-1769834594005-54",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2025-02-21",
+      "monthlyWage": 934380,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:14.005Z",
+      "updatedAt": "2026-01-31T04:43:14.005Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834622030-55",
+      "workerId": "worker-bupyeong-1769834622030-55",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2025-03-04",
+      "monthlyWage": 2875350,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:42.030Z",
+      "updatedAt": "2026-01-31T04:43:42.030Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834622030-56",
+      "workerId": "worker-bupyeong-1769834622030-56",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2025-03-05",
+      "monthlyWage": 2702360,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:42.030Z",
+      "updatedAt": "2026-01-31T04:43:42.030Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834622030-57",
+      "workerId": "worker-bupyeong-1769834622030-57",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2025-03-10",
+      "monthlyWage": 2308800,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:42.030Z",
+      "updatedAt": "2026-01-31T04:43:42.030Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834622030-58",
+      "workerId": "worker-bupyeong-1769834622030-58",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2025-03-10",
+      "monthlyWage": 2219880,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:42.030Z",
+      "updatedAt": "2026-01-31T04:43:42.030Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834622626-59",
+      "workerId": "worker-bupyeong-1769834622626-59",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2025-04-24",
+      "monthlyWage": 786200,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:42.626Z",
+      "updatedAt": "2026-01-31T04:43:42.626Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834623112-60",
+      "workerId": "worker-bupyeong-1769834623112-60",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2025-05-09",
+      "monthlyWage": 2731510,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:43.112Z",
+      "updatedAt": "2026-01-31T04:43:43.112Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834623614-61",
+      "workerId": "worker-bupyeong-1769834623614-61",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2025-06-01",
+      "monthlyWage": 3000000,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:43.614Z",
+      "updatedAt": "2026-01-31T04:43:43.614Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834624160-62",
+      "workerId": "worker-bupyeong-1769834624160-62",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2025-07-03",
+      "monthlyWage": 2828240,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:44.160Z",
+      "updatedAt": "2026-01-31T04:43:44.160Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834624160-63",
+      "workerId": "worker-bupyeong-1769834624160-63",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2025-07-23",
+      "monthlyWage": 978220,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:44.160Z",
+      "updatedAt": "2026-01-31T04:43:44.161Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834624161-64",
+      "workerId": "worker-bupyeong-1769834624161-64",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2025-07-23",
+      "monthlyWage": 949450,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:44.161Z",
+      "updatedAt": "2026-01-31T04:43:44.161Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834624917-65",
+      "workerId": "worker-bupyeong-1769834624917-65",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2025-08-01",
+      "monthlyWage": 3751470,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:44.917Z",
+      "updatedAt": "2026-01-31T04:43:44.917Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834624917-66",
+      "workerId": "worker-bupyeong-1769834624917-66",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2025-08-18",
+      "monthlyWage": 1467510,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:44.917Z",
+      "updatedAt": "2026-01-31T04:43:44.917Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834624917-67",
+      "workerId": "worker-bupyeong-1769834624917-67",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2025-08-18",
+      "monthlyWage": 1555040,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:44.917Z",
+      "updatedAt": "2026-01-31T04:43:44.917Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834624917-68",
+      "workerId": "worker-bupyeong-1769834624917-68",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2025-08-18",
+      "monthlyWage": 1467510,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:44.917Z",
+      "updatedAt": "2026-01-31T04:43:44.917Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834624917-69",
+      "workerId": "worker-bupyeong-1769834624917-69",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2025-08-19",
+      "monthlyWage": 1364520,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:44.917Z",
+      "updatedAt": "2026-01-31T04:43:44.917Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834624917-70",
+      "workerId": "worker-bupyeong-1769834624917-70",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2025-08-21",
+      "monthlyWage": 1157690,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:44.917Z",
+      "updatedAt": "2026-01-31T04:43:44.917Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834624917-71",
+      "workerId": "worker-bupyeong-1769834624917-71",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2025-08-25",
+      "monthlyWage": 783220,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:44.917Z",
+      "updatedAt": "2026-01-31T04:43:44.917Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834625499-72",
+      "workerId": "worker-bupyeong-1769834625499-72",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2025-09-01",
+      "monthlyWage": 2863350,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:45.499Z",
+      "updatedAt": "2026-01-31T04:43:45.499Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834625499-73",
+      "workerId": "worker-bupyeong-1769834625499-73",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2025-09-08",
+      "monthlyWage": 2394240,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:45.499Z",
+      "updatedAt": "2026-01-31T04:43:45.499Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834625499-74",
+      "workerId": "worker-bupyeong-1769834625499-74",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2025-09-10",
+      "monthlyWage": 2257140,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:45.499Z",
+      "updatedAt": "2026-01-31T04:43:45.499Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834625499-75",
+      "workerId": "worker-bupyeong-1769834625499-75",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2025-09-15",
+      "monthlyWage": 1651210,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:45.499Z",
+      "updatedAt": "2026-01-31T04:43:45.499Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834625499-76",
+      "workerId": "worker-bupyeong-1769834625499-76",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2025-09-15",
+      "monthlyWage": 1728680,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:45.499Z",
+      "updatedAt": "2026-01-31T04:43:45.499Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834625500-77",
+      "workerId": "worker-bupyeong-1769834625500-77",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2025-09-22",
+      "monthlyWage": 981090,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:45.500Z",
+      "updatedAt": "2026-01-31T04:43:45.500Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834625500-78",
+      "workerId": "worker-bupyeong-1769834625500-78",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2025-09-22",
+      "monthlyWage": 951360,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:45.500Z",
+      "updatedAt": "2026-01-31T04:43:45.500Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834626072-79",
+      "workerId": "worker-bupyeong-1769834626072-79",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2025-10-11",
+      "monthlyWage": 22877316129032256,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:46.072Z",
+      "updatedAt": "2026-01-31T04:43:46.072Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834626072-80",
+      "workerId": "worker-bupyeong-1769834626072-80",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2025-10-03",
+      "monthlyWage": 30679716129032256,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:46.072Z",
+      "updatedAt": "2026-01-31T04:43:46.072Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834626650-81",
+      "workerId": "worker-bupyeong-1769834626650-81",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "INACTIVE",
+      "joinDate": "2025-11-13",
+      "leaveDate": "2025-11-28",
+      "monthlyWage": 1744160,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:46.650Z",
+      "updatedAt": "2026-01-31T04:43:46.650Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834626650-82",
+      "workerId": "worker-bupyeong-1769834626650-82",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2025-11-10",
+      "monthlyWage": 2636060,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:46.650Z",
+      "updatedAt": "2026-01-31T04:43:46.650Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834627287-83",
+      "workerId": "worker-bupyeong-1769834627287-83",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2025-11-10",
+      "monthlyWage": 2956040,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:47.288Z",
+      "updatedAt": "2026-01-31T04:43:47.288Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834627288-84",
+      "workerId": "worker-bupyeong-1769834627288-84",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2025-12-01",
+      "monthlyWage": 2992065806451613,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:47.288Z",
+      "updatedAt": "2026-01-31T04:43:47.288Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834627288-85",
+      "workerId": "worker-bupyeong-1769834627288-85",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2025-12-09",
+      "monthlyWage": 23680129032258064,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:47.288Z",
+      "updatedAt": "2026-01-31T04:43:47.288Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834627288-86",
+      "workerId": "worker-bupyeong-1769834627288-86",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2025-12-10",
+      "monthlyWage": 2373615806451613,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:47.288Z",
+      "updatedAt": "2026-01-31T04:43:47.288Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834627288-87",
+      "workerId": "worker-bupyeong-1769834627288-87",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2025-12-22",
+      "monthlyWage": 959050,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:47.288Z",
+      "updatedAt": "2026-01-31T04:43:47.288Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834627288-88",
+      "workerId": "worker-bupyeong-1769834627288-88",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2025-12-22",
+      "monthlyWage": 10727529032258064,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:47.288Z",
+      "updatedAt": "2026-01-31T04:43:47.288Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834627288-89",
+      "workerId": "worker-bupyeong-1769834627288-89",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2025-12-22",
+      "monthlyWage": 1270770322580645,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:47.288Z",
+      "updatedAt": "2026-01-31T04:43:47.288Z"
+    },
+    {
+      "id": "emp-bupyeong-1769834627288-90",
+      "workerId": "worker-bupyeong-1769834627288-90",
+      "businessId": "biz-kukuku-bupyeong",
+      "status": "ACTIVE",
+      "joinDate": "2025-12-24",
+      "monthlyWage": 9510516129032258,
+      "jikjongCode": "532",
+      "workHours": 40,
+      "gyYn": true,
+      "sjYn": true,
+      "npsYn": true,
+      "nhicYn": true,
+      "createdAt": "2026-01-31T04:43:47.288Z",
+      "updatedAt": "2026-01-31T04:43:47.288Z"
+    }
+  ],
+  "monthlyWages": [
+    {
+      "id": "mw-emp-bupyeong-1769834593534-0-2025-01",
+      "employmentId": "emp-bupyeong-1769834593534-0",
+      "yearMonth": "2025-01",
+      "totalWage": 3766584,
+      "createdAt": "2026-01-31T04:43:13.534Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593534-1-2025-01",
+      "employmentId": "emp-bupyeong-1769834593534-1",
+      "yearMonth": "2025-01",
+      "totalWage": 2936220,
+      "createdAt": "2026-01-31T04:43:13.534Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593534-2-2025-01",
+      "employmentId": "emp-bupyeong-1769834593534-2",
+      "yearMonth": "2025-01",
+      "totalWage": 3575165,
+      "createdAt": "2026-01-31T04:43:13.534Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593534-3-2025-01",
+      "employmentId": "emp-bupyeong-1769834593534-3",
+      "yearMonth": "2025-01",
+      "totalWage": 2587328,
+      "createdAt": "2026-01-31T04:43:13.534Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593534-4-2025-01",
+      "employmentId": "emp-bupyeong-1769834593534-4",
+      "yearMonth": "2025-01",
+      "totalWage": 29357369999999996,
+      "createdAt": "2026-01-31T04:43:13.534Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-5-2025-01",
+      "employmentId": "emp-bupyeong-1769834593535-5",
+      "yearMonth": "2025-01",
+      "totalWage": 2990375,
+      "createdAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-6-2025-01",
+      "employmentId": "emp-bupyeong-1769834593535-6",
+      "yearMonth": "2025-01",
+      "totalWage": 2795760,
+      "createdAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-7-2025-01",
+      "employmentId": "emp-bupyeong-1769834593535-7",
+      "yearMonth": "2025-01",
+      "totalWage": 2762069,
+      "createdAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-8-2025-01",
+      "employmentId": "emp-bupyeong-1769834593535-8",
+      "yearMonth": "2025-01",
+      "totalWage": 2878933,
+      "createdAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-9-2025-01",
+      "employmentId": "emp-bupyeong-1769834593535-9",
+      "yearMonth": "2025-01",
+      "totalWage": 2654460,
+      "createdAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-10-2025-01",
+      "employmentId": "emp-bupyeong-1769834593535-10",
+      "yearMonth": "2025-01",
+      "totalWage": 3107955,
+      "createdAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-11-2025-01",
+      "employmentId": "emp-bupyeong-1769834593535-11",
+      "yearMonth": "2025-01",
+      "totalWage": 2797933,
+      "createdAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-12-2025-01",
+      "employmentId": "emp-bupyeong-1769834593535-12",
+      "yearMonth": "2025-01",
+      "totalWage": 2864289,
+      "createdAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-13-2025-01",
+      "employmentId": "emp-bupyeong-1769834593535-13",
+      "yearMonth": "2025-01",
+      "totalWage": 2976632,
+      "createdAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-14-2025-01",
+      "employmentId": "emp-bupyeong-1769834593535-14",
+      "yearMonth": "2025-01",
+      "totalWage": 3065185,
+      "createdAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-15-2025-01",
+      "employmentId": "emp-bupyeong-1769834593535-15",
+      "yearMonth": "2025-01",
+      "totalWage": 2835843,
+      "createdAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-16-2025-01",
+      "employmentId": "emp-bupyeong-1769834593535-16",
+      "yearMonth": "2025-01",
+      "totalWage": 2864289,
+      "createdAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-17-2025-01",
+      "employmentId": "emp-bupyeong-1769834593535-17",
+      "yearMonth": "2025-01",
+      "totalWage": 2905322,
+      "createdAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-18-2025-01",
+      "employmentId": "emp-bupyeong-1769834593535-18",
+      "yearMonth": "2025-01",
+      "totalWage": 2057777,
+      "createdAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-19-2025-01",
+      "employmentId": "emp-bupyeong-1769834593535-19",
+      "yearMonth": "2025-01",
+      "totalWage": 2735223,
+      "createdAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-20-2025-01",
+      "employmentId": "emp-bupyeong-1769834593535-20",
+      "yearMonth": "2025-01",
+      "totalWage": 2862766,
+      "createdAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-21-2025-01",
+      "employmentId": "emp-bupyeong-1769834593535-21",
+      "yearMonth": "2025-01",
+      "totalWage": 3037126,
+      "createdAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-22-2025-01",
+      "employmentId": "emp-bupyeong-1769834593535-22",
+      "yearMonth": "2025-01",
+      "totalWage": 2991533,
+      "createdAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-23-2025-01",
+      "employmentId": "emp-bupyeong-1769834593535-23",
+      "yearMonth": "2025-01",
+      "totalWage": 2853003,
+      "createdAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-24-2025-01",
+      "employmentId": "emp-bupyeong-1769834593535-24",
+      "yearMonth": "2025-01",
+      "totalWage": 2809290,
+      "createdAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-25-2025-01",
+      "employmentId": "emp-bupyeong-1769834593535-25",
+      "yearMonth": "2025-01",
+      "totalWage": 2912366,
+      "createdAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-26-2025-01",
+      "employmentId": "emp-bupyeong-1769834593535-26",
+      "yearMonth": "2025-01",
+      "totalWage": 2997072,
+      "createdAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-27-2025-01",
+      "employmentId": "emp-bupyeong-1769834593535-27",
+      "yearMonth": "2025-01",
+      "totalWage": 1773610,
+      "createdAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-28-2025-01",
+      "employmentId": "emp-bupyeong-1769834593535-28",
+      "yearMonth": "2025-01",
+      "totalWage": 736670,
+      "createdAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-29-2025-01",
+      "employmentId": "emp-bupyeong-1769834593535-29",
+      "yearMonth": "2025-01",
+      "totalWage": 1926270,
+      "createdAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-30-2025-01",
+      "employmentId": "emp-bupyeong-1769834593535-30",
+      "yearMonth": "2025-01",
+      "totalWage": 1787020,
+      "createdAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-31-2025-01",
+      "employmentId": "emp-bupyeong-1769834593535-31",
+      "yearMonth": "2025-01",
+      "totalWage": 1525930,
+      "createdAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-32-2025-01",
+      "employmentId": "emp-bupyeong-1769834593535-32",
+      "yearMonth": "2025-01",
+      "totalWage": 1659380,
+      "createdAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-33-2025-01",
+      "employmentId": "emp-bupyeong-1769834593535-33",
+      "yearMonth": "2025-01",
+      "totalWage": 1021160,
+      "createdAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-34-2025-01",
+      "employmentId": "emp-bupyeong-1769834593535-34",
+      "yearMonth": "2025-01",
+      "totalWage": 1827630,
+      "createdAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-35-2025-01",
+      "employmentId": "emp-bupyeong-1769834593535-35",
+      "yearMonth": "2025-01",
+      "totalWage": 1566540,
+      "createdAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-36-2025-01",
+      "employmentId": "emp-bupyeong-1769834593535-36",
+      "yearMonth": "2025-01",
+      "totalWage": 1067570,
+      "createdAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-37-2025-01",
+      "employmentId": "emp-bupyeong-1769834593535-37",
+      "yearMonth": "2025-01",
+      "totalWage": 197270,
+      "createdAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-38-2025-01",
+      "employmentId": "emp-bupyeong-1769834593535-38",
+      "yearMonth": "2025-01",
+      "totalWage": 1148800,
+      "createdAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-39-2025-01",
+      "employmentId": "emp-bupyeong-1769834593535-39",
+      "yearMonth": "2025-01",
+      "totalWage": 510580,
+      "createdAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-40-2025-01",
+      "employmentId": "emp-bupyeong-1769834593535-40",
+      "yearMonth": "2025-01",
+      "totalWage": 510580,
+      "createdAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-41-2025-01",
+      "employmentId": "emp-bupyeong-1769834593535-41",
+      "yearMonth": "2025-01",
+      "totalWage": 1392480,
+      "createdAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-42-2025-01",
+      "employmentId": "emp-bupyeong-1769834593535-42",
+      "yearMonth": "2025-01",
+      "totalWage": 1856640,
+      "createdAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-43-2025-01",
+      "employmentId": "emp-bupyeong-1769834593535-43",
+      "yearMonth": "2025-01",
+      "totalWage": 1154600,
+      "createdAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-44-2025-01",
+      "employmentId": "emp-bupyeong-1769834593535-44",
+      "yearMonth": "2025-01",
+      "totalWage": 881910,
+      "createdAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-45-2025-01",
+      "employmentId": "emp-bupyeong-1769834593535-45",
+      "yearMonth": "2025-01",
+      "totalWage": 1154600,
+      "createdAt": "2026-01-31T04:43:13.535Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-46-2025-01",
+      "employmentId": "emp-bupyeong-1769834593535-46",
+      "yearMonth": "2025-01",
+      "totalWage": 794880,
+      "createdAt": "2026-01-31T04:43:13.539Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593539-47-2025-01",
+      "employmentId": "emp-bupyeong-1769834593539-47",
+      "yearMonth": "2025-01",
+      "totalWage": 203070,
+      "createdAt": "2026-01-31T04:43:13.539Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593539-48-2025-01",
+      "employmentId": "emp-bupyeong-1769834593539-48",
+      "yearMonth": "2025-01",
+      "totalWage": 1154600,
+      "createdAt": "2026-01-31T04:43:13.539Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593539-49-2025-01",
+      "employmentId": "emp-bupyeong-1769834593539-49",
+      "yearMonth": "2025-01",
+      "totalWage": 2094530,
+      "createdAt": "2026-01-31T04:43:13.539Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593539-50-2025-01",
+      "employmentId": "emp-bupyeong-1769834593539-50",
+      "yearMonth": "2025-01",
+      "totalWage": 945730,
+      "createdAt": "2026-01-31T04:43:13.539Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593539-51-2025-01",
+      "employmentId": "emp-bupyeong-1769834593539-51",
+      "yearMonth": "2025-01",
+      "totalWage": 980540,
+      "createdAt": "2026-01-31T04:43:13.539Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593539-52-2025-01",
+      "employmentId": "emp-bupyeong-1769834593539-52",
+      "yearMonth": "2025-01",
+      "totalWage": 98640,
+      "createdAt": "2026-01-31T04:43:13.539Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593534-0-2025-02",
+      "employmentId": "emp-bupyeong-1769834593534-0",
+      "yearMonth": "2025-02",
+      "totalWage": 4309032857142857,
+      "createdAt": "2026-01-31T04:43:14.003Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593534-1-2025-02",
+      "employmentId": "emp-bupyeong-1769834593534-1",
+      "yearMonth": "2025-02",
+      "totalWage": 40105814285714290,
+      "createdAt": "2026-01-31T04:43:14.003Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593534-2-2025-02",
+      "employmentId": "emp-bupyeong-1769834593534-2",
+      "yearMonth": "2025-02",
+      "totalWage": 3890931428571428,
+      "createdAt": "2026-01-31T04:43:14.003Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593534-3-2025-02",
+      "employmentId": "emp-bupyeong-1769834593534-3",
+      "yearMonth": "2025-02",
+      "totalWage": 28968928571428572,
+      "createdAt": "2026-01-31T04:43:14.003Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593534-4-2025-02",
+      "employmentId": "emp-bupyeong-1769834593534-4",
+      "yearMonth": "2025-02",
+      "totalWage": 2791970,
+      "createdAt": "2026-01-31T04:43:14.003Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-5-2025-02",
+      "employmentId": "emp-bupyeong-1769834593535-5",
+      "yearMonth": "2025-02",
+      "totalWage": 3640870,
+      "createdAt": "2026-01-31T04:43:14.003Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-6-2025-02",
+      "employmentId": "emp-bupyeong-1769834593535-6",
+      "yearMonth": "2025-02",
+      "totalWage": 2414530,
+      "createdAt": "2026-01-31T04:43:14.003Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-7-2025-02",
+      "employmentId": "emp-bupyeong-1769834593535-7",
+      "yearMonth": "2025-02",
+      "totalWage": 34034071428571428,
+      "createdAt": "2026-01-31T04:43:14.003Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-8-2025-02",
+      "employmentId": "emp-bupyeong-1769834593535-8",
+      "yearMonth": "2025-02",
+      "totalWage": 3326505714285714,
+      "createdAt": "2026-01-31T04:43:14.004Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-9-2025-02",
+      "employmentId": "emp-bupyeong-1769834593535-9",
+      "yearMonth": "2025-02",
+      "totalWage": 2589484285714286,
+      "createdAt": "2026-01-31T04:43:14.004Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-10-2025-02",
+      "employmentId": "emp-bupyeong-1769834593535-10",
+      "yearMonth": "2025-02",
+      "totalWage": 3178120,
+      "createdAt": "2026-01-31T04:43:14.004Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-11-2025-02",
+      "employmentId": "emp-bupyeong-1769834593535-11",
+      "yearMonth": "2025-02",
+      "totalWage": 2938495714285714,
+      "createdAt": "2026-01-31T04:43:14.004Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-12-2025-02",
+      "employmentId": "emp-bupyeong-1769834593535-12",
+      "yearMonth": "2025-02",
+      "totalWage": 3362310,
+      "createdAt": "2026-01-31T04:43:14.004Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-13-2025-02",
+      "employmentId": "emp-bupyeong-1769834593535-13",
+      "yearMonth": "2025-02",
+      "totalWage": 3420310,
+      "createdAt": "2026-01-31T04:43:14.004Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-14-2025-02",
+      "employmentId": "emp-bupyeong-1769834593535-14",
+      "yearMonth": "2025-02",
+      "totalWage": 4142920,
+      "createdAt": "2026-01-31T04:43:14.004Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-15-2025-02",
+      "employmentId": "emp-bupyeong-1769834593535-15",
+      "yearMonth": "2025-02",
+      "totalWage": 3686250,
+      "createdAt": "2026-01-31T04:43:14.004Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-16-2025-02",
+      "employmentId": "emp-bupyeong-1769834593535-16",
+      "yearMonth": "2025-02",
+      "totalWage": 3399995714285714,
+      "createdAt": "2026-01-31T04:43:14.004Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-17-2025-02",
+      "employmentId": "emp-bupyeong-1769834593535-17",
+      "yearMonth": "2025-02",
+      "totalWage": 3390550,
+      "createdAt": "2026-01-31T04:43:14.004Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-18-2025-02",
+      "employmentId": "emp-bupyeong-1769834593535-18",
+      "yearMonth": "2025-02",
+      "totalWage": 2225290,
+      "createdAt": "2026-01-31T04:43:14.004Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-19-2025-02",
+      "employmentId": "emp-bupyeong-1769834593535-19",
+      "yearMonth": "2025-02",
+      "totalWage": 3568915714285714,
+      "createdAt": "2026-01-31T04:43:14.005Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-20-2025-02",
+      "employmentId": "emp-bupyeong-1769834593535-20",
+      "yearMonth": "2025-02",
+      "totalWage": 1373250,
+      "createdAt": "2026-01-31T04:43:14.005Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-21-2025-02",
+      "employmentId": "emp-bupyeong-1769834593535-21",
+      "yearMonth": "2025-02",
+      "totalWage": 3038340,
+      "createdAt": "2026-01-31T04:43:14.005Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-22-2025-02",
+      "employmentId": "emp-bupyeong-1769834593535-22",
+      "yearMonth": "2025-02",
+      "totalWage": 2955780,
+      "createdAt": "2026-01-31T04:43:14.005Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-23-2025-02",
+      "employmentId": "emp-bupyeong-1769834593535-23",
+      "yearMonth": "2025-02",
+      "totalWage": 2941225714285714,
+      "createdAt": "2026-01-31T04:43:14.005Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-24-2025-02",
+      "employmentId": "emp-bupyeong-1769834593535-24",
+      "yearMonth": "2025-02",
+      "totalWage": 2941225714285714,
+      "createdAt": "2026-01-31T04:43:14.005Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-25-2025-02",
+      "employmentId": "emp-bupyeong-1769834593535-25",
+      "yearMonth": "2025-02",
+      "totalWage": 2845980,
+      "createdAt": "2026-01-31T04:43:14.005Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-26-2025-02",
+      "employmentId": "emp-bupyeong-1769834593535-26",
+      "yearMonth": "2025-02",
+      "totalWage": 2126720,
+      "createdAt": "2026-01-31T04:43:14.005Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-27-2025-02",
+      "employmentId": "emp-bupyeong-1769834593535-27",
+      "yearMonth": "2025-02",
+      "totalWage": 2927640,
+      "createdAt": "2026-01-31T04:43:14.005Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-28-2025-02",
+      "employmentId": "emp-bupyeong-1769834593535-28",
+      "yearMonth": "2025-02",
+      "totalWage": 2927640,
+      "createdAt": "2026-01-31T04:43:14.005Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834594005-53-2025-02",
+      "employmentId": "emp-bupyeong-1769834594005-53",
+      "yearMonth": "2025-02",
+      "totalWage": 2803680,
+      "createdAt": "2026-01-31T04:43:14.005Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834594005-54-2025-02",
+      "employmentId": "emp-bupyeong-1769834594005-54",
+      "yearMonth": "2025-02",
+      "totalWage": 934380,
+      "createdAt": "2026-01-31T04:43:14.005Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593534-0-2025-03",
+      "employmentId": "emp-bupyeong-1769834593534-0",
+      "yearMonth": "2025-03",
+      "totalWage": 3925115,
+      "createdAt": "2026-01-31T04:43:42.029Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593534-1-2025-03",
+      "employmentId": "emp-bupyeong-1769834593534-1",
+      "yearMonth": "2025-03",
+      "totalWage": 1916060,
+      "createdAt": "2026-01-31T04:43:42.029Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593534-2-2025-03",
+      "employmentId": "emp-bupyeong-1769834593534-2",
+      "yearMonth": "2025-03",
+      "totalWage": 3928395,
+      "createdAt": "2026-01-31T04:43:42.029Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593534-3-2025-03",
+      "employmentId": "emp-bupyeong-1769834593534-3",
+      "yearMonth": "2025-03",
+      "totalWage": 2852735,
+      "createdAt": "2026-01-31T04:43:42.029Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593534-4-2025-03",
+      "employmentId": "emp-bupyeong-1769834593534-4",
+      "yearMonth": "2025-03",
+      "totalWage": 3188884,
+      "createdAt": "2026-01-31T04:43:42.029Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-5-2025-03",
+      "employmentId": "emp-bupyeong-1769834593535-5",
+      "yearMonth": "2025-03",
+      "totalWage": 3173665,
+      "createdAt": "2026-01-31T04:43:42.030Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-6-2025-03",
+      "employmentId": "emp-bupyeong-1769834593535-6",
+      "yearMonth": "2025-03",
+      "totalWage": 2988150,
+      "createdAt": "2026-01-31T04:43:42.030Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-7-2025-03",
+      "employmentId": "emp-bupyeong-1769834593535-7",
+      "yearMonth": "2025-03",
+      "totalWage": 3106206,
+      "createdAt": "2026-01-31T04:43:42.030Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-10-2025-03",
+      "employmentId": "emp-bupyeong-1769834593535-10",
+      "yearMonth": "2025-03",
+      "totalWage": 3158442,
+      "createdAt": "2026-01-31T04:43:42.030Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-12-2025-03",
+      "employmentId": "emp-bupyeong-1769834593535-12",
+      "yearMonth": "2025-03",
+      "totalWage": 2908693,
+      "createdAt": "2026-01-31T04:43:42.030Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-13-2025-03",
+      "employmentId": "emp-bupyeong-1769834593535-13",
+      "yearMonth": "2025-03",
+      "totalWage": 3335468,
+      "createdAt": "2026-01-31T04:43:42.030Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-14-2025-03",
+      "employmentId": "emp-bupyeong-1769834593535-14",
+      "yearMonth": "2025-03",
+      "totalWage": 3158442,
+      "createdAt": "2026-01-31T04:43:42.030Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-15-2025-03",
+      "employmentId": "emp-bupyeong-1769834593535-15",
+      "yearMonth": "2025-03",
+      "totalWage": 3074599,
+      "createdAt": "2026-01-31T04:43:42.030Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-16-2025-03",
+      "employmentId": "emp-bupyeong-1769834593535-16",
+      "yearMonth": "2025-03",
+      "totalWage": 2908693,
+      "createdAt": "2026-01-31T04:43:42.030Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-17-2025-03",
+      "employmentId": "emp-bupyeong-1769834593535-17",
+      "yearMonth": "2025-03",
+      "totalWage": 3078315,
+      "createdAt": "2026-01-31T04:43:42.030Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-18-2025-03",
+      "employmentId": "emp-bupyeong-1769834593535-18",
+      "yearMonth": "2025-03",
+      "totalWage": 2108707,
+      "createdAt": "2026-01-31T04:43:42.030Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-19-2025-03",
+      "employmentId": "emp-bupyeong-1769834593535-19",
+      "yearMonth": "2025-03",
+      "totalWage": 2993599,
+      "createdAt": "2026-01-31T04:43:42.030Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-21-2025-03",
+      "employmentId": "emp-bupyeong-1769834593535-21",
+      "yearMonth": "2025-03",
+      "totalWage": 3191977,
+      "createdAt": "2026-01-31T04:43:42.030Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-23-2025-03",
+      "employmentId": "emp-bupyeong-1769834593535-23",
+      "yearMonth": "2025-03",
+      "totalWage": 2908693,
+      "createdAt": "2026-01-31T04:43:42.030Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-24-2025-03",
+      "employmentId": "emp-bupyeong-1769834593535-24",
+      "yearMonth": "2025-03",
+      "totalWage": 2908693,
+      "createdAt": "2026-01-31T04:43:42.030Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-25-2025-03",
+      "employmentId": "emp-bupyeong-1769834593535-25",
+      "yearMonth": "2025-03",
+      "totalWage": 2908693,
+      "createdAt": "2026-01-31T04:43:42.030Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-26-2025-03",
+      "employmentId": "emp-bupyeong-1769834593535-26",
+      "yearMonth": "2025-03",
+      "totalWage": 2675010,
+      "createdAt": "2026-01-31T04:43:42.030Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-27-2025-03",
+      "employmentId": "emp-bupyeong-1769834593535-27",
+      "yearMonth": "2025-03",
+      "totalWage": 3205610,
+      "createdAt": "2026-01-31T04:43:42.030Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-28-2025-03",
+      "employmentId": "emp-bupyeong-1769834593535-28",
+      "yearMonth": "2025-03",
+      "totalWage": 3164939,
+      "createdAt": "2026-01-31T04:43:42.030Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834594005-53-2025-03",
+      "employmentId": "emp-bupyeong-1769834594005-53",
+      "yearMonth": "2025-03",
+      "totalWage": 3075249,
+      "createdAt": "2026-01-31T04:43:42.030Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834594005-54-2025-03",
+      "employmentId": "emp-bupyeong-1769834594005-54",
+      "yearMonth": "2025-03",
+      "totalWage": 2992066,
+      "createdAt": "2026-01-31T04:43:42.030Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834622030-55-2025-03",
+      "employmentId": "emp-bupyeong-1769834622030-55",
+      "yearMonth": "2025-03",
+      "totalWage": 2875350,
+      "createdAt": "2026-01-31T04:43:42.030Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834622030-56-2025-03",
+      "employmentId": "emp-bupyeong-1769834622030-56",
+      "yearMonth": "2025-03",
+      "totalWage": 2702360,
+      "createdAt": "2026-01-31T04:43:42.030Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834622030-57-2025-03",
+      "employmentId": "emp-bupyeong-1769834622030-57",
+      "yearMonth": "2025-03",
+      "totalWage": 2308800,
+      "createdAt": "2026-01-31T04:43:42.030Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834622030-58-2025-03",
+      "employmentId": "emp-bupyeong-1769834622030-58",
+      "yearMonth": "2025-03",
+      "totalWage": 2219880,
+      "createdAt": "2026-01-31T04:43:42.030Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593534-0-2025-04",
+      "employmentId": "emp-bupyeong-1769834593534-0",
+      "yearMonth": "2025-04",
+      "totalWage": 3754160,
+      "createdAt": "2026-01-31T04:43:42.626Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593534-1-2025-04",
+      "employmentId": "emp-bupyeong-1769834593534-1",
+      "yearMonth": "2025-04",
+      "totalWage": 3216720,
+      "createdAt": "2026-01-31T04:43:42.626Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593534-2-2025-04",
+      "employmentId": "emp-bupyeong-1769834593534-2",
+      "yearMonth": "2025-04",
+      "totalWage": 3757440,
+      "createdAt": "2026-01-31T04:43:42.626Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593534-3-2025-04",
+      "employmentId": "emp-bupyeong-1769834593534-3",
+      "yearMonth": "2025-04",
+      "totalWage": 2644770,
+      "createdAt": "2026-01-31T04:43:42.626Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593534-4-2025-04",
+      "employmentId": "emp-bupyeong-1769834593534-4",
+      "yearMonth": "2025-04",
+      "totalWage": 2963090,
+      "createdAt": "2026-01-31T04:43:42.626Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-6-2025-04",
+      "employmentId": "emp-bupyeong-1769834593535-6",
+      "yearMonth": "2025-04",
+      "totalWage": 3027830,
+      "createdAt": "2026-01-31T04:43:42.626Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-7-2025-04",
+      "employmentId": "emp-bupyeong-1769834593535-7",
+      "yearMonth": "2025-04",
+      "totalWage": 2971280,
+      "createdAt": "2026-01-31T04:43:42.626Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-10-2025-04",
+      "employmentId": "emp-bupyeong-1769834593535-10",
+      "yearMonth": "2025-04",
+      "totalWage": 3110130,
+      "createdAt": "2026-01-31T04:43:42.626Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-12-2025-04",
+      "employmentId": "emp-bupyeong-1769834593535-12",
+      "yearMonth": "2025-04",
+      "totalWage": 3037980,
+      "createdAt": "2026-01-31T04:43:42.626Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-13-2025-04",
+      "employmentId": "emp-bupyeong-1769834593535-13",
+      "yearMonth": "2025-04",
+      "totalWage": 32076066666666664,
+      "createdAt": "2026-01-31T04:43:42.626Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-14-2025-04",
+      "employmentId": "emp-bupyeong-1769834593535-14",
+      "yearMonth": "2025-04",
+      "totalWage": 3110130,
+      "createdAt": "2026-01-31T04:43:42.626Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-15-2025-04",
+      "employmentId": "emp-bupyeong-1769834593535-15",
+      "yearMonth": "2025-04",
+      "totalWage": 3027830,
+      "createdAt": "2026-01-31T04:43:42.626Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-16-2025-04",
+      "employmentId": "emp-bupyeong-1769834593535-16",
+      "yearMonth": "2025-04",
+      "totalWage": 2863350,
+      "createdAt": "2026-01-31T04:43:42.626Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-17-2025-04",
+      "employmentId": "emp-bupyeong-1769834593535-17",
+      "yearMonth": "2025-04",
+      "totalWage": 29531666666666664,
+      "createdAt": "2026-01-31T04:43:42.626Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-18-2025-04",
+      "employmentId": "emp-bupyeong-1769834593535-18",
+      "yearMonth": "2025-04",
+      "totalWage": 2074500,
+      "createdAt": "2026-01-31T04:43:42.626Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-19-2025-04",
+      "employmentId": "emp-bupyeong-1769834593535-19",
+      "yearMonth": "2025-04",
+      "totalWage": 2863350,
+      "createdAt": "2026-01-31T04:43:42.626Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-21-2025-04",
+      "employmentId": "emp-bupyeong-1769834593535-21",
+      "yearMonth": "2025-04",
+      "totalWage": 3057530,
+      "createdAt": "2026-01-31T04:43:42.626Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-23-2025-04",
+      "employmentId": "emp-bupyeong-1769834593535-23",
+      "yearMonth": "2025-04",
+      "totalWage": 2863350,
+      "createdAt": "2026-01-31T04:43:42.626Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-24-2025-04",
+      "employmentId": "emp-bupyeong-1769834593535-24",
+      "yearMonth": "2025-04",
+      "totalWage": 2863350,
+      "createdAt": "2026-01-31T04:43:42.626Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-25-2025-04",
+      "employmentId": "emp-bupyeong-1769834593535-25",
+      "yearMonth": "2025-04",
+      "totalWage": 2863350,
+      "createdAt": "2026-01-31T04:43:42.626Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-26-2025-04",
+      "employmentId": "emp-bupyeong-1769834593535-26",
+      "yearMonth": "2025-04",
+      "totalWage": 3037980,
+      "createdAt": "2026-01-31T04:43:42.626Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-28-2025-04",
+      "employmentId": "emp-bupyeong-1769834593535-28",
+      "yearMonth": "2025-04",
+      "totalWage": 2946830,
+      "createdAt": "2026-01-31T04:43:42.626Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834594005-53-2025-04",
+      "employmentId": "emp-bupyeong-1769834594005-53",
+      "yearMonth": "2025-04",
+      "totalWage": 3028470,
+      "createdAt": "2026-01-31T04:43:42.626Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834594005-54-2025-04",
+      "employmentId": "emp-bupyeong-1769834594005-54",
+      "yearMonth": "2025-04",
+      "totalWage": 2946830,
+      "createdAt": "2026-01-31T04:43:42.626Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834622030-55-2025-04",
+      "employmentId": "emp-bupyeong-1769834622030-55",
+      "yearMonth": "2025-04",
+      "totalWage": 2946830,
+      "createdAt": "2026-01-31T04:43:42.626Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834622030-58-2025-04",
+      "employmentId": "emp-bupyeong-1769834622030-58",
+      "yearMonth": "2025-04",
+      "totalWage": 2863350,
+      "createdAt": "2026-01-31T04:43:42.626Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834622030-56-2025-04",
+      "employmentId": "emp-bupyeong-1769834622030-56",
+      "yearMonth": "2025-04",
+      "totalWage": 2944350,
+      "createdAt": "2026-01-31T04:43:42.626Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834622626-59-2025-04",
+      "employmentId": "emp-bupyeong-1769834622626-59",
+      "yearMonth": "2025-04",
+      "totalWage": 786200,
+      "createdAt": "2026-01-31T04:43:42.626Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593534-0-2025-05",
+      "employmentId": "emp-bupyeong-1769834593534-0",
+      "yearMonth": "2025-05",
+      "totalWage": 4258493548387097,
+      "createdAt": "2026-01-31T04:43:43.111Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593534-1-2025-05",
+      "employmentId": "emp-bupyeong-1769834593534-1",
+      "yearMonth": "2025-05",
+      "totalWage": 3304118064516129,
+      "createdAt": "2026-01-31T04:43:43.111Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593534-2-2025-05",
+      "employmentId": "emp-bupyeong-1769834593534-2",
+      "yearMonth": "2025-05",
+      "totalWage": 4037694193548387,
+      "createdAt": "2026-01-31T04:43:43.111Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593534-3-2025-05",
+      "employmentId": "emp-bupyeong-1769834593534-3",
+      "yearMonth": "2025-05",
+      "totalWage": 29342096774193548,
+      "createdAt": "2026-01-31T04:43:43.111Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593534-4-2025-05",
+      "employmentId": "emp-bupyeong-1769834593534-4",
+      "yearMonth": "2025-05",
+      "totalWage": 32716409677419356,
+      "createdAt": "2026-01-31T04:43:43.111Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-6-2025-05",
+      "employmentId": "emp-bupyeong-1769834593535-6",
+      "yearMonth": "2025-05",
+      "totalWage": 32459390322580644,
+      "createdAt": "2026-01-31T04:43:43.111Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-7-2025-05",
+      "employmentId": "emp-bupyeong-1769834593535-7",
+      "yearMonth": "2025-05",
+      "totalWage": 1362546129032258,
+      "createdAt": "2026-01-31T04:43:43.111Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-10-2025-05",
+      "employmentId": "emp-bupyeong-1769834593535-10",
+      "yearMonth": "2025-05",
+      "totalWage": 34281612903225804,
+      "createdAt": "2026-01-31T04:43:43.111Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-12-2025-05",
+      "employmentId": "emp-bupyeong-1769834593535-12",
+      "yearMonth": "2025-05",
+      "totalWage": 31649390322580644,
+      "createdAt": "2026-01-31T04:43:43.111Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-13-2025-05",
+      "employmentId": "emp-bupyeong-1769834593535-13",
+      "yearMonth": "2025-05",
+      "totalWage": 35179145161290320,
+      "createdAt": "2026-01-31T04:43:43.111Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-14-2025-05",
+      "employmentId": "emp-bupyeong-1769834593535-14",
+      "yearMonth": "2025-05",
+      "totalWage": 3335468064516129,
+      "createdAt": "2026-01-31T04:43:43.111Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-15-2025-05",
+      "employmentId": "emp-bupyeong-1769834593535-15",
+      "yearMonth": "2025-05",
+      "totalWage": 3160847419354839,
+      "createdAt": "2026-01-31T04:43:43.111Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-16-2025-05",
+      "employmentId": "emp-bupyeong-1769834593535-16",
+      "yearMonth": "2025-05",
+      "totalWage": 3119337419354839,
+      "createdAt": "2026-01-31T04:43:43.111Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-17-2025-05",
+      "employmentId": "emp-bupyeong-1769834593535-17",
+      "yearMonth": "2025-05",
+      "totalWage": 30783145161290320,
+      "createdAt": "2026-01-31T04:43:43.111Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-18-2025-05",
+      "employmentId": "emp-bupyeong-1769834593535-18",
+      "yearMonth": "2025-05",
+      "totalWage": 21764403225806452,
+      "createdAt": "2026-01-31T04:43:43.111Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-19-2025-05",
+      "employmentId": "emp-bupyeong-1769834593535-19",
+      "yearMonth": "2025-05",
+      "totalWage": 31603403225806452,
+      "createdAt": "2026-01-31T04:43:43.111Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-21-2025-05",
+      "employmentId": "emp-bupyeong-1769834593535-21",
+      "yearMonth": "2025-05",
+      "totalWage": 3191977419354839,
+      "createdAt": "2026-01-31T04:43:43.111Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-23-2025-05",
+      "employmentId": "emp-bupyeong-1769834593535-23",
+      "yearMonth": "2025-05",
+      "totalWage": 30783145161290320,
+      "createdAt": "2026-01-31T04:43:43.111Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-24-2025-05",
+      "employmentId": "emp-bupyeong-1769834593535-24",
+      "yearMonth": "2025-05",
+      "totalWage": 31603403225806452,
+      "createdAt": "2026-01-31T04:43:43.111Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-26-2025-05",
+      "employmentId": "emp-bupyeong-1769834593535-26",
+      "yearMonth": "2025-05",
+      "totalWage": 31649390322580644,
+      "createdAt": "2026-01-31T04:43:43.111Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-28-2025-05",
+      "employmentId": "emp-bupyeong-1769834593535-28",
+      "yearMonth": "2025-05",
+      "totalWage": 2992065806451613,
+      "createdAt": "2026-01-31T04:43:43.111Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834594005-53-2025-05",
+      "employmentId": "emp-bupyeong-1769834594005-53",
+      "yearMonth": "2025-05",
+      "totalWage": 34266283870967744,
+      "createdAt": "2026-01-31T04:43:43.111Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834594005-54-2025-05",
+      "employmentId": "emp-bupyeong-1769834594005-54",
+      "yearMonth": "2025-05",
+      "totalWage": 32101748387096776,
+      "createdAt": "2026-01-31T04:43:43.112Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834622030-55-2025-05",
+      "employmentId": "emp-bupyeong-1769834622030-55",
+      "yearMonth": "2025-05",
+      "totalWage": 31224032258064510,
+      "createdAt": "2026-01-31T04:43:43.112Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834622030-58-2025-05",
+      "employmentId": "emp-bupyeong-1769834622030-58",
+      "yearMonth": "2025-05",
+      "totalWage": 2993598709677419,
+      "createdAt": "2026-01-31T04:43:43.112Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834622030-56-2025-05",
+      "employmentId": "emp-bupyeong-1769834622030-56",
+      "yearMonth": "2025-05",
+      "totalWage": 31593145161290320,
+      "createdAt": "2026-01-31T04:43:43.112Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834622626-59-2025-05",
+      "employmentId": "emp-bupyeong-1769834622626-59",
+      "yearMonth": "2025-05",
+      "totalWage": 33370209677419356,
+      "createdAt": "2026-01-31T04:43:43.112Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834623112-60-2025-05",
+      "employmentId": "emp-bupyeong-1769834623112-60",
+      "yearMonth": "2025-05",
+      "totalWage": 2731510,
+      "createdAt": "2026-01-31T04:43:43.112Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593534-1-2025-06",
+      "employmentId": "emp-bupyeong-1769834593534-1",
+      "yearMonth": "2025-06",
+      "totalWage": 3153290,
+      "createdAt": "2026-01-31T04:43:43.614Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593534-2-2025-06",
+      "employmentId": "emp-bupyeong-1769834593534-2",
+      "yearMonth": "2025-06",
+      "totalWage": 3836770,
+      "createdAt": "2026-01-31T04:43:43.614Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593534-3-2025-06",
+      "employmentId": "emp-bupyeong-1769834593534-3",
+      "yearMonth": "2025-06",
+      "totalWage": 2689020,
+      "createdAt": "2026-01-31T04:43:43.614Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593534-4-2025-06",
+      "employmentId": "emp-bupyeong-1769834593534-4",
+      "yearMonth": "2025-06",
+      "totalWage": 3196610,
+      "createdAt": "2026-01-31T04:43:43.614Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-6-2025-06",
+      "employmentId": "emp-bupyeong-1769834593535-6",
+      "yearMonth": "2025-06",
+      "totalWage": 3118980,
+      "createdAt": "2026-01-31T04:43:43.614Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-7-2025-06",
+      "employmentId": "emp-bupyeong-1769834593535-7",
+      "yearMonth": "2025-06",
+      "totalWage": 30656233333333336,
+      "createdAt": "2026-01-31T04:43:43.614Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-10-2025-06",
+      "employmentId": "emp-bupyeong-1769834593535-10",
+      "yearMonth": "2025-06",
+      "totalWage": 3351900,
+      "createdAt": "2026-01-31T04:43:43.614Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-12-2025-06",
+      "employmentId": "emp-bupyeong-1769834593535-12",
+      "yearMonth": "2025-06",
+      "totalWage": 3089750,
+      "createdAt": "2026-01-31T04:43:43.614Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-13-2025-06",
+      "employmentId": "emp-bupyeong-1769834593535-13",
+      "yearMonth": "2025-06",
+      "totalWage": 33985633333333336,
+      "createdAt": "2026-01-31T04:43:43.614Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-14-2025-06",
+      "employmentId": "emp-bupyeong-1769834593535-14",
+      "yearMonth": "2025-06",
+      "totalWage": 3351900,
+      "createdAt": "2026-01-31T04:43:43.614Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-15-2025-06",
+      "employmentId": "emp-bupyeong-1769834593535-15",
+      "yearMonth": "2025-06",
+      "totalWage": 3082270,
+      "createdAt": "2026-01-31T04:43:43.614Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-16-2025-06",
+      "employmentId": "emp-bupyeong-1769834593535-16",
+      "yearMonth": "2025-06",
+      "totalWage": 31718366666666664,
+      "createdAt": "2026-01-31T04:43:43.614Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-17-2025-06",
+      "employmentId": "emp-bupyeong-1769834593535-17",
+      "yearMonth": "2025-06",
+      "totalWage": 29103133333333336,
+      "createdAt": "2026-01-31T04:43:43.614Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-18-2025-06",
+      "employmentId": "emp-bupyeong-1769834593535-18",
+      "yearMonth": "2025-06",
+      "totalWage": 21449266666666664,
+      "createdAt": "2026-01-31T04:43:43.614Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-19-2025-06",
+      "employmentId": "emp-bupyeong-1769834593535-19",
+      "yearMonth": "2025-06",
+      "totalWage": 3126450,
+      "createdAt": "2026-01-31T04:43:43.614Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-21-2025-06",
+      "employmentId": "emp-bupyeong-1769834593535-21",
+      "yearMonth": "2025-06",
+      "totalWage": 3149670,
+      "createdAt": "2026-01-31T04:43:43.614Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-23-2025-06",
+      "employmentId": "emp-bupyeong-1769834593535-23",
+      "yearMonth": "2025-06",
+      "totalWage": 30635166666666664,
+      "createdAt": "2026-01-31T04:43:43.614Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-24-2025-06",
+      "employmentId": "emp-bupyeong-1769834593535-24",
+      "yearMonth": "2025-06",
+      "totalWage": 30411533333333336,
+      "createdAt": "2026-01-31T04:43:43.614Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-26-2025-06",
+      "employmentId": "emp-bupyeong-1769834593535-26",
+      "yearMonth": "2025-06",
+      "totalWage": 3126450,
+      "createdAt": "2026-01-31T04:43:43.614Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-28-2025-06",
+      "employmentId": "emp-bupyeong-1769834593535-28",
+      "yearMonth": "2025-06",
+      "totalWage": 3001270,
+      "createdAt": "2026-01-31T04:43:43.614Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834594005-53-2025-06",
+      "employmentId": "emp-bupyeong-1769834594005-53",
+      "yearMonth": "2025-06",
+      "totalWage": 32144466666666664,
+      "createdAt": "2026-01-31T04:43:43.614Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834594005-54-2025-06",
+      "employmentId": "emp-bupyeong-1769834594005-54",
+      "yearMonth": "2025-06",
+      "totalWage": 3126450,
+      "createdAt": "2026-01-31T04:43:43.614Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834622030-55-2025-06",
+      "employmentId": "emp-bupyeong-1769834622030-55",
+      "yearMonth": "2025-06",
+      "totalWage": 3037980,
+      "createdAt": "2026-01-31T04:43:43.614Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834622030-58-2025-06",
+      "employmentId": "emp-bupyeong-1769834622030-58",
+      "yearMonth": "2025-06",
+      "totalWage": 29531666666666664,
+      "createdAt": "2026-01-31T04:43:43.614Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834622030-56-2025-06",
+      "employmentId": "emp-bupyeong-1769834622030-56",
+      "yearMonth": "2025-06",
+      "totalWage": 30341666666666664,
+      "createdAt": "2026-01-31T04:43:43.614Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834622626-59-2025-06",
+      "employmentId": "emp-bupyeong-1769834622626-59",
+      "yearMonth": "2025-06",
+      "totalWage": 31228133333333336,
+      "createdAt": "2026-01-31T04:43:43.614Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834623112-60-2025-06",
+      "employmentId": "emp-bupyeong-1769834623112-60",
+      "yearMonth": "2025-06",
+      "totalWage": 3349410,
+      "createdAt": "2026-01-31T04:43:43.614Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834623614-61-2025-06",
+      "employmentId": "emp-bupyeong-1769834623614-61",
+      "yearMonth": "2025-06",
+      "totalWage": 3000000,
+      "createdAt": "2026-01-31T04:43:43.614Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593534-1-2025-07",
+      "employmentId": "emp-bupyeong-1769834593534-1",
+      "yearMonth": "2025-07",
+      "totalWage": 2829110,
+      "createdAt": "2026-01-31T04:43:44.160Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593534-2-2025-07",
+      "employmentId": "emp-bupyeong-1769834593534-2",
+      "yearMonth": "2025-07",
+      "totalWage": 3303230,
+      "createdAt": "2026-01-31T04:43:44.160Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593534-3-2025-07",
+      "employmentId": "emp-bupyeong-1769834593534-3",
+      "yearMonth": "2025-07",
+      "totalWage": 2511800,
+      "createdAt": "2026-01-31T04:43:44.160Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593534-4-2025-07",
+      "employmentId": "emp-bupyeong-1769834593534-4",
+      "yearMonth": "2025-07",
+      "totalWage": 2765270,
+      "createdAt": "2026-01-31T04:43:44.160Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-6-2025-07",
+      "employmentId": "emp-bupyeong-1769834593535-6",
+      "yearMonth": "2025-07",
+      "totalWage": 2893260,
+      "createdAt": "2026-01-31T04:43:44.160Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-7-2025-07",
+      "employmentId": "emp-bupyeong-1769834593535-7",
+      "yearMonth": "2025-07",
+      "totalWage": 2799260,
+      "createdAt": "2026-01-31T04:43:44.160Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-10-2025-07",
+      "employmentId": "emp-bupyeong-1769834593535-10",
+      "yearMonth": "2025-07",
+      "totalWage": 2838230,
+      "createdAt": "2026-01-31T04:43:44.160Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-12-2025-07",
+      "employmentId": "emp-bupyeong-1769834593535-12",
+      "yearMonth": "2025-07",
+      "totalWage": 2684600,
+      "createdAt": "2026-01-31T04:43:44.160Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-13-2025-07",
+      "employmentId": "emp-bupyeong-1769834593535-13",
+      "yearMonth": "2025-07",
+      "totalWage": 2899660,
+      "createdAt": "2026-01-31T04:43:44.160Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-14-2025-07",
+      "employmentId": "emp-bupyeong-1769834593535-14",
+      "yearMonth": "2025-07",
+      "totalWage": 2746430,
+      "createdAt": "2026-01-31T04:43:44.160Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-15-2025-07",
+      "employmentId": "emp-bupyeong-1769834593535-15",
+      "yearMonth": "2025-07",
+      "totalWage": 2842450,
+      "createdAt": "2026-01-31T04:43:44.160Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-16-2025-07",
+      "employmentId": "emp-bupyeong-1769834593535-16",
+      "yearMonth": "2025-07",
+      "totalWage": 2256170,
+      "createdAt": "2026-01-31T04:43:44.160Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-17-2025-07",
+      "employmentId": "emp-bupyeong-1769834593535-17",
+      "yearMonth": "2025-07",
+      "totalWage": 50723333333333256,
+      "createdAt": "2026-01-31T04:43:44.160Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-18-2025-07",
+      "employmentId": "emp-bupyeong-1769834593535-18",
+      "yearMonth": "2025-07",
+      "totalWage": 1879450,
+      "createdAt": "2026-01-31T04:43:44.160Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-19-2025-07",
+      "employmentId": "emp-bupyeong-1769834593535-19",
+      "yearMonth": "2025-07",
+      "totalWage": 2660590,
+      "createdAt": "2026-01-31T04:43:44.160Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-21-2025-07",
+      "employmentId": "emp-bupyeong-1769834593535-21",
+      "yearMonth": "2025-07",
+      "totalWage": 2921520,
+      "createdAt": "2026-01-31T04:43:44.160Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-24-2025-07",
+      "employmentId": "emp-bupyeong-1769834593535-24",
+      "yearMonth": "2025-07",
+      "totalWage": 2819920,
+      "createdAt": "2026-01-31T04:43:44.160Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-26-2025-07",
+      "employmentId": "emp-bupyeong-1769834593535-26",
+      "yearMonth": "2025-07",
+      "totalWage": 2538220,
+      "createdAt": "2026-01-31T04:43:44.160Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-28-2025-07",
+      "employmentId": "emp-bupyeong-1769834593535-28",
+      "yearMonth": "2025-07",
+      "totalWage": 2761450,
+      "createdAt": "2026-01-31T04:43:44.160Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834594005-53-2025-07",
+      "employmentId": "emp-bupyeong-1769834594005-53",
+      "yearMonth": "2025-07",
+      "totalWage": 2895240,
+      "createdAt": "2026-01-31T04:43:44.160Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834594005-54-2025-07",
+      "employmentId": "emp-bupyeong-1769834594005-54",
+      "yearMonth": "2025-07",
+      "totalWage": 2447340,
+      "createdAt": "2026-01-31T04:43:44.160Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834622030-55-2025-07",
+      "employmentId": "emp-bupyeong-1769834622030-55",
+      "yearMonth": "2025-07",
+      "totalWage": 2812260,
+      "createdAt": "2026-01-31T04:43:44.160Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834622030-58-2025-07",
+      "employmentId": "emp-bupyeong-1769834622030-58",
+      "yearMonth": "2025-07",
+      "totalWage": 29086929032258064,
+      "createdAt": "2026-01-31T04:43:44.160Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834622030-56-2025-07",
+      "employmentId": "emp-bupyeong-1769834622030-56",
+      "yearMonth": "2025-07",
+      "totalWage": 2812190,
+      "createdAt": "2026-01-31T04:43:44.160Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834622626-59-2025-07",
+      "employmentId": "emp-bupyeong-1769834622626-59",
+      "yearMonth": "2025-07",
+      "totalWage": 2984410,
+      "createdAt": "2026-01-31T04:43:44.160Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834623112-60-2025-07",
+      "employmentId": "emp-bupyeong-1769834623112-60",
+      "yearMonth": "2025-07",
+      "totalWage": 3006250,
+      "createdAt": "2026-01-31T04:43:44.160Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834623614-61-2025-07",
+      "employmentId": "emp-bupyeong-1769834623614-61",
+      "yearMonth": "2025-07",
+      "totalWage": 3000000,
+      "createdAt": "2026-01-31T04:43:44.160Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834624160-62-2025-07",
+      "employmentId": "emp-bupyeong-1769834624160-62",
+      "yearMonth": "2025-07",
+      "totalWage": 2828240,
+      "createdAt": "2026-01-31T04:43:44.160Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834624160-63-2025-07",
+      "employmentId": "emp-bupyeong-1769834624160-63",
+      "yearMonth": "2025-07",
+      "totalWage": 978220,
+      "createdAt": "2026-01-31T04:43:44.161Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834624161-64-2025-07",
+      "employmentId": "emp-bupyeong-1769834624161-64",
+      "yearMonth": "2025-07",
+      "totalWage": 949450,
+      "createdAt": "2026-01-31T04:43:44.161Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593534-1-2025-08",
+      "employmentId": "emp-bupyeong-1769834593534-1",
+      "yearMonth": "2025-08",
+      "totalWage": 35249216129032256,
+      "createdAt": "2026-01-31T04:43:44.916Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593534-2-2025-08",
+      "employmentId": "emp-bupyeong-1769834593534-2",
+      "yearMonth": "2025-08",
+      "totalWage": 4145023870967742,
+      "createdAt": "2026-01-31T04:43:44.916Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593534-3-2025-08",
+      "employmentId": "emp-bupyeong-1769834593534-3",
+      "yearMonth": "2025-08",
+      "totalWage": 30225145161290320,
+      "createdAt": "2026-01-31T04:43:44.916Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593534-4-2025-08",
+      "employmentId": "emp-bupyeong-1769834593534-4",
+      "yearMonth": "2025-08",
+      "totalWage": 3087486129032258,
+      "createdAt": "2026-01-31T04:43:44.916Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-6-2025-08",
+      "employmentId": "emp-bupyeong-1769834593535-6",
+      "yearMonth": "2025-08",
+      "totalWage": 3073065806451613,
+      "createdAt": "2026-01-31T04:43:44.916Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-7-2025-08",
+      "employmentId": "emp-bupyeong-1769834593535-7",
+      "yearMonth": "2025-08",
+      "totalWage": 32410409677419356,
+      "createdAt": "2026-01-31T04:43:44.916Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-10-2025-08",
+      "employmentId": "emp-bupyeong-1769834593535-10",
+      "yearMonth": "2025-08",
+      "totalWage": 3255458064516129,
+      "createdAt": "2026-01-31T04:43:44.916Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-12-2025-08",
+      "employmentId": "emp-bupyeong-1769834593535-12",
+      "yearMonth": "2025-08",
+      "totalWage": 31885235483870970,
+      "createdAt": "2026-01-31T04:43:44.916Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-13-2025-08",
+      "employmentId": "emp-bupyeong-1769834593535-13",
+      "yearMonth": "2025-08",
+      "totalWage": 33096696774193548,
+      "createdAt": "2026-01-31T04:43:44.916Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-14-2025-08",
+      "employmentId": "emp-bupyeong-1769834593535-14",
+      "yearMonth": "2025-08",
+      "totalWage": 3342972580645161,
+      "createdAt": "2026-01-31T04:43:44.916Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-15-2025-08",
+      "employmentId": "emp-bupyeong-1769834593535-15",
+      "yearMonth": "2025-08",
+      "totalWage": 3073065806451613,
+      "createdAt": "2026-01-31T04:43:44.916Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-18-2025-08",
+      "employmentId": "emp-bupyeong-1769834593535-18",
+      "yearMonth": "2025-08",
+      "totalWage": 20833267741935490,
+      "createdAt": "2026-01-31T04:43:44.916Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-19-2025-08",
+      "employmentId": "emp-bupyeong-1769834593535-19",
+      "yearMonth": "2025-08",
+      "totalWage": 30943390322580644,
+      "createdAt": "2026-01-31T04:43:44.916Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-21-2025-08",
+      "employmentId": "emp-bupyeong-1769834593535-21",
+      "yearMonth": "2025-08",
+      "totalWage": 3103235806451613,
+      "createdAt": "2026-01-31T04:43:44.916Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-24-2025-08",
+      "employmentId": "emp-bupyeong-1769834593535-24",
+      "yearMonth": "2025-08",
+      "totalWage": 3163396129032258,
+      "createdAt": "2026-01-31T04:43:44.916Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-28-2025-08",
+      "employmentId": "emp-bupyeong-1769834593535-28",
+      "yearMonth": "2025-08",
+      "totalWage": 3075248709677419,
+      "createdAt": "2026-01-31T04:43:44.916Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834594005-53-2025-08",
+      "employmentId": "emp-bupyeong-1769834594005-53",
+      "yearMonth": "2025-08",
+      "totalWage": 32542635483870970,
+      "createdAt": "2026-01-31T04:43:44.916Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834594005-54-2025-08",
+      "employmentId": "emp-bupyeong-1769834594005-54",
+      "yearMonth": "2025-08",
+      "totalWage": 32101748387096776,
+      "createdAt": "2026-01-31T04:43:44.916Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834622030-55-2025-08",
+      "employmentId": "emp-bupyeong-1769834622030-55",
+      "yearMonth": "2025-08",
+      "totalWage": 2992065806451613,
+      "createdAt": "2026-01-31T04:43:44.916Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834622030-58-2025-08",
+      "employmentId": "emp-bupyeong-1769834622030-58",
+      "yearMonth": "2025-08",
+      "totalWage": 3340512258064516,
+      "createdAt": "2026-01-31T04:43:44.916Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834622626-59-2025-08",
+      "employmentId": "emp-bupyeong-1769834622626-59",
+      "yearMonth": "2025-08",
+      "totalWage": 3028470,
+      "createdAt": "2026-01-31T04:43:44.916Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834623112-60-2025-08",
+      "employmentId": "emp-bupyeong-1769834623112-60",
+      "yearMonth": "2025-08",
+      "totalWage": 3349410,
+      "createdAt": "2026-01-31T04:43:44.917Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834623614-61-2025-08",
+      "employmentId": "emp-bupyeong-1769834623614-61",
+      "yearMonth": "2025-08",
+      "totalWage": 3000000,
+      "createdAt": "2026-01-31T04:43:44.917Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834624160-62-2025-08",
+      "employmentId": "emp-bupyeong-1769834624160-62",
+      "yearMonth": "2025-08",
+      "totalWage": 31649390322580644,
+      "createdAt": "2026-01-31T04:43:44.917Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834624161-64-2025-08",
+      "employmentId": "emp-bupyeong-1769834624161-64",
+      "yearMonth": "2025-08",
+      "totalWage": 31649390322580644,
+      "createdAt": "2026-01-31T04:43:44.917Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834624917-65-2025-08",
+      "employmentId": "emp-bupyeong-1769834624917-65",
+      "yearMonth": "2025-08",
+      "totalWage": 3751470,
+      "createdAt": "2026-01-31T04:43:44.917Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834624917-66-2025-08",
+      "employmentId": "emp-bupyeong-1769834624917-66",
+      "yearMonth": "2025-08",
+      "totalWage": 1467510,
+      "createdAt": "2026-01-31T04:43:44.917Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834624917-67-2025-08",
+      "employmentId": "emp-bupyeong-1769834624917-67",
+      "yearMonth": "2025-08",
+      "totalWage": 1555040,
+      "createdAt": "2026-01-31T04:43:44.917Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834624917-68-2025-08",
+      "employmentId": "emp-bupyeong-1769834624917-68",
+      "yearMonth": "2025-08",
+      "totalWage": 1467510,
+      "createdAt": "2026-01-31T04:43:44.917Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834624917-69-2025-08",
+      "employmentId": "emp-bupyeong-1769834624917-69",
+      "yearMonth": "2025-08",
+      "totalWage": 1364520,
+      "createdAt": "2026-01-31T04:43:44.917Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834624917-70-2025-08",
+      "employmentId": "emp-bupyeong-1769834624917-70",
+      "yearMonth": "2025-08",
+      "totalWage": 1157690,
+      "createdAt": "2026-01-31T04:43:44.917Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834624917-71-2025-08",
+      "employmentId": "emp-bupyeong-1769834624917-71",
+      "yearMonth": "2025-08",
+      "totalWage": 783220,
+      "createdAt": "2026-01-31T04:43:44.917Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593534-1-2025-09",
+      "employmentId": "emp-bupyeong-1769834593534-1",
+      "yearMonth": "2025-09",
+      "totalWage": 2977840,
+      "createdAt": "2026-01-31T04:43:45.498Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593534-2-2025-09",
+      "employmentId": "emp-bupyeong-1769834593534-2",
+      "yearMonth": "2025-09",
+      "totalWage": 3201823333333333,
+      "createdAt": "2026-01-31T04:43:45.498Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593534-4-2025-09",
+      "employmentId": "emp-bupyeong-1769834593534-4",
+      "yearMonth": "2025-09",
+      "totalWage": 29470033333333336,
+      "createdAt": "2026-01-31T04:43:45.499Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-6-2025-09",
+      "employmentId": "emp-bupyeong-1769834593535-6",
+      "yearMonth": "2025-09",
+      "totalWage": 3027830,
+      "createdAt": "2026-01-31T04:43:45.499Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-7-2025-09",
+      "employmentId": "emp-bupyeong-1769834593535-7",
+      "yearMonth": "2025-09",
+      "totalWage": 2840750,
+      "createdAt": "2026-01-31T04:43:45.499Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-10-2025-09",
+      "employmentId": "emp-bupyeong-1769834593535-10",
+      "yearMonth": "2025-09",
+      "totalWage": 2891040,
+      "createdAt": "2026-01-31T04:43:45.499Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-12-2025-09",
+      "employmentId": "emp-bupyeong-1769834593535-12",
+      "yearMonth": "2025-09",
+      "totalWage": 2824900,
+      "createdAt": "2026-01-31T04:43:45.499Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-13-2025-09",
+      "employmentId": "emp-bupyeong-1769834593535-13",
+      "yearMonth": "2025-09",
+      "totalWage": 3118720,
+      "createdAt": "2026-01-31T04:43:45.499Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-14-2025-09",
+      "employmentId": "emp-bupyeong-1769834593535-14",
+      "yearMonth": "2025-09",
+      "totalWage": 3209160,
+      "createdAt": "2026-01-31T04:43:45.499Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-15-2025-09",
+      "employmentId": "emp-bupyeong-1769834593535-15",
+      "yearMonth": "2025-09",
+      "totalWage": 3027830,
+      "createdAt": "2026-01-31T04:43:45.499Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-18-2025-09",
+      "employmentId": "emp-bupyeong-1769834593535-18",
+      "yearMonth": "2025-09",
+      "totalWage": 2049120,
+      "createdAt": "2026-01-31T04:43:45.499Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-19-2025-09",
+      "employmentId": "emp-bupyeong-1769834593535-19",
+      "yearMonth": "2025-09",
+      "totalWage": 2967380,
+      "createdAt": "2026-01-31T04:43:45.499Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-21-2025-09",
+      "employmentId": "emp-bupyeong-1769834593535-21",
+      "yearMonth": "2025-09",
+      "totalWage": 3057530,
+      "createdAt": "2026-01-31T04:43:45.499Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-24-2025-09",
+      "employmentId": "emp-bupyeong-1769834593535-24",
+      "yearMonth": "2025-09",
+      "totalWage": 31228133333333336,
+      "createdAt": "2026-01-31T04:43:45.499Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-28-2025-09",
+      "employmentId": "emp-bupyeong-1769834593535-28",
+      "yearMonth": "2025-09",
+      "totalWage": 2929820,
+      "createdAt": "2026-01-31T04:43:45.499Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834594005-53-2025-09",
+      "employmentId": "emp-bupyeong-1769834594005-53",
+      "yearMonth": "2025-09",
+      "totalWage": 31228133333333336,
+      "createdAt": "2026-01-31T04:43:45.499Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834594005-54-2025-09",
+      "employmentId": "emp-bupyeong-1769834594005-54",
+      "yearMonth": "2025-09",
+      "totalWage": 2245850,
+      "createdAt": "2026-01-31T04:43:45.499Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834622030-55-2025-09",
+      "employmentId": "emp-bupyeong-1769834622030-55",
+      "yearMonth": "2025-09",
+      "totalWage": 2946830,
+      "createdAt": "2026-01-31T04:43:45.499Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834622030-58-2025-09",
+      "employmentId": "emp-bupyeong-1769834622030-58",
+      "yearMonth": "2025-09",
+      "totalWage": 2665810,
+      "createdAt": "2026-01-31T04:43:45.499Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834622626-59-2025-09",
+      "employmentId": "emp-bupyeong-1769834622626-59",
+      "yearMonth": "2025-09",
+      "totalWage": 31228133333333336,
+      "createdAt": "2026-01-31T04:43:45.499Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834623614-61-2025-09",
+      "employmentId": "emp-bupyeong-1769834623614-61",
+      "yearMonth": "2025-09",
+      "totalWage": 3000000,
+      "createdAt": "2026-01-31T04:43:45.499Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834624160-62-2025-09",
+      "employmentId": "emp-bupyeong-1769834624160-62",
+      "yearMonth": "2025-09",
+      "totalWage": 3037980,
+      "createdAt": "2026-01-31T04:43:45.499Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834624161-64-2025-09",
+      "employmentId": "emp-bupyeong-1769834624161-64",
+      "yearMonth": "2025-09",
+      "totalWage": 3037980,
+      "createdAt": "2026-01-31T04:43:45.499Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834624917-65-2025-09",
+      "employmentId": "emp-bupyeong-1769834624917-65",
+      "yearMonth": "2025-09",
+      "totalWage": 3546880,
+      "createdAt": "2026-01-31T04:43:45.499Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834624917-66-2025-09",
+      "employmentId": "emp-bupyeong-1769834624917-66",
+      "yearMonth": "2025-09",
+      "totalWage": 2946830,
+      "createdAt": "2026-01-31T04:43:45.499Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834624917-67-2025-09",
+      "employmentId": "emp-bupyeong-1769834624917-67",
+      "yearMonth": "2025-09",
+      "totalWage": 3110130,
+      "createdAt": "2026-01-31T04:43:45.499Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834624917-68-2025-09",
+      "employmentId": "emp-bupyeong-1769834624917-68",
+      "yearMonth": "2025-09",
+      "totalWage": 3037980,
+      "createdAt": "2026-01-31T04:43:45.499Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834624917-69-2025-09",
+      "employmentId": "emp-bupyeong-1769834624917-69",
+      "yearMonth": "2025-09",
+      "totalWage": 2946830,
+      "createdAt": "2026-01-31T04:43:45.499Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834624917-70-2025-09",
+      "employmentId": "emp-bupyeong-1769834624917-70",
+      "yearMonth": "2025-09",
+      "totalWage": 2946830,
+      "createdAt": "2026-01-31T04:43:45.499Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834625499-72-2025-09",
+      "employmentId": "emp-bupyeong-1769834625499-72",
+      "yearMonth": "2025-09",
+      "totalWage": 2863350,
+      "createdAt": "2026-01-31T04:43:45.499Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834622030-57-2025-09",
+      "employmentId": "emp-bupyeong-1769834622030-57",
+      "yearMonth": "2025-09",
+      "totalWage": 2788270,
+      "createdAt": "2026-01-31T04:43:45.499Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834625499-73-2025-09",
+      "employmentId": "emp-bupyeong-1769834625499-73",
+      "yearMonth": "2025-09",
+      "totalWage": 2394240,
+      "createdAt": "2026-01-31T04:43:45.499Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834625499-74-2025-09",
+      "employmentId": "emp-bupyeong-1769834625499-74",
+      "yearMonth": "2025-09",
+      "totalWage": 2257140,
+      "createdAt": "2026-01-31T04:43:45.499Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834625499-75-2025-09",
+      "employmentId": "emp-bupyeong-1769834625499-75",
+      "yearMonth": "2025-09",
+      "totalWage": 1651210,
+      "createdAt": "2026-01-31T04:43:45.499Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834625499-76-2025-09",
+      "employmentId": "emp-bupyeong-1769834625499-76",
+      "yearMonth": "2025-09",
+      "totalWage": 1728680,
+      "createdAt": "2026-01-31T04:43:45.499Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834625500-77-2025-09",
+      "employmentId": "emp-bupyeong-1769834625500-77",
+      "yearMonth": "2025-09",
+      "totalWage": 981090,
+      "createdAt": "2026-01-31T04:43:45.500Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834625500-78-2025-09",
+      "employmentId": "emp-bupyeong-1769834625500-78",
+      "yearMonth": "2025-09",
+      "totalWage": 951360,
+      "createdAt": "2026-01-31T04:43:45.500Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593534-1-2025-10",
+      "employmentId": "emp-bupyeong-1769834593534-1",
+      "yearMonth": "2025-10",
+      "totalWage": 3229080322580645,
+      "createdAt": "2026-01-31T04:43:46.070Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593534-2-2025-10",
+      "employmentId": "emp-bupyeong-1769834593534-2",
+      "yearMonth": "2025-10",
+      "totalWage": 3560500,
+      "createdAt": "2026-01-31T04:43:46.070Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593534-4-2025-10",
+      "employmentId": "emp-bupyeong-1769834593534-4",
+      "yearMonth": "2025-10",
+      "totalWage": 2982717419354839,
+      "createdAt": "2026-01-31T04:43:46.070Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-6-2025-10",
+      "employmentId": "emp-bupyeong-1769834593535-6",
+      "yearMonth": "2025-10",
+      "totalWage": 3018015806451613,
+      "createdAt": "2026-01-31T04:43:46.070Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-10-2025-10",
+      "employmentId": "emp-bupyeong-1769834593535-10",
+      "yearMonth": "2025-10",
+      "totalWage": 30229032258064510,
+      "createdAt": "2026-01-31T04:43:46.070Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-12-2025-10",
+      "employmentId": "emp-bupyeong-1769834593535-12",
+      "yearMonth": "2025-10",
+      "totalWage": 2953707419354839,
+      "createdAt": "2026-01-31T04:43:46.070Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-13-2025-10",
+      "employmentId": "emp-bupyeong-1769834593535-13",
+      "yearMonth": "2025-10",
+      "totalWage": 31133448387096776,
+      "createdAt": "2026-01-31T04:43:46.070Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-14-2025-10",
+      "employmentId": "emp-bupyeong-1769834593535-14",
+      "yearMonth": "2025-10",
+      "totalWage": 3049230,
+      "createdAt": "2026-01-31T04:43:46.070Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-15-2025-10",
+      "employmentId": "emp-bupyeong-1769834593535-15",
+      "yearMonth": "2025-10",
+      "totalWage": 1583890,
+      "createdAt": "2026-01-31T04:43:46.070Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-18-2025-10",
+      "employmentId": "emp-bupyeong-1769834593535-18",
+      "yearMonth": "2025-10",
+      "totalWage": 21001835483870970,
+      "createdAt": "2026-01-31T04:43:46.070Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-19-2025-10",
+      "employmentId": "emp-bupyeong-1769834593535-19",
+      "yearMonth": "2025-10",
+      "totalWage": 29089616129032256,
+      "createdAt": "2026-01-31T04:43:46.071Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-21-2025-10",
+      "employmentId": "emp-bupyeong-1769834593535-21",
+      "yearMonth": "2025-10",
+      "totalWage": 3022630,
+      "createdAt": "2026-01-31T04:43:46.071Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-24-2025-10",
+      "employmentId": "emp-bupyeong-1769834593535-24",
+      "yearMonth": "2025-10",
+      "totalWage": 2476500,
+      "createdAt": "2026-01-31T04:43:46.071Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-28-2025-10",
+      "employmentId": "emp-bupyeong-1769834593535-28",
+      "yearMonth": "2025-10",
+      "totalWage": 3058627419354839,
+      "createdAt": "2026-01-31T04:43:46.071Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834594005-53-2025-10",
+      "employmentId": "emp-bupyeong-1769834594005-53",
+      "yearMonth": "2025-10",
+      "totalWage": 3058627419354839,
+      "createdAt": "2026-01-31T04:43:46.071Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834594005-54-2025-10",
+      "employmentId": "emp-bupyeong-1769834594005-54",
+      "yearMonth": "2025-10",
+      "totalWage": 29795616129032256,
+      "createdAt": "2026-01-31T04:43:46.071Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834622030-55-2025-10",
+      "employmentId": "emp-bupyeong-1769834622030-55",
+      "yearMonth": "2025-10",
+      "totalWage": 29979116129032256,
+      "createdAt": "2026-01-31T04:43:46.071Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834622626-59-2025-10",
+      "employmentId": "emp-bupyeong-1769834622626-59",
+      "yearMonth": "2025-10",
+      "totalWage": 3058627419354839,
+      "createdAt": "2026-01-31T04:43:46.071Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834623614-61-2025-10",
+      "employmentId": "emp-bupyeong-1769834623614-61",
+      "yearMonth": "2025-10",
+      "totalWage": 3000000,
+      "createdAt": "2026-01-31T04:43:46.071Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834624160-62-2025-10",
+      "employmentId": "emp-bupyeong-1769834624160-62",
+      "yearMonth": "2025-10",
+      "totalWage": 29979116129032256,
+      "createdAt": "2026-01-31T04:43:46.071Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834624161-64-2025-10",
+      "employmentId": "emp-bupyeong-1769834624161-64",
+      "yearMonth": "2025-10",
+      "totalWage": 29979116129032256,
+      "createdAt": "2026-01-31T04:43:46.071Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834624917-65-2025-10",
+      "employmentId": "emp-bupyeong-1769834624917-65",
+      "yearMonth": "2025-10",
+      "totalWage": 3700949677419355,
+      "createdAt": "2026-01-31T04:43:46.071Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834624917-66-2025-10",
+      "employmentId": "emp-bupyeong-1769834624917-66",
+      "yearMonth": "2025-10",
+      "totalWage": 29979116129032256,
+      "createdAt": "2026-01-31T04:43:46.071Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834624917-67-2025-10",
+      "employmentId": "emp-bupyeong-1769834624917-67",
+      "yearMonth": "2025-10",
+      "totalWage": 2609550,
+      "createdAt": "2026-01-31T04:43:46.071Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834624917-68-2025-10",
+      "employmentId": "emp-bupyeong-1769834624917-68",
+      "yearMonth": "2025-10",
+      "totalWage": 2910130,
+      "createdAt": "2026-01-31T04:43:46.071Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834624917-69-2025-10",
+      "employmentId": "emp-bupyeong-1769834624917-69",
+      "yearMonth": "2025-10",
+      "totalWage": 29979116129032256,
+      "createdAt": "2026-01-31T04:43:46.071Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834624917-70-2025-10",
+      "employmentId": "emp-bupyeong-1769834624917-70",
+      "yearMonth": "2025-10",
+      "totalWage": 2910130,
+      "createdAt": "2026-01-31T04:43:46.071Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834625499-72-2025-10",
+      "employmentId": "emp-bupyeong-1769834625499-72",
+      "yearMonth": "2025-10",
+      "totalWage": 2913205806451613,
+      "createdAt": "2026-01-31T04:43:46.071Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834622030-57-2025-10",
+      "employmentId": "emp-bupyeong-1769834622030-57",
+      "yearMonth": "2025-10",
+      "totalWage": 30303616129032256,
+      "createdAt": "2026-01-31T04:43:46.071Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834625499-73-2025-10",
+      "employmentId": "emp-bupyeong-1769834625499-73",
+      "yearMonth": "2025-10",
+      "totalWage": 2913205806451613,
+      "createdAt": "2026-01-31T04:43:46.071Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834625499-74-2025-10",
+      "employmentId": "emp-bupyeong-1769834625499-74",
+      "yearMonth": "2025-10",
+      "totalWage": 29979116129032256,
+      "createdAt": "2026-01-31T04:43:46.071Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834625499-75-2025-10",
+      "employmentId": "emp-bupyeong-1769834625499-75",
+      "yearMonth": "2025-10",
+      "totalWage": 34430990322580644,
+      "createdAt": "2026-01-31T04:43:46.072Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834625500-77-2025-10",
+      "employmentId": "emp-bupyeong-1769834625500-77",
+      "yearMonth": "2025-10",
+      "totalWage": 1528920,
+      "createdAt": "2026-01-31T04:43:46.072Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834625500-78-2025-10",
+      "employmentId": "emp-bupyeong-1769834625500-78",
+      "yearMonth": "2025-10",
+      "totalWage": 2913205806451613,
+      "createdAt": "2026-01-31T04:43:46.072Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834626072-79-2025-10",
+      "employmentId": "emp-bupyeong-1769834626072-79",
+      "yearMonth": "2025-10",
+      "totalWage": 22877316129032256,
+      "createdAt": "2026-01-31T04:43:46.072Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834626072-80-2025-10",
+      "employmentId": "emp-bupyeong-1769834626072-80",
+      "yearMonth": "2025-10",
+      "totalWage": 30679716129032256,
+      "createdAt": "2026-01-31T04:43:46.072Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593534-1-2025-11",
+      "employmentId": "emp-bupyeong-1769834593534-1",
+      "yearMonth": "2025-11",
+      "totalWage": 33289633333333336,
+      "createdAt": "2026-01-31T04:43:46.649Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593534-2-2025-11",
+      "employmentId": "emp-bupyeong-1769834593534-2",
+      "yearMonth": "2025-11",
+      "totalWage": 2371580,
+      "createdAt": "2026-01-31T04:43:46.649Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593534-4-2025-11",
+      "employmentId": "emp-bupyeong-1769834593534-4",
+      "yearMonth": "2025-11",
+      "totalWage": 30469033333333336,
+      "createdAt": "2026-01-31T04:43:46.649Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-6-2025-11",
+      "employmentId": "emp-bupyeong-1769834593535-6",
+      "yearMonth": "2025-11",
+      "totalWage": 3118980,
+      "createdAt": "2026-01-31T04:43:46.649Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-10-2025-11",
+      "employmentId": "emp-bupyeong-1769834593535-10",
+      "yearMonth": "2025-11",
+      "totalWage": 3030120,
+      "createdAt": "2026-01-31T04:43:46.649Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-12-2025-11",
+      "employmentId": "emp-bupyeong-1769834593535-12",
+      "yearMonth": "2025-11",
+      "totalWage": 2962730,
+      "createdAt": "2026-01-31T04:43:46.649Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-13-2025-11",
+      "employmentId": "emp-bupyeong-1769834593535-13",
+      "yearMonth": "2025-11",
+      "totalWage": 3181420,
+      "createdAt": "2026-01-31T04:43:46.649Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-14-2025-11",
+      "employmentId": "emp-bupyeong-1769834593535-14",
+      "yearMonth": "2025-11",
+      "totalWage": 3209160,
+      "createdAt": "2026-01-31T04:43:46.649Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-15-2025-11",
+      "employmentId": "emp-bupyeong-1769834593535-15",
+      "yearMonth": "2025-11",
+      "totalWage": 3027830,
+      "createdAt": "2026-01-31T04:43:46.649Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-18-2025-11",
+      "employmentId": "emp-bupyeong-1769834593535-18",
+      "yearMonth": "2025-11",
+      "totalWage": 21195466666666664,
+      "createdAt": "2026-01-31T04:43:46.649Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-19-2025-11",
+      "employmentId": "emp-bupyeong-1769834593535-19",
+      "yearMonth": "2025-11",
+      "totalWage": 3055850,
+      "createdAt": "2026-01-31T04:43:46.649Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-21-2025-11",
+      "employmentId": "emp-bupyeong-1769834593535-21",
+      "yearMonth": "2025-11",
+      "totalWage": 3057530,
+      "createdAt": "2026-01-31T04:43:46.649Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-24-2025-11",
+      "employmentId": "emp-bupyeong-1769834593535-24",
+      "yearMonth": "2025-11",
+      "totalWage": 31228133333333336,
+      "createdAt": "2026-01-31T04:43:46.649Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-28-2025-11",
+      "employmentId": "emp-bupyeong-1769834593535-28",
+      "yearMonth": "2025-11",
+      "totalWage": 3028470,
+      "createdAt": "2026-01-31T04:43:46.649Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834594005-53-2025-11",
+      "employmentId": "emp-bupyeong-1769834594005-53",
+      "yearMonth": "2025-11",
+      "totalWage": 32144466666666664,
+      "createdAt": "2026-01-31T04:43:46.649Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834594005-54-2025-11",
+      "employmentId": "emp-bupyeong-1769834594005-54",
+      "yearMonth": "2025-11",
+      "totalWage": 3082230,
+      "createdAt": "2026-01-31T04:43:46.649Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834622030-55-2025-11",
+      "employmentId": "emp-bupyeong-1769834622030-55",
+      "yearMonth": "2025-11",
+      "totalWage": 2946830,
+      "createdAt": "2026-01-31T04:43:46.649Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834622626-59-2025-11",
+      "employmentId": "emp-bupyeong-1769834622626-59",
+      "yearMonth": "2025-11",
+      "totalWage": 31228133333333336,
+      "createdAt": "2026-01-31T04:43:46.649Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834623614-61-2025-11",
+      "employmentId": "emp-bupyeong-1769834623614-61",
+      "yearMonth": "2025-11",
+      "totalWage": 3000000,
+      "createdAt": "2026-01-31T04:43:46.649Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834624160-62-2025-11",
+      "employmentId": "emp-bupyeong-1769834624160-62",
+      "yearMonth": "2025-11",
+      "totalWage": 3037980,
+      "createdAt": "2026-01-31T04:43:46.650Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834624161-64-2025-11",
+      "employmentId": "emp-bupyeong-1769834624161-64",
+      "yearMonth": "2025-11",
+      "totalWage": 3037980,
+      "createdAt": "2026-01-31T04:43:46.650Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834624917-65-2025-11",
+      "employmentId": "emp-bupyeong-1769834624917-65",
+      "yearMonth": "2025-11",
+      "totalWage": 4094330,
+      "createdAt": "2026-01-31T04:43:46.650Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834624917-66-2025-11",
+      "employmentId": "emp-bupyeong-1769834624917-66",
+      "yearMonth": "2025-11",
+      "totalWage": 3037980,
+      "createdAt": "2026-01-31T04:43:46.650Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834624917-67-2025-11",
+      "employmentId": "emp-bupyeong-1769834624917-67",
+      "yearMonth": "2025-11",
+      "totalWage": 32076066666666664,
+      "createdAt": "2026-01-31T04:43:46.650Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834624917-68-2025-11",
+      "employmentId": "emp-bupyeong-1769834624917-68",
+      "yearMonth": "2025-11",
+      "totalWage": 860460,
+      "createdAt": "2026-01-31T04:43:46.650Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834624917-69-2025-11",
+      "employmentId": "emp-bupyeong-1769834624917-69",
+      "yearMonth": "2025-11",
+      "totalWage": 2946830,
+      "createdAt": "2026-01-31T04:43:46.650Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834624917-70-2025-11",
+      "employmentId": "emp-bupyeong-1769834624917-70",
+      "yearMonth": "2025-11",
+      "totalWage": 2946830,
+      "createdAt": "2026-01-31T04:43:46.650Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834625499-72-2025-11",
+      "employmentId": "emp-bupyeong-1769834625499-72",
+      "yearMonth": "2025-11",
+      "totalWage": 29531666666666664,
+      "createdAt": "2026-01-31T04:43:46.650Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834622030-57-2025-11",
+      "employmentId": "emp-bupyeong-1769834622030-57",
+      "yearMonth": "2025-11",
+      "totalWage": 3023940,
+      "createdAt": "2026-01-31T04:43:46.650Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834625499-73-2025-11",
+      "employmentId": "emp-bupyeong-1769834625499-73",
+      "yearMonth": "2025-11",
+      "totalWage": 29531666666666664,
+      "createdAt": "2026-01-31T04:43:46.650Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834625499-74-2025-11",
+      "employmentId": "emp-bupyeong-1769834625499-74",
+      "yearMonth": "2025-11",
+      "totalWage": 3161780,
+      "createdAt": "2026-01-31T04:43:46.650Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834625500-78-2025-11",
+      "employmentId": "emp-bupyeong-1769834625500-78",
+      "yearMonth": "2025-11",
+      "totalWage": 30411533333333336,
+      "createdAt": "2026-01-31T04:43:46.650Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834626072-79-2025-11",
+      "employmentId": "emp-bupyeong-1769834626072-79",
+      "yearMonth": "2025-11",
+      "totalWage": 3126450,
+      "createdAt": "2026-01-31T04:43:46.650Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834626072-80-2025-11",
+      "employmentId": "emp-bupyeong-1769834626072-80",
+      "yearMonth": "2025-11",
+      "totalWage": 2946830,
+      "createdAt": "2026-01-31T04:43:46.650Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834626650-81-2025-11",
+      "employmentId": "emp-bupyeong-1769834626650-81",
+      "yearMonth": "2025-11",
+      "totalWage": 1744160,
+      "createdAt": "2026-01-31T04:43:46.650Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834626650-82-2025-11",
+      "employmentId": "emp-bupyeong-1769834626650-82",
+      "yearMonth": "2025-11",
+      "totalWage": 2636060,
+      "createdAt": "2026-01-31T04:43:46.650Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593534-1-2025-12",
+      "employmentId": "emp-bupyeong-1769834593534-1",
+      "yearMonth": "2025-12",
+      "totalWage": 2185050,
+      "createdAt": "2026-01-31T04:43:47.285Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593534-2-2025-12",
+      "employmentId": "emp-bupyeong-1769834593534-2",
+      "yearMonth": "2025-12",
+      "totalWage": 37299845161290330,
+      "createdAt": "2026-01-31T04:43:47.285Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593534-4-2025-12",
+      "employmentId": "emp-bupyeong-1769834593534-4",
+      "yearMonth": "2025-12",
+      "totalWage": 3087486129032258,
+      "createdAt": "2026-01-31T04:43:47.285Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-6-2025-12",
+      "employmentId": "emp-bupyeong-1769834593535-6",
+      "yearMonth": "2025-12",
+      "totalWage": 3160847419354839,
+      "createdAt": "2026-01-31T04:43:47.285Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-10-2025-12",
+      "employmentId": "emp-bupyeong-1769834593535-10",
+      "yearMonth": "2025-12",
+      "totalWage": 31696548387096776,
+      "createdAt": "2026-01-31T04:43:47.285Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-12-2025-12",
+      "employmentId": "emp-bupyeong-1769834593535-12",
+      "yearMonth": "2025-12",
+      "totalWage": 31839248387096776,
+      "createdAt": "2026-01-31T04:43:47.285Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-13-2025-12",
+      "employmentId": "emp-bupyeong-1769834593535-13",
+      "yearMonth": "2025-12",
+      "totalWage": 31133448387096776,
+      "createdAt": "2026-01-31T04:43:47.285Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-14-2025-12",
+      "employmentId": "emp-bupyeong-1769834593535-14",
+      "yearMonth": "2025-12",
+      "totalWage": 3342972580645161,
+      "createdAt": "2026-01-31T04:43:47.285Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-15-2025-12",
+      "employmentId": "emp-bupyeong-1769834593535-15",
+      "yearMonth": "2025-12",
+      "totalWage": 3073065806451613,
+      "createdAt": "2026-01-31T04:43:47.286Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-18-2025-12",
+      "employmentId": "emp-bupyeong-1769834593535-18",
+      "yearMonth": "2025-12",
+      "totalWage": 20833267741935490,
+      "createdAt": "2026-01-31T04:43:47.286Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-19-2025-12",
+      "employmentId": "emp-bupyeong-1769834593535-19",
+      "yearMonth": "2025-12",
+      "totalWage": 3004648709677419,
+      "createdAt": "2026-01-31T04:43:47.286Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-21-2025-12",
+      "employmentId": "emp-bupyeong-1769834593535-21",
+      "yearMonth": "2025-12",
+      "totalWage": 3103235806451613,
+      "createdAt": "2026-01-31T04:43:47.286Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-24-2025-12",
+      "employmentId": "emp-bupyeong-1769834593535-24",
+      "yearMonth": "2025-12",
+      "totalWage": 3075248709677419,
+      "createdAt": "2026-01-31T04:43:47.286Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834593535-28-2025-12",
+      "employmentId": "emp-bupyeong-1769834593535-28",
+      "yearMonth": "2025-12",
+      "totalWage": 3163396129032258,
+      "createdAt": "2026-01-31T04:43:47.286Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834594005-53-2025-12",
+      "employmentId": "emp-bupyeong-1769834594005-53",
+      "yearMonth": "2025-12",
+      "totalWage": 3075248709677419,
+      "createdAt": "2026-01-31T04:43:47.286Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834594005-54-2025-12",
+      "employmentId": "emp-bupyeong-1769834594005-54",
+      "yearMonth": "2025-12",
+      "totalWage": 3009460,
+      "createdAt": "2026-01-31T04:43:47.286Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834622030-55-2025-12",
+      "employmentId": "emp-bupyeong-1769834622030-55",
+      "yearMonth": "2025-12",
+      "totalWage": 2992065806451613,
+      "createdAt": "2026-01-31T04:43:47.286Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834622626-59-2025-12",
+      "employmentId": "emp-bupyeong-1769834622626-59",
+      "yearMonth": "2025-12",
+      "totalWage": 3163396129032258,
+      "createdAt": "2026-01-31T04:43:47.286Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834623614-61-2025-12",
+      "employmentId": "emp-bupyeong-1769834623614-61",
+      "yearMonth": "2025-12",
+      "totalWage": 3000000,
+      "createdAt": "2026-01-31T04:43:47.287Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834624160-62-2025-12",
+      "employmentId": "emp-bupyeong-1769834624160-62",
+      "yearMonth": "2025-12",
+      "totalWage": 2992065806451613,
+      "createdAt": "2026-01-31T04:43:47.287Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834624161-64-2025-12",
+      "employmentId": "emp-bupyeong-1769834624161-64",
+      "yearMonth": "2025-12",
+      "totalWage": 2992065806451613,
+      "createdAt": "2026-01-31T04:43:47.287Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834624917-65-2025-12",
+      "employmentId": "emp-bupyeong-1769834624917-65",
+      "yearMonth": "2025-12",
+      "totalWage": 3824204193548387,
+      "createdAt": "2026-01-31T04:43:47.287Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834624917-66-2025-12",
+      "employmentId": "emp-bupyeong-1769834624917-66",
+      "yearMonth": "2025-12",
+      "totalWage": 2992065806451613,
+      "createdAt": "2026-01-31T04:43:47.287Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834624917-67-2025-12",
+      "employmentId": "emp-bupyeong-1769834624917-67",
+      "yearMonth": "2025-12",
+      "totalWage": 2710550,
+      "createdAt": "2026-01-31T04:43:47.287Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834624917-69-2025-12",
+      "employmentId": "emp-bupyeong-1769834624917-69",
+      "yearMonth": "2025-12",
+      "totalWage": 2992065806451613,
+      "createdAt": "2026-01-31T04:43:47.287Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834624917-70-2025-12",
+      "employmentId": "emp-bupyeong-1769834624917-70",
+      "yearMonth": "2025-12",
+      "totalWage": 2992065806451613,
+      "createdAt": "2026-01-31T04:43:47.287Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834625499-72-2025-12",
+      "employmentId": "emp-bupyeong-1769834625499-72",
+      "yearMonth": "2025-12",
+      "totalWage": 29086929032258064,
+      "createdAt": "2026-01-31T04:43:47.287Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834622030-57-2025-12",
+      "employmentId": "emp-bupyeong-1769834622030-57",
+      "yearMonth": "2025-12",
+      "totalWage": 30652716129032256,
+      "createdAt": "2026-01-31T04:43:47.287Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834625499-73-2025-12",
+      "employmentId": "emp-bupyeong-1769834625499-73",
+      "yearMonth": "2025-12",
+      "totalWage": 29086929032258064,
+      "createdAt": "2026-01-31T04:43:47.287Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834625500-78-2025-12",
+      "employmentId": "emp-bupyeong-1769834625500-78",
+      "yearMonth": "2025-12",
+      "totalWage": 2993598709677419,
+      "createdAt": "2026-01-31T04:43:47.287Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834626072-79-2025-12",
+      "employmentId": "emp-bupyeong-1769834626072-79",
+      "yearMonth": "2025-12",
+      "totalWage": 3079847419354839,
+      "createdAt": "2026-01-31T04:43:47.287Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834626072-80-2025-12",
+      "employmentId": "emp-bupyeong-1769834626072-80",
+      "yearMonth": "2025-12",
+      "totalWage": 2992065806451613,
+      "createdAt": "2026-01-31T04:43:47.287Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834627287-83-2025-12",
+      "employmentId": "emp-bupyeong-1769834627287-83",
+      "yearMonth": "2025-12",
+      "totalWage": 2956040,
+      "createdAt": "2026-01-31T04:43:47.288Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834627288-84-2025-12",
+      "employmentId": "emp-bupyeong-1769834627288-84",
+      "yearMonth": "2025-12",
+      "totalWage": 2992065806451613,
+      "createdAt": "2026-01-31T04:43:47.288Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834627288-85-2025-12",
+      "employmentId": "emp-bupyeong-1769834627288-85",
+      "yearMonth": "2025-12",
+      "totalWage": 23680129032258064,
+      "createdAt": "2026-01-31T04:43:47.288Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834627288-86-2025-12",
+      "employmentId": "emp-bupyeong-1769834627288-86",
+      "yearMonth": "2025-12",
+      "totalWage": 2373615806451613,
+      "createdAt": "2026-01-31T04:43:47.288Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834627288-87-2025-12",
+      "employmentId": "emp-bupyeong-1769834627288-87",
+      "yearMonth": "2025-12",
+      "totalWage": 959050,
+      "createdAt": "2026-01-31T04:43:47.288Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834627288-88-2025-12",
+      "employmentId": "emp-bupyeong-1769834627288-88",
+      "yearMonth": "2025-12",
+      "totalWage": 10727529032258064,
+      "createdAt": "2026-01-31T04:43:47.288Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834627288-89-2025-12",
+      "employmentId": "emp-bupyeong-1769834627288-89",
+      "yearMonth": "2025-12",
+      "totalWage": 1270770322580645,
+      "createdAt": "2026-01-31T04:43:47.288Z"
+    },
+    {
+      "id": "mw-emp-bupyeong-1769834627288-90-2025-12",
+      "employmentId": "emp-bupyeong-1769834627288-90",
+      "yearMonth": "2025-12",
+      "totalWage": 9510516129032258,
+      "createdAt": "2026-01-31T04:43:47.288Z"
+    }
+  ]
+}

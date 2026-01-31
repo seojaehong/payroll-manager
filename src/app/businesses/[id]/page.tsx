@@ -17,13 +17,58 @@ export default function BusinessDetailPage() {
 
   const {
     businesses, workers, employments, monthlyWages, reports, excelMappings,
-    addWorker, addEmployment, addMonthlyWages, addReport,
+    addWorker, addEmployment, addMonthlyWages, addReport, updateBusiness,
   } = useStore();
 
   const [activeTab, setActiveTab] = useState<TabType>('workers');
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear() - 1);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editForm, setEditForm] = useState({
+    name: '',
+    bizNo: '',
+    gwanriNo: '',
+    gyGwanriNo: '',
+    sjGwanriNo: '',
+    npsGwanriNo: '',
+    nhicGwanriNo: '',
+    address: '',
+    tel: '',
+    defaultJikjong: '532',
+    defaultWorkHours: 40,
+  });
 
   const business = businesses.find((b) => b.id === businessId);
+
+  // 수정 모드 시작
+  const handleEdit = useCallback(() => {
+    if (business) {
+      setEditForm({
+        name: business.name,
+        bizNo: business.bizNo,
+        gwanriNo: business.gwanriNo || '',
+        gyGwanriNo: business.gyGwanriNo || '',
+        sjGwanriNo: business.sjGwanriNo || '',
+        npsGwanriNo: business.npsGwanriNo || '',
+        nhicGwanriNo: business.nhicGwanriNo || '',
+        address: business.address || '',
+        tel: business.tel || '',
+        defaultJikjong: business.defaultJikjong || '532',
+        defaultWorkHours: business.defaultWorkHours || 40,
+      });
+      setIsEditing(true);
+    }
+  }, [business]);
+
+  // 수정 저장
+  const handleSave = useCallback(() => {
+    if (business) {
+      updateBusiness(business.id, {
+        ...editForm,
+        updatedAt: new Date(),
+      });
+      setIsEditing(false);
+    }
+  }, [business, editForm, updateBusiness]);
 
   // 해당 사업장 근로자
   const businessEmployments = useMemo(() => {
@@ -58,15 +103,147 @@ export default function BusinessDetailPage() {
   return (
     <div>
       {/* 헤더 */}
-      <div className="flex items-center gap-4 mb-6">
-        <button onClick={() => router.push('/')} className="text-white/50 hover:text-white">
-          ← 대시보드
-        </button>
-        <div>
-          <h1 className="text-3xl font-semibold text-white">{business.name}</h1>
-          <p className="text-white/40">{business.bizNo} | 관리번호: {business.gwanriNo || '-'}</p>
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-4">
+          <button onClick={() => router.push('/')} className="text-white/50 hover:text-white">
+            ← 대시보드
+          </button>
+          <div>
+            <h1 className="text-3xl font-semibold text-white">{business.name}</h1>
+            <p className="text-white/40">{business.bizNo} | 관리번호: {business.gwanriNo || '-'}</p>
+          </div>
         </div>
+        <button
+          onClick={handleEdit}
+          className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-white/80 transition-all"
+        >
+          수정
+        </button>
       </div>
+
+      {/* 수정 모달 */}
+      {isEditing && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="glass p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <h2 className="text-xl font-semibold text-white mb-4">사업장 정보 수정</h2>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-white/60 text-sm mb-1">사업장명</label>
+                <input
+                  type="text"
+                  value={editForm.name}
+                  onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                  className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white"
+                />
+              </div>
+              <div>
+                <label className="block text-white/60 text-sm mb-1">사업자번호</label>
+                <input
+                  type="text"
+                  value={editForm.bizNo}
+                  onChange={(e) => setEditForm({ ...editForm, bizNo: e.target.value })}
+                  className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white"
+                />
+              </div>
+              <div>
+                <label className="block text-white/60 text-sm mb-1">관리번호</label>
+                <input
+                  type="text"
+                  value={editForm.gwanriNo}
+                  onChange={(e) => setEditForm({ ...editForm, gwanriNo: e.target.value })}
+                  className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white"
+                />
+              </div>
+              <div>
+                <label className="block text-white/60 text-sm mb-1">고용보험 관리번호</label>
+                <input
+                  type="text"
+                  value={editForm.gyGwanriNo}
+                  onChange={(e) => setEditForm({ ...editForm, gyGwanriNo: e.target.value })}
+                  className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white"
+                />
+              </div>
+              <div>
+                <label className="block text-white/60 text-sm mb-1">산재보험 관리번호</label>
+                <input
+                  type="text"
+                  value={editForm.sjGwanriNo}
+                  onChange={(e) => setEditForm({ ...editForm, sjGwanriNo: e.target.value })}
+                  className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white"
+                />
+              </div>
+              <div>
+                <label className="block text-white/60 text-sm mb-1">국민연금 관리번호</label>
+                <input
+                  type="text"
+                  value={editForm.npsGwanriNo}
+                  onChange={(e) => setEditForm({ ...editForm, npsGwanriNo: e.target.value })}
+                  className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white"
+                />
+              </div>
+              <div>
+                <label className="block text-white/60 text-sm mb-1">건강보험 관리번호</label>
+                <input
+                  type="text"
+                  value={editForm.nhicGwanriNo}
+                  onChange={(e) => setEditForm({ ...editForm, nhicGwanriNo: e.target.value })}
+                  className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white"
+                />
+              </div>
+              <div>
+                <label className="block text-white/60 text-sm mb-1">기본 직종코드</label>
+                <input
+                  type="text"
+                  value={editForm.defaultJikjong}
+                  onChange={(e) => setEditForm({ ...editForm, defaultJikjong: e.target.value })}
+                  className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white"
+                />
+              </div>
+              <div className="col-span-2">
+                <label className="block text-white/60 text-sm mb-1">주소</label>
+                <input
+                  type="text"
+                  value={editForm.address}
+                  onChange={(e) => setEditForm({ ...editForm, address: e.target.value })}
+                  className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white"
+                />
+              </div>
+              <div>
+                <label className="block text-white/60 text-sm mb-1">전화번호</label>
+                <input
+                  type="text"
+                  value={editForm.tel}
+                  onChange={(e) => setEditForm({ ...editForm, tel: e.target.value })}
+                  className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white"
+                />
+              </div>
+              <div>
+                <label className="block text-white/60 text-sm mb-1">기본 근무시간</label>
+                <input
+                  type="number"
+                  value={editForm.defaultWorkHours}
+                  onChange={(e) => setEditForm({ ...editForm, defaultWorkHours: parseInt(e.target.value) || 40 })}
+                  className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white"
+                />
+              </div>
+            </div>
+            <div className="flex justify-end gap-3 mt-6">
+              <button
+                onClick={() => setIsEditing(false)}
+                className="px-4 py-2 text-white/60 hover:text-white transition-all"
+              >
+                취소
+              </button>
+              <button
+                onClick={handleSave}
+                className="px-6 py-2 bg-blue-500 hover:bg-blue-600 rounded-lg text-white transition-all"
+              >
+                저장
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* 통계 요약 */}
       <div className="grid grid-cols-4 gap-4 mb-6">
@@ -247,7 +424,15 @@ function WagesTab({
   workers: Worker[];
 }) {
   const [importMonth, setImportMonth] = useState('');
-  const [importPreview, setImportPreview] = useState<{ name: string; residentNo: string; wage: number; matched: boolean; duplicate: boolean }[]>([]);
+  const [importPreview, setImportPreview] = useState<{
+    name: string;
+    residentNo: string;
+    wage: number;
+    matched: boolean;
+    duplicate: boolean;
+    oldWage?: number;
+    diff?: number;
+  }[]>([]);
 
   const months = Array.from({ length: 12 }, (_, i) => `${selectedYear}-${String(i + 1).padStart(2, '0')}`);
 
@@ -330,10 +515,12 @@ function WagesTab({
             ? businessEmployments.find(({ worker }) => worker.id === matchedWorker.id)
             : null;
 
-          // 중복 체크
-          const isDuplicate = matchedEmp
-            ? !!monthlyWages.find((mw) => mw.employmentId === matchedEmp.employment.id && mw.yearMonth === importMonth)
-            : false;
+          // 중복 체크 및 기존 급여 조회
+          const existingWage = matchedEmp
+            ? monthlyWages.find((mw) => mw.employmentId === matchedEmp.employment.id && mw.yearMonth === importMonth)
+            : null;
+          const isDuplicate = !!existingWage;
+          const oldWage = existingWage?.totalWage;
 
           preview.push({
             name,
@@ -341,6 +528,8 @@ function WagesTab({
             wage,
             matched: !!matchedEmp,
             duplicate: isDuplicate,
+            oldWage,
+            diff: isDuplicate && oldWage !== undefined ? wage - oldWage : undefined,
           });
         }
       }
@@ -361,7 +550,15 @@ function WagesTab({
 
     const duplicates = importPreview.filter((p) => p.duplicate && p.matched);
     if (duplicates.length > 0) {
-      if (!confirm(`${duplicates.length}건의 기존 데이터가 있습니다. 덮어쓸까요?`)) {
+      const increased = duplicates.filter(d => d.diff && d.diff > 0).length;
+      const decreased = duplicates.filter(d => d.diff && d.diff < 0).length;
+      const unchanged = duplicates.filter(d => d.diff === 0).length;
+      const msg = `${duplicates.length}건의 기존 데이터가 있습니다.\n\n` +
+        `- 증가: ${increased}건\n` +
+        `- 감소: ${decreased}건\n` +
+        `- 변동없음: ${unchanged}건\n\n` +
+        `덮어쓸까요?`;
+      if (!confirm(msg)) {
         return;
       }
     }
@@ -474,31 +671,62 @@ function WagesTab({
         </div>
 
         {importPreview.length > 0 && (
-          <div className="mt-4 max-h-40 overflow-auto">
-            <table className="w-full table-glass text-sm">
-              <thead>
-                <tr>
-                  <th className="px-3 py-2 text-left">이름</th>
-                  <th className="px-3 py-2 text-right">급여</th>
-                  <th className="px-3 py-2 text-center">매칭</th>
-                  <th className="px-3 py-2 text-center">중복</th>
-                </tr>
-              </thead>
-              <tbody>
-                {importPreview.map((row, i) => (
-                  <tr key={i} className={row.matched ? '' : 'opacity-50'}>
-                    <td className="px-3 py-2 text-white">{row.name}</td>
-                    <td className="px-3 py-2 text-right text-white/80">{row.wage.toLocaleString()}</td>
-                    <td className="px-3 py-2 text-center">
-                      {row.matched ? <span className="text-green-400">O</span> : <span className="text-red-400">X</span>}
-                    </td>
-                    <td className="px-3 py-2 text-center">
-                      {row.duplicate && <span className="text-yellow-400">기존</span>}
-                    </td>
+          <div className="mt-4">
+            {/* 변경 요약 */}
+            {importPreview.some(p => p.duplicate) && (
+              <div className="mb-3 p-3 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
+                <p className="text-yellow-400 text-sm font-medium mb-2">
+                  기존 데이터 {importPreview.filter(p => p.duplicate).length}건 발견 - 재업로드 시 변경사항:
+                </p>
+                <div className="flex gap-4 text-xs">
+                  <span className="text-green-400">
+                    증가: {importPreview.filter(p => p.diff && p.diff > 0).length}건
+                  </span>
+                  <span className="text-red-400">
+                    감소: {importPreview.filter(p => p.diff && p.diff < 0).length}건
+                  </span>
+                  <span className="text-white/50">
+                    변동없음: {importPreview.filter(p => p.diff === 0).length}건
+                  </span>
+                </div>
+              </div>
+            )}
+            <div className="max-h-60 overflow-auto">
+              <table className="w-full table-glass text-sm">
+                <thead>
+                  <tr>
+                    <th className="px-3 py-2 text-left">이름</th>
+                    <th className="px-3 py-2 text-right">기존 급여</th>
+                    <th className="px-3 py-2 text-right">새 급여</th>
+                    <th className="px-3 py-2 text-right">변경</th>
+                    <th className="px-3 py-2 text-center">매칭</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {importPreview.map((row, i) => (
+                    <tr key={i} className={row.matched ? '' : 'opacity-50'}>
+                      <td className="px-3 py-2 text-white">{row.name}</td>
+                      <td className="px-3 py-2 text-right text-white/50">
+                        {row.oldWage !== undefined ? row.oldWage.toLocaleString() : '-'}
+                      </td>
+                      <td className="px-3 py-2 text-right text-white/80">{row.wage.toLocaleString()}</td>
+                      <td className="px-3 py-2 text-right">
+                        {row.diff !== undefined ? (
+                          <span className={row.diff > 0 ? 'text-green-400' : row.diff < 0 ? 'text-red-400' : 'text-white/30'}>
+                            {row.diff > 0 ? '+' : ''}{row.diff.toLocaleString()}
+                          </span>
+                        ) : (
+                          <span className="text-blue-400 text-xs">신규</span>
+                        )}
+                      </td>
+                      <td className="px-3 py-2 text-center">
+                        {row.matched ? <span className="text-green-400">O</span> : <span className="text-red-400">X</span>}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
       </div>
