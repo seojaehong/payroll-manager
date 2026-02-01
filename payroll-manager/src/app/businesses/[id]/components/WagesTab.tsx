@@ -71,6 +71,11 @@ export function WagesTab({
   const [importPreview, setImportPreview] = useState<any[]>([]);
   const [showMappingModal, setShowMappingModal] = useState(false);
 
+  // 다중 파일 일괄 업로드
+  const [batchFiles, setBatchFiles] = useState<{ file: File; yearMonth: string }[]>([]);
+  const [batchMode, setBatchMode] = useState(false);
+  const [batchProcessing, setBatchProcessing] = useState(false);
+
   // 공통 훅 사용
   const excel = useExcelImport({ defaultHeaderRow: 4, defaultDataStartRow: 6 });
 
@@ -118,27 +123,147 @@ export function WagesTab({
     return null;
   };
 
-  // 파일 업로드
+  // 파일 업로드 (단일/다중)
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
 
-    // 파일명에서 년월 추출
-    const fileNameMatch = file.name.match(/(\d{4})(\d{2})/);
-    if (fileNameMatch) {
-      setImportMonth(`${fileNameMatch[1]}-${fileNameMatch[2]}`);
+    // 다중 파일인 경우
+    if (files.length > 1) {
+      const batch: { file: File; yearMonth: string }[] = [];
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const match = file.name.match(/(\d{4})[-_]?(\d{2})/);
+        if (match) {
+          batch.push({ file, yearMonth: `${match[1]}-${match[2]}` });
+        }
+      }
+      if (batch.length > 0) {
+        // 년월 순으로 정렬
+        batch.sort((a, b) => a.yearMonth.localeCompare(b.yearMonth));
+        setBatchFiles(batch);
+        setBatchMode(true);
+        // 첫 번째 파일로 매핑 설정
+        excel.handleFileUpload(batch[0].file, () => {
+          loadExistingMapping();
+          setShowMappingModal(true);
+        });
+      } else {
+        alert('파일명에서 년월을 추출할 수 없습니다. (예: 202501_급여.xlsx)');
+      }
+    } else {
+      // 단일 파일
+      const file = files[0];
+      const fileNameMatch = file.name.match(/(\d{4})[-_]?(\d{2})/);
+      if (fileNameMatch) {
+        setImportMonth(`${fileNameMatch[1]}-${fileNameMatch[2]}`);
+      }
+      setBatchMode(false);
+      setBatchFiles([]);
+
+      excel.handleFileUpload(file, (wb, autoSheet) => {
+        const savedSheet = loadExistingMapping();
+        if (savedSheet && wb.SheetNames.includes(savedSheet)) {
+          excel.handleSheetChange(savedSheet);
+        }
+        setShowMappingModal(true);
+      });
     }
 
-    excel.handleFileUpload(file, (wb, autoSheet) => {
-      // 기존 매핑 로드
-      const savedSheet = loadExistingMapping();
-      if (savedSheet && wb.SheetNames.includes(savedSheet)) {
-        excel.handleSheetChange(savedSheet);
-      }
-      setShowMappingModal(true);
-    });
-
     e.target.value = '';
+  };
+
+  // 다중 파일 일괄 처리
+  const executeBatchImport = async () => {
+    if (batchFiles.length === 0) return;
+
+    setBatchProcessing(true);
+    let totalImported = 0;
+
+    for (const { file, yearMonth } of batchFiles) {
+      // 파일 읽기
+      const data = await new Promise<string>((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (e) => resolve(e.target?.result as string);
+        reader.readAsBinaryString(file);
+      });
+
+      const wb = XLSX.read(data, { type: 'binary' });
+      const savedSheet = excelMappings.find((m: any) => m.businessId === businessId)?.sheetName || wb.SheetNames[0];
+      const ws = wb.Sheets[savedSheet];
+      if (!ws) continue;
+
+      const jsonData = XLSX.utils.sheet_to_json(ws, { header: 1 }) as unknown[][];
+      const fm = excel.fieldMapping;
+      const nameIdx = fm.name;
+      const residentNoIdx = fm.residentNo;
+
+      if (nameIdx == null || residentNoIdx == null) continue;
+
+      const newWages: MonthlyWage[] = [];
+
+      for (let i = excel.dataStartRow - 1; i < jsonData.length; i++) {
+        const row = jsonData[i] as any[];
+        if (!row || !row[nameIdx]) continue;
+
+        const name = String(row[nameIdx] || '').trim();
+        let residentNo = String(row[residentNoIdx] || '').replace(/-/g, '').trim();
+        if (residentNo.length < 13 && !isNaN(Number(residentNo))) {
+          residentNo = residentNo.padStart(13, '0');
+        }
+
+        const totalWage = parseExcelNumber(row[fm.totalWage!]) || 0;
+        if (!name || totalWage === 0) continue;
+
+        const matchedWorker = workers.find((w) => w.residentNo === residentNo);
+        if (!matchedWorker) continue;
+
+        const matchedEmp = businessEmployments.find(({ worker }) => worker.id === matchedWorker.id);
+        if (!matchedEmp) continue;
+
+        newWages.push({
+          id: `${matchedEmp.employment.id}-${yearMonth}`,
+          employmentId: matchedEmp.employment.id,
+          yearMonth,
+          totalWage,
+          basicWage: parseExcelNumber(row[fm.basicWage!]),
+          overtimeWeekday: parseExcelNumber(row[fm.overtimeWeekday!]),
+          overtimeWeekend: parseExcelNumber(row[fm.overtimeWeekend!]),
+          nightWage: parseExcelNumber(row[fm.nightWage!]),
+          holidayWage: parseExcelNumber(row[fm.holidayWage!]),
+          annualLeaveWage: parseExcelNumber(row[fm.annualLeaveWage!]),
+          bonusWage: parseExcelNumber(row[fm.bonusWage!]),
+          mealAllowance: parseExcelNumber(row[fm.mealAllowance!]),
+          carAllowance: parseExcelNumber(row[fm.carAllowance!]),
+          otherWage: parseExcelNumber(row[fm.otherWage!]),
+          incomeTax: parseExcelNumber(row[fm.incomeTax!]),
+          localTax: parseExcelNumber(row[fm.localTax!]),
+          nps: parseExcelNumber(row[fm.nps!]),
+          nhic: parseExcelNumber(row[fm.nhic!]),
+          ltc: parseExcelNumber(row[fm.ltc!]),
+          ei: parseExcelNumber(row[fm.ei!]),
+          advancePayment: parseExcelNumber(row[fm.advancePayment!]),
+          otherDeduction: parseExcelNumber(row[fm.otherDeduction!]),
+          totalDeduction: parseExcelNumber(row[fm.totalDeduction!]),
+          netWage: parseExcelNumber(row[fm.netWage!]),
+          workDays: parseExcelNumber(row[fm.workDays!]),
+          deductionDays: parseExcelNumber(row[fm.deductionDays!]),
+          deductionHours: parseExcelNumber(row[fm.deductionHours!]),
+          createdAt: new Date(),
+        });
+      }
+
+      if (newWages.length > 0) {
+        addMonthlyWages(newWages);
+        totalImported += newWages.length;
+      }
+    }
+
+    setBatchProcessing(false);
+    setBatchMode(false);
+    setBatchFiles([]);
+    setShowMappingModal(false);
+    alert(`일괄 임포트 완료! ${batchFiles.length}개 파일, 총 ${totalImported}건 저장`);
   };
 
   // 미리보기 로드
@@ -319,24 +444,35 @@ export function WagesTab({
 
       {/* 임포트 */}
       <div className="glass p-4 mb-6">
-        <h4 className="text-white font-medium mb-3">엑셀에서 급여 임포트</h4>
+        <h4 className="text-white font-medium mb-3">
+          엑셀에서 급여 임포트
+          <span className="text-xs text-white/50 ml-2">(Ctrl+클릭으로 여러 파일 선택 가능)</span>
+        </h4>
         <div className="grid grid-cols-3 gap-4 items-end">
           <div>
             <input
               type="file"
               accept=".xlsx,.xls"
+              multiple
               onChange={handleFileUpload}
               className="w-full input-glass px-4 py-3 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-blue-500/20 file:text-blue-400 file:cursor-pointer"
             />
           </div>
           <div>
-            <input
-              type="month"
-              value={importMonth}
-              onChange={(e) => setImportMonth(e.target.value)}
-              className="w-full input-glass px-4 py-3"
-              placeholder="적용 월"
-            />
+            {batchMode ? (
+              <div className="input-glass px-4 py-3 text-sm text-white/70">
+                {batchFiles.length}개 파일 선택됨
+                <span className="text-xs ml-2">({batchFiles.map(f => f.yearMonth.slice(5)).join(', ')}월)</span>
+              </div>
+            ) : (
+              <input
+                type="month"
+                value={importMonth}
+                onChange={(e) => setImportMonth(e.target.value)}
+                className="w-full input-glass px-4 py-3"
+                placeholder="적용 월"
+              />
+            )}
           </div>
           <div>
             <button
@@ -469,17 +605,52 @@ export function WagesTab({
               임금총액={excel.fieldMapping.totalWage != null ? `${excel.fieldMapping.totalWage}번째 열` : '미선택'}
             </div>
 
+            {/* 배치 모드 파일 목록 */}
+            {batchMode && (
+              <div className="mt-4 p-3 bg-blue-500/10 border border-blue-500/30 rounded">
+                <strong className="text-blue-400 text-sm">일괄 처리 대상 ({batchFiles.length}개 파일):</strong>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {batchFiles.map(({ file, yearMonth }) => (
+                    <span key={yearMonth} className="px-2 py-1 bg-blue-500/20 rounded text-xs text-white">
+                      {yearMonth} ({file.name})
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* 버튼 */}
             <div className="flex gap-4 mt-6 pt-4 border-t border-white/20">
-              <button onClick={loadPreview} className="btn-primary flex-1">미리보기</button>
-              <button onClick={saveMapping} className="btn-secondary flex-1">매핑 저장</button>
-              <button
-                onClick={() => excel.setFullFieldMapping({})}
-                className="btn-secondary flex-1 text-yellow-400"
-              >
-                매핑 초기화
-              </button>
-              <button onClick={() => setShowMappingModal(false)} className="btn-secondary flex-1">취소</button>
+              {batchMode ? (
+                <>
+                  <button
+                    onClick={executeBatchImport}
+                    disabled={batchProcessing || excel.fieldMapping.name == null || excel.fieldMapping.residentNo == null}
+                    className="btn-primary flex-1 disabled:opacity-50"
+                  >
+                    {batchProcessing ? '처리 중...' : `${batchFiles.length}개 파일 일괄 임포트`}
+                  </button>
+                  <button onClick={saveMapping} className="btn-secondary flex-1">매핑 저장</button>
+                  <button
+                    onClick={() => { setBatchMode(false); setBatchFiles([]); setShowMappingModal(false); }}
+                    className="btn-secondary flex-1"
+                  >
+                    취소
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button onClick={loadPreview} className="btn-primary flex-1">미리보기</button>
+                  <button onClick={saveMapping} className="btn-secondary flex-1">매핑 저장</button>
+                  <button
+                    onClick={() => excel.setFullFieldMapping({})}
+                    className="btn-secondary flex-1 text-yellow-400"
+                  >
+                    매핑 초기화
+                  </button>
+                  <button onClick={() => setShowMappingModal(false)} className="btn-secondary flex-1">취소</button>
+                </>
+              )}
             </div>
           </div>
         </div>
