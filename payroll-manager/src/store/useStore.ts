@@ -294,6 +294,7 @@ interface AppState {
   addEmployments: (employments: Employment[]) => void;
   updateEmployment: (id: string, data: Partial<Employment>) => void;
   deleteEmployment: (id: string) => void;
+  deleteEmploymentsByBusiness: (businessId: string) => Promise<number>;
 
   // 신고 이력
   reports: Report[];
@@ -515,6 +516,18 @@ export const useStore = create<AppState>()(
         set((state) => ({
           employments: state.employments.filter((e) => e.id !== id),
         }));
+      },
+      deleteEmploymentsByBusiness: async (businessId) => {
+        const state = get();
+        const toDelete = state.employments.filter((e) => e.businessId === businessId);
+        const count = toDelete.length;
+
+        set((state) => ({
+          employments: state.employments.filter((e) => e.businessId !== businessId),
+        }));
+
+        await firestore.deleteEmploymentsByBusiness(businessId);
+        return count;
       },
 
       // 신고 이력

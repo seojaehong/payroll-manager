@@ -14,13 +14,15 @@ interface ImportRow {
 }
 
 export default function ImportPage() {
-  const { businesses, workers, addWorkers, addEmployments, excelMappings, setExcelMapping } = useStore();
+  const { businesses, workers, employments, addWorkers, addEmployments, deleteEmploymentsByBusiness, excelMappings, setExcelMapping } = useStore();
   const [selectedBusiness, setSelectedBusiness] = useState('');
   const [previewData, setPreviewData] = useState<ImportRow[]>([]);
   const [fileName, setFileName] = useState('');
   const [sheets, setSheets] = useState<string[]>([]);
   const [selectedSheet, setSelectedSheet] = useState('');
   const [workbook, setWorkbook] = useState<XLSX.WorkBook | null>(null);
+  const [overwriteMode, setOverwriteMode] = useState(false);
+  const [isImporting, setIsImporting] = useState(false);
 
   const [mapping, setMapping] = useState({
     sheetName: '임금대장',
@@ -136,67 +138,126 @@ export default function ImportPage() {
     alert('매핑 설정이 저장되었습니다.');
   };
 
-  const handleImport = () => {
+  const handleImport = async () => {
     if (!selectedBusiness || previewData.length === 0) {
       alert('사업장을 선택하고 데이터를 미리보기하세요.');
       return;
     }
 
-    // 중복 체크를 위한 Set (O(1) 조회)
-    const existingResidentNos = new Set(workers.map((w) => w.residentNo));
+    setIsImporting(true);
+    let deletedCount = 0;
+
+    try {
+      // 덮어쓰기 모드: 기존 Employment 삭제
+      if (overwriteMode) {
+        deletedCount = await deleteEmploymentsByBusiness(selectedBusiness);
+        console.log(`덮어쓰기 모드: 기존 ${deletedCount}개 Employment 삭제`);
+      }
+
+      // 근로자 주민번호 -> Worker 맵 (O(1) 조회)
+      const workerByResidentNo = new Map(workers.map((w) => [w.residentNo, w]));
+
+      // 해당 사업장의 기존 Employment (덮어쓰기 모드면 비어있음)
+      const currentEmployments = useStore.getState().employments;
+      const businessEmployments = currentEmployments.filter((e) => e.businessId === selectedBusiness);
+      const existingEmploymentWorkerIds = new Set(businessEmployments.map((e) => e.workerId));
 
     const newWorkers: Worker[] = [];
     const newEmployments: Employment[] = [];
+    let newWorkerCount = 0;
+    let newEmploymentCount = 0;
     let skippedCount = 0;
 
     previewData.forEach((row) => {
-      if (existingResidentNos.has(row.residentNo)) {
-        skippedCount++;
-        return;
+      const existingWorker = workerByResidentNo.get(row.residentNo);
+
+      if (existingWorker) {
+        // 근로자는 이미 존재 → 이 사업장에 Employment가 있는지 확인
+        if (existingEmploymentWorkerIds.has(existingWorker.id)) {
+          // 이 사업장에 이미 고용관계 있음 → 스킵
+          skippedCount++;
+          return;
+        }
+
+        // 이 사업장에는 고용관계 없음 → Employment만 새로 생성
+        const employmentId = crypto.randomUUID();
+        newEmployments.push({
+          id: employmentId,
+          workerId: existingWorker.id,
+          businessId: selectedBusiness,
+          status: row.leaveDate ? 'INACTIVE' : 'ACTIVE',
+          joinDate: row.joinDate || new Date().toISOString().slice(0, 10),
+          leaveDate: row.leaveDate,
+          monthlyWage: row.wage || business?.defaultWorkHours || 2060740,
+          jikjongCode: business?.defaultJikjong || '532',
+          workHours: business?.defaultWorkHours || 40,
+          gyYn: true,
+          sjYn: true,
+          npsYn: true,
+          nhicYn: true,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        });
+        existingEmploymentWorkerIds.add(existingWorker.id);
+        newEmploymentCount++;
+      } else {
+        // 새 근로자 → Worker + Employment 모두 생성
+        const workerId = crypto.randomUUID();
+        const employmentId = crypto.randomUUID();
+
+        newWorkers.push({
+          id: workerId,
+          name: row.name,
+          residentNo: row.residentNo,
+          nationality: '100',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        });
+
+        newEmployments.push({
+          id: employmentId,
+          workerId,
+          businessId: selectedBusiness,
+          status: row.leaveDate ? 'INACTIVE' : 'ACTIVE',
+          joinDate: row.joinDate || new Date().toISOString().slice(0, 10),
+          leaveDate: row.leaveDate,
+          monthlyWage: row.wage || business?.defaultWorkHours || 2060740,
+          jikjongCode: business?.defaultJikjong || '532',
+          workHours: business?.defaultWorkHours || 40,
+          gyYn: true,
+          sjYn: true,
+          npsYn: true,
+          nhicYn: true,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        });
+
+        // 중복 방지를 위해 Map에 추가
+        workerByResidentNo.set(row.residentNo, { id: workerId } as Worker);
+        existingEmploymentWorkerIds.add(workerId);
+        newWorkerCount++;
       }
-
-      const workerId = crypto.randomUUID();
-      const employmentId = crypto.randomUUID();
-
-      newWorkers.push({
-        id: workerId,
-        name: row.name,
-        residentNo: row.residentNo,
-        nationality: '100',
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      });
-
-      newEmployments.push({
-        id: employmentId,
-        workerId,
-        businessId: selectedBusiness,
-        status: row.leaveDate ? 'INACTIVE' : 'ACTIVE',
-        joinDate: row.joinDate || new Date().toISOString().slice(0, 10),
-        leaveDate: row.leaveDate,
-        monthlyWage: row.wage || business?.defaultWorkHours || 2060740,
-        jikjongCode: business?.defaultJikjong || '532',
-        workHours: business?.defaultWorkHours || 40,
-        gyYn: true,
-        sjYn: true,
-        npsYn: true,
-        nhicYn: true,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      });
-
-      // 중복 방지를 위해 Set에 추가
-      existingResidentNos.add(row.residentNo);
     });
 
     // 배치로 한번에 저장
     if (newWorkers.length > 0) {
       addWorkers(newWorkers);
+    }
+    if (newEmployments.length > 0) {
       addEmployments(newEmployments);
     }
 
-    alert(`Import 완료!\n- 추가: ${newWorkers.length}명\n- 중복 스킵: ${skippedCount}명`);
-    setPreviewData([]);
+      const resultMsg = overwriteMode
+        ? `Import 완료!\n- 기존 삭제: ${deletedCount}명\n- 신규 근로자: ${newWorkerCount}명\n- 고용관계 추가: ${newEmploymentCount}명`
+        : `Import 완료!\n- 신규 근로자: ${newWorkerCount}명\n- 고용관계 추가: ${newEmploymentCount}명\n- 중복 스킵: ${skippedCount}명`;
+      alert(resultMsg);
+      setPreviewData([]);
+    } catch (error) {
+      console.error('Import 에러:', error);
+      alert('Import 중 오류가 발생했습니다.');
+    } finally {
+      setIsImporting(false);
+    }
   };
 
   return (
@@ -282,7 +343,24 @@ export default function ImportPage() {
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-white">미리보기 ({previewData.length}명)</h2>
             {previewData.length > 0 && (
-              <button onClick={handleImport} className="btn-primary">Import 실행</button>
+              <div className="flex items-center gap-4">
+                <label className="flex items-center gap-2 text-sm text-white/60 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={overwriteMode}
+                    onChange={(e) => setOverwriteMode(e.target.checked)}
+                    className="w-4 h-4 rounded bg-white/10 border-white/20"
+                  />
+                  기존 고용관계 삭제 후 재등록
+                </label>
+                <button
+                  onClick={handleImport}
+                  disabled={isImporting}
+                  className="btn-primary disabled:opacity-50"
+                >
+                  {isImporting ? '처리중...' : 'Import 실행'}
+                </button>
+              </div>
             )}
           </div>
 

@@ -130,7 +130,7 @@ export default function WagesPage() {
       const dataStartRow = mapping?.dataStartRow || 6;
       const nameCol = mapping?.columns.name || 2;
       const residentNoCol = mapping?.columns.residentNo || 4;
-      const wageCol = 20; // 임금총액 열 (고정)
+      const wageCol = 21; // 임금총액 열 U열 (고정)
 
       const ws = wb.Sheets[sheetName];
       if (!ws) {
@@ -162,7 +162,6 @@ export default function WagesPage() {
           : parseInt(String(wageRaw).replace(/,/g, '')) || 0;
 
         if (name && wage > 0) {
-          // 근로자 매칭
           const matchedWorker = workers.find((w) => w.residentNo === residentNo);
           preview.push({
             name,
@@ -191,7 +190,7 @@ export default function WagesPage() {
     const dataStartRow = mapping?.dataStartRow || 6;
     const nameCol = mapping?.columns.name || 2;
     const residentNoCol = mapping?.columns.residentNo || 4;
-    const wageCol = 20;
+    const wageCol = 21;
 
     const processedFiles: typeof bulkImportFiles = [];
 

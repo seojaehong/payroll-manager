@@ -157,6 +157,22 @@ export async function saveEmployments(employments: Employment[]): Promise<void> 
   }
 }
 
+export async function deleteEmploymentsByBusiness(businessId: string): Promise<string[]> {
+  const q = query(collection(db, COLLECTIONS.employments), where('businessId', '==', businessId));
+  const snapshot = await getDocs(q);
+  const deletedIds: string[] = [];
+
+  if (snapshot.empty) return deletedIds;
+
+  const batch = writeBatch(db);
+  snapshot.docs.forEach((docSnap) => {
+    batch.delete(docSnap.ref);
+    deletedIds.push(docSnap.id);
+  });
+  await batch.commit();
+  return deletedIds;
+}
+
 // === 월별 급여 ===
 export async function getMonthlyWages(): Promise<MonthlyWage[]> {
   const snapshot = await getDocs(collection(db, COLLECTIONS.monthlyWages));
