@@ -6,6 +6,13 @@ import * as XLSX from 'xlsx';
 import { MonthlyWage, Worker, Employment, FieldGroups } from '@/types';
 import { useExcelImport, parseExcelNumber, indexToColumnLetter } from '@/hooks/useExcelImport';
 
+// undefined 필드 제거 (Firestore는 undefined 허용 안함)
+function removeUndefined<T extends Record<string, any>>(obj: T): T {
+  return Object.fromEntries(
+    Object.entries(obj).filter(([_, v]) => v !== undefined)
+  ) as T;
+}
+
 interface WagesTabProps {
   businessId: string;
   businessEmployments: { employment: Employment; worker: Worker }[];
@@ -221,7 +228,7 @@ export function WagesTab({
         const matchedEmp = businessEmployments.find(({ worker }) => worker.id === matchedWorker.id);
         if (!matchedEmp) continue;
 
-        newWages.push({
+        newWages.push(removeUndefined({
           id: `${matchedEmp.employment.id}-${yearMonth}`,
           employmentId: matchedEmp.employment.id,
           yearMonth,
@@ -250,7 +257,7 @@ export function WagesTab({
           deductionDays: parseExcelNumber(row[fm.deductionDays!]),
           deductionHours: parseExcelNumber(row[fm.deductionHours!]),
           createdAt: new Date(),
-        });
+        }));
       }
 
       if (newWages.length > 0) {
@@ -368,7 +375,7 @@ export function WagesTab({
       const matchedEmp = businessEmployments.find(({ worker }) => worker.id === matchedWorker.id);
       if (!matchedEmp) return;
 
-      newWages.push({
+      newWages.push(removeUndefined({
         id: `${matchedEmp.employment.id}-${importMonth}`,
         employmentId: matchedEmp.employment.id,
         yearMonth: importMonth,
@@ -397,7 +404,7 @@ export function WagesTab({
         deductionDays: row.deductionDays,
         deductionHours: row.deductionHours,
         createdAt: new Date(),
-      });
+      }));
       matchedCount++;
     });
 

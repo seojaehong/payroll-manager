@@ -17,29 +17,29 @@ function formatNumber(num: number | undefined | null): string {
 function createPayslipHtml(data: PayslipData): string {
   const yearMonth = data.yearMonth.replace('-', '년 ') + '월';
 
-  // 지급 항목
+  // 지급 항목 (값이 있는 항목만 표시, 0도 표시)
   const earningsItems: { label: string; amount: number }[] = [];
-  if (data.basicWage) earningsItems.push({ label: '기본급', amount: data.basicWage });
-  if (data.overtimeWage) earningsItems.push({ label: '연장근로수당', amount: data.overtimeWage });
-  if (data.nightWage) earningsItems.push({ label: '야간근로수당', amount: data.nightWage });
-  if (data.holidayWage) earningsItems.push({ label: '휴일근로수당', amount: data.holidayWage });
-  if (data.bonusWage) earningsItems.push({ label: '상여금', amount: data.bonusWage });
-  if (data.otherWage) earningsItems.push({ label: '기타수당', amount: data.otherWage });
+  if (data.basicWage != null) earningsItems.push({ label: '기본급', amount: data.basicWage });
+  if (data.overtimeWage != null && data.overtimeWage > 0) earningsItems.push({ label: '연장근로수당', amount: data.overtimeWage });
+  if (data.nightWage != null && data.nightWage > 0) earningsItems.push({ label: '야간근로수당', amount: data.nightWage });
+  if (data.holidayWage != null && data.holidayWage > 0) earningsItems.push({ label: '휴일근로수당', amount: data.holidayWage });
+  if (data.bonusWage != null && data.bonusWage > 0) earningsItems.push({ label: '상여금', amount: data.bonusWage });
+  if (data.otherWage != null && data.otherWage > 0) earningsItems.push({ label: '기타수당', amount: data.otherWage });
 
   // 항목 없으면 총액만
   if (earningsItems.length === 0 && data.totalWage) {
     earningsItems.push({ label: '급여', amount: data.totalWage });
   }
 
-  // 공제 항목
+  // 공제 항목 (값이 있는 항목만 표시)
   const deductionItems: { label: string; amount: number }[] = [];
-  if (data.nps) deductionItems.push({ label: '국민연금', amount: data.nps });
-  if (data.nhic) deductionItems.push({ label: '건강보험', amount: data.nhic });
-  if (data.ltc) deductionItems.push({ label: '장기요양보험', amount: data.ltc });
-  if (data.ei) deductionItems.push({ label: '고용보험', amount: data.ei });
-  if (data.incomeTax) deductionItems.push({ label: '소득세', amount: data.incomeTax });
-  if (data.localTax) deductionItems.push({ label: '지방소득세', amount: data.localTax });
-  if (data.otherDeduction) deductionItems.push({ label: '기타공제', amount: data.otherDeduction });
+  if (data.nps != null && data.nps > 0) deductionItems.push({ label: '국민연금', amount: data.nps });
+  if (data.nhic != null && data.nhic > 0) deductionItems.push({ label: '건강보험', amount: data.nhic });
+  if (data.ltc != null && data.ltc > 0) deductionItems.push({ label: '장기요양보험', amount: data.ltc });
+  if (data.ei != null && data.ei > 0) deductionItems.push({ label: '고용보험', amount: data.ei });
+  if (data.incomeTax != null && data.incomeTax > 0) deductionItems.push({ label: '소득세', amount: data.incomeTax });
+  if (data.localTax != null && data.localTax > 0) deductionItems.push({ label: '지방소득세', amount: data.localTax });
+  if (data.otherDeduction != null && data.otherDeduction > 0) deductionItems.push({ label: '기타공제', amount: data.otherDeduction });
 
   const generatedDate = data.generatedAt instanceof Date
     ? data.generatedAt.toISOString().split('T')[0]

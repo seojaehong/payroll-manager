@@ -81,21 +81,24 @@ export function PayslipTab({
       (wage.localTax || 0) +
       (wage.otherDeduction || 0);
 
-    // 기타수당 계산 (식대 + 차량유지비 + otherWage)
-    const otherWageTotal = (wage.mealAllowance || 0) + (wage.carAllowance || 0) + (wage.otherWage || 0);
+    // 연장근로 합산 (평일 + 주말)
+    const overtimeTotal = (wage.overtimeWage || 0) + (wage.overtimeWeekday || 0) + (wage.overtimeWeekend || 0);
+
+    // 기타수당 계산 (식대 + 차량유지비 + 연차수당 + otherWage)
+    const otherWageTotal = (wage.mealAllowance || 0) + (wage.carAllowance || 0) + (wage.annualLeaveWage || 0) + (wage.otherWage || 0);
 
     return {
       businessName: business.name,
       businessBizNo: business.bizNo,
       workerName: worker.name,
       yearMonth: wage.yearMonth,
-      // 지급 항목
-      basicWage: wage.basicWage || wage.totalWage, // 기본급이 없으면 총액 사용
-      overtimeWage: wage.overtimeWage,
-      nightWage: wage.nightWage,
-      holidayWage: wage.holidayWage,
-      bonusWage: wage.bonusWage,
-      otherWage: otherWageTotal > 0 ? otherWageTotal : undefined,
+      // 지급 항목 (값이 있는 항목은 모두 전달)
+      basicWage: wage.basicWage ?? wage.totalWage, // 기본급이 없으면 총액 사용
+      overtimeWage: overtimeTotal || undefined,
+      nightWage: wage.nightWage || undefined,
+      holidayWage: wage.holidayWage || undefined,
+      bonusWage: wage.bonusWage || undefined,
+      otherWage: otherWageTotal || undefined,
       totalWage: wage.totalWage,
       // 공제 항목
       nps: wage.nps || 0,

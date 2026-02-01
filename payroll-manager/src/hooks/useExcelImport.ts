@@ -55,6 +55,7 @@ export function useExcelImport(options: UseExcelImportOptions = {}) {
   /**
    * 헤더 추출 (2행 병합)
    * hRow 기준으로 hRow-1, hRow 두 행을 합쳐서 헤더명 생성
+   * 빈 헤더도 열 문자로 표시 (선택 가능하게)
    */
   const extractHeaders = useCallback((wb: XLSX.WorkBook, sheetName: string, hRow: number): HeaderInfo[] => {
     const ws = wb.Sheets[sheetName];
@@ -63,7 +64,11 @@ export function useExcelImport(options: UseExcelImportOptions = {}) {
     const jsonData = XLSX.utils.sheet_to_json(ws, { header: 1 }) as unknown[][];
     const result: HeaderInfo[] = [];
 
-    for (let c = 0; c < 60; c++) {
+    // 데이터가 있는 마지막 열 찾기
+    const range = XLSX.utils.decode_range(ws['!ref'] || 'A1');
+    const maxCol = Math.min(range.e.c + 1, 100); // 최대 100열
+
+    for (let c = 0; c < maxCol; c++) {
       const h1 = jsonData[hRow - 2]?.[c];
       const h2 = jsonData[hRow - 1]?.[c];
       const name = [h1, h2]
@@ -72,9 +77,15 @@ export function useExcelImport(options: UseExcelImportOptions = {}) {
         .join(' ')
         .trim();
 
-      if (name) {
-        result.push({ index: c, name });
-      }
+      // 빈 헤더도 포함 (열 문자로 표시)
+      const colLetter = c < 26
+        ? String.fromCharCode(65 + c)
+        : String.fromCharCode(64 + Math.floor(c / 26)) + String.fromCharCode(65 + (c % 26));
+
+      result.push({
+        index: c,
+        name: name || `(${colLetter}열 - 빈 헤더)`
+      });
     }
 
     return result;
