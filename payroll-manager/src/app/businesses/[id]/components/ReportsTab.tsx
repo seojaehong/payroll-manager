@@ -12,6 +12,7 @@ export interface ReportsTabProps {
   monthlyWages: MonthlyWage[];
   reports: any[];
   addReport: (report: any) => void;
+  addMonthlyWages?: (wages: MonthlyWage[]) => void;
 }
 
 export function ReportsTab({
@@ -21,11 +22,14 @@ export function ReportsTab({
   monthlyWages,
   reports,
   addReport,
+  addMonthlyWages,
 }: ReportsTabProps) {
   const [reportType, setReportType] = useState<'ACQUIRE' | 'LOSE'>('ACQUIRE');
   const [targetMonth, setTargetMonth] = useState(new Date().toISOString().slice(0, 7));
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [showAllWorkers, setShowAllWorkers] = useState(false);
+  const [showAutoFillModal, setShowAutoFillModal] = useState(false);
+  const [missingWageInfo, setMissingWageInfo] = useState<{ employmentId: string; name: string; missing: string[]; monthlyWage: number }[]>([]);
 
   // 자동 필터 대상자
   const autoFilteredWorkers = useMemo(() => {
@@ -187,10 +191,20 @@ export function ReportsTab({
     });
 
     if (missingData.length > 0) {
-      const msg = missingData.map(({ name, missing }) =>
-        `${name}: ${missing.slice(0, 3).join(', ')}${missing.length > 3 ? ` 외 ${missing.length - 3}건` : ''}`
-      ).join('\n');
-      alert(`급여 데이터가 누락되었습니다.\n[급여 이력] 탭에서 먼저 입력해주세요.\n\n${msg}`);
+      // 자동 채우기 옵션 제공
+      const info = selectedWorkers
+        .filter(({ employment }) => {
+          if (!employment.leaveDate || !employment.joinDate) return false;
+          return getMissingWageData(employment.id, employment.leaveDate, employment.joinDate).length > 0;
+        })
+        .map(({ worker, employment }) => ({
+          employmentId: employment.id,
+          name: worker.name,
+          missing: getMissingWageData(employment.id, employment.leaveDate!, employment.joinDate!),
+          monthlyWage: employment.monthlyWage,
+        }));
+      setMissingWageInfo(info);
+      setShowAutoFillModal(true);
       return;
     }
 
@@ -360,6 +374,96 @@ export function ReportsTab({
             ))}
           </tbody>
         </table>
+      )}
+
+      {/* 급여 자동 채우기 모달 */}
+      {showAutoFillModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="glass p-6 max-w-2xl w-full max-h-[80vh] overflow-auto">
+            <h3 className="text-xl font-semibold text-white mb-4">급여 데이터 누락</h3>
+            <p className="text-white/70 mb-4">
+              상실신고에 필요한 급여 데이터가 누락되었습니다.
+              평균보수로 자동 채우시겠습니까?
+            </p>
+
+            <div className="space-y-3 mb-6 max-h-60 overflow-auto">
+              {missingWageInfo.map(({ name, missing, monthlyWage }) => (
+                <div key={name} className="p-3 bg-white/5 rounded">
+                  <div className="flex justify-between items-center mb-1">
+                    <span className="text-white font-medium">{name}</span>
+                    <span className="text-white/50 text-sm">월평균 {monthlyWage.toLocaleString()}원</span>
+                  </div>
+                  <div className="text-xs text-red-400">
+                    누락: {missing.slice(0, 5).join(', ')}{missing.length > 5 ? ` 외 ${missing.length - 5}건` : ''}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="flex gap-4">
+              <button
+                onClick={() => {
+                  if (!addMonthlyWages) {
+                    alert('급여 추가 기능이 없습니다.');
+                    return;
+                  }
+                  // 누락된 급여를 평균보수로 채우기
+                  const newWages: MonthlyWage[] = [];
+                  missingWageInfo.forEach(({ employmentId, missing, monthlyWage }) => {
+                    missing.forEach((ym) => {
+                      newWages.push({
+                        id: `${employmentId}-${ym}`,
+                        employmentId,
+                        yearMonth: ym,
+                        totalWage: monthlyWage,
+                        createdAt: new Date(),
+                      });
+                    });
+                  });
+                  addMonthlyWages(newWages);
+                  setShowAutoFillModal(false);
+                  alert(`${newWages.length}건의 급여 데이터가 자동 생성되었습니다.\n다시 신고서를 생성하세요.`);
+                }}
+                className="btn-primary flex-1"
+              >
+                평균보수로 채우기 ({missingWageInfo.reduce((acc, m) => acc + m.missing.length, 0)}건)
+              </button>
+              <button
+                onClick={() => {
+                  if (!addMonthlyWages) {
+                    alert('급여 추가 기능이 없습니다.');
+                    return;
+                  }
+                  // 0원으로 채우기
+                  const newWages: MonthlyWage[] = [];
+                  missingWageInfo.forEach(({ employmentId, missing }) => {
+                    missing.forEach((ym) => {
+                      newWages.push({
+                        id: `${employmentId}-${ym}`,
+                        employmentId,
+                        yearMonth: ym,
+                        totalWage: 0,
+                        createdAt: new Date(),
+                      });
+                    });
+                  });
+                  addMonthlyWages(newWages);
+                  setShowAutoFillModal(false);
+                  alert(`${newWages.length}건의 급여 데이터가 0원으로 생성되었습니다.\n다시 신고서를 생성하세요.`);
+                }}
+                className="btn-secondary flex-1"
+              >
+                0원으로 채우기
+              </button>
+              <button
+                onClick={() => setShowAutoFillModal(false)}
+                className="btn-secondary flex-1"
+              >
+                취소
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

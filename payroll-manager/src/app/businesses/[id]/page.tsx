@@ -342,6 +342,7 @@ export default function BusinessDetailPage() {
             monthlyWages={monthlyWages}
             reports={reports}
             addReport={addReport}
+            addMonthlyWages={addMonthlyWages}
           />
         )}
         {activeTab === 'import' && (
