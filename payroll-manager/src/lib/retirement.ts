@@ -94,7 +94,12 @@ export function calculateRetirementPay(
   return Math.round(retirementPay);
 }
 
-// 근속연수공제 계산 (2023년 기준)
+// 10원 단위 절사 (국고금관리법 제47조)
+export function truncateTo10(amount: number): number {
+  return Math.floor(amount / 10) * 10;
+}
+
+// 근속연수공제 계산 (2025년 기준, 소득세법 시행령 별표2)
 export function getServiceYearDeduction(serviceYears: number): number {
   const years = Math.floor(serviceYears);
 
@@ -115,7 +120,7 @@ export function getConvertedIncome(retirementPay: number, serviceYears: number):
   return Math.round((retirementPay / serviceYears) * 12);
 }
 
-// 환산급여 기준 소득세율표 (2023년 기준)
+// 환산급여 기준 소득세율표 (2025년 기준, 소득세법 제55조)
 function getTaxRate(convertedIncome: number): { rate: number; deduction: number } {
   if (convertedIncome <= 14000000) {
     return { rate: 0.06, deduction: 0 };
@@ -169,11 +174,11 @@ export function calculateRetirementTax(
   const { rate, deduction } = getTaxRate(taxableIncome);
   const convertedTax = Math.max(0, taxableIncome * rate - deduction);
 
-  // 6. 퇴직소득세 = 환산산출세액 × 근속연수 ÷ 12
-  const retirementTax = Math.round((convertedTax * serviceYears) / 12);
+  // 6. 퇴직소득세 = 환산산출세액 × 근속연수 ÷ 12 (10원 미만 절사)
+  const retirementTax = truncateTo10((convertedTax * serviceYears) / 12);
 
-  // 7. 지방소득세 = 퇴직소득세 × 10%
-  const localTax = Math.round(retirementTax * 0.1);
+  // 7. 지방소득세 = 퇴직소득세 × 10% (10원 미만 절사)
+  const localTax = truncateTo10(retirementTax * 0.1);
 
   return { retirementTax, localTax, taxableIncome };
 }

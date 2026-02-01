@@ -9,8 +9,9 @@ import { WagesTab } from './components/WagesTab';
 import { ReportsTab } from './components/ReportsTab';
 import { ImportTab } from './components/ImportTab';
 import { RetirementTab } from './components/RetirementTab';
+import { PayslipTab } from './components/PayslipTab';
 
-type TabType = 'workers' | 'wages' | 'reports' | 'import' | 'retirement';
+type TabType = 'workers' | 'wages' | 'payslip' | 'reports' | 'import' | 'retirement';
 
 export default function BusinessDetailPage() {
   const params = useParams();
@@ -96,6 +97,7 @@ export default function BusinessDetailPage() {
   const tabs: { id: TabType; label: string; icon: string }[] = [
     { id: 'workers', label: '근로자', icon: '👥' },
     { id: 'wages', label: '급여 이력', icon: '💰' },
+    { id: 'payslip', label: '명세서 발송', icon: '📨' },
     { id: 'retirement', label: '퇴직금', icon: '💼' },
     { id: 'reports', label: '신고서', icon: '📝' },
     { id: 'import', label: 'Import', icon: '📥' },
@@ -322,6 +324,14 @@ export default function BusinessDetailPage() {
             workers={workers}
             retirementCalculations={retirementCalculations}
             addRetirementCalculation={addRetirementCalculation}
+          />
+        )}
+        {activeTab === 'payslip' && (
+          <PayslipTab
+            businessId={businessId}
+            business={business}
+            businessEmployments={businessEmployments}
+            monthlyWages={monthlyWages}
           />
         )}
         {activeTab === 'reports' && (

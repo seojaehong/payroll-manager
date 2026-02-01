@@ -30,10 +30,13 @@ export function ReportsTab({
   // 자동 필터 대상자
   const autoFilteredWorkers = useMemo(() => {
     if (reportType === 'ACQUIRE') {
+      // 취득신고: 해당 월에 입사한 사람 (당월 퇴사자 포함)
+      // status 체크 제거 - 입사일만 체크
       return businessEmployments.filter(({ employment }) =>
-        employment.joinDate?.startsWith(targetMonth) && employment.status === 'ACTIVE'
+        employment.joinDate?.startsWith(targetMonth)
       );
     } else {
+      // 상실신고: 해당 월에 퇴사한 사람
       return businessEmployments.filter(({ employment }) =>
         employment.leaveDate?.startsWith(targetMonth)
       );
@@ -307,7 +310,8 @@ export function ReportsTab({
                 />
               </th>
               <th className="px-3 py-2 text-left">이름</th>
-              <th className="px-3 py-2 text-left">{reportType === 'ACQUIRE' ? '입사일' : '퇴사일'}</th>
+              <th className="px-3 py-2 text-left">입사일</th>
+              {reportType === 'LOSE' && <th className="px-3 py-2 text-left">퇴사일</th>}
               <th className="px-3 py-2 text-right">월평균보수</th>
             </tr>
           </thead>
@@ -318,9 +322,8 @@ export function ReportsTab({
                   <input type="checkbox" checked={selectedIds.has(worker.id)} onChange={() => {}} />
                 </td>
                 <td className="px-3 py-2 text-white">{worker.name}</td>
-                <td className="px-3 py-2 text-white/60">
-                  {reportType === 'ACQUIRE' ? employment.joinDate : employment.leaveDate}
-                </td>
+                <td className="px-3 py-2 text-white/60">{employment.joinDate}</td>
+                {reportType === 'LOSE' && <td className="px-3 py-2 text-white/60">{employment.leaveDate}</td>}
                 <td className="px-3 py-2 text-right text-white/60">{employment.monthlyWage.toLocaleString()}</td>
               </tr>
             ))}

@@ -25,6 +25,7 @@ export interface Worker {
   englishName?: string;  // 영문명 (외국인)
   stayStatus?: string;  // 체류자격 (외국인)
   phone?: string;
+  email?: string;  // 이메일 주소
   createdAt: Date;
   updatedAt: Date;
 }
@@ -69,9 +70,20 @@ export interface MonthlyWage {
   employmentId: string;
   yearMonth: string;  // YYYY-MM 형식
 
-  // 급여
-  totalWage: number;  // 임금총액 (세전)
-  netWage?: number;   // 실지급액 (세후)
+  // 지급 항목
+  basicWage?: number;           // 기본급
+  overtimeWage?: number;        // 연장근로수당 (통합)
+  overtimeWeekday?: number;     // 연장근로수당 (평일)
+  overtimeWeekend?: number;     // 연장근로수당 (주말)
+  nightWage?: number;           // 야간근로수당
+  holidayWage?: number;         // 휴일근로수당
+  annualLeaveWage?: number;     // 연차수당
+  bonusWage?: number;           // 상여금
+  mealAllowance?: number;       // 식대
+  carAllowance?: number;        // 차량유지비
+  otherWage?: number;           // 기타수당
+  totalWage: number;            // 임금총액 (세전)
+  netWage?: number;             // 실지급액 (세후)
 
   // 4대보험
   nps?: number;       // 국민연금 (National Pension Service)
@@ -83,7 +95,16 @@ export interface MonthlyWage {
   incomeTax?: number;  // 소득세
   localTax?: number;   // 지방소득세 (주민세)
 
-  workDays?: number;  // 근무일수
+  // 기타 공제
+  otherDeduction?: number;   // 기타공제
+  totalDeduction?: number;   // 공제액 합계
+  advancePayment?: number;   // 기지급액
+
+  // 근무 정보
+  workDays?: number;         // 근무일수
+  deductionDays?: number;    // 공제일수
+  deductionHours?: number;   // 공제시간
+
   createdAt: Date;
 }
 
@@ -112,20 +133,41 @@ export interface ExcelMapping {
     residentNo: number;
     joinDate: number;
     leaveDate: number;
-    wage: number;           // 임금총액 (세전)
+    wage: number;               // 임금총액 (세전)
+
+    // 선택 (지급 항목)
+    basicWage?: number;         // 기본급
+    overtimeWage?: number;      // 연장근로수당 (통합)
+    overtimeWeekday?: number;   // 연장근로수당 (평일)
+    overtimeWeekend?: number;   // 연장근로수당 (주말)
+    nightWage?: number;         // 야간근로수당
+    holidayWage?: number;       // 휴일근로수당
+    annualLeaveWage?: number;   // 연차수당
+    bonusWage?: number;         // 상여금
+    mealAllowance?: number;     // 식대
+    carAllowance?: number;      // 차량유지비
+    otherWage?: number;         // 기타수당
 
     // 선택 (4대보험)
-    nps?: number;           // 국민연금
-    nhic?: number;          // 건강보험
-    ltc?: number;           // 장기요양보험
-    ei?: number;            // 고용보험
+    nps?: number;               // 국민연금
+    nhic?: number;              // 건강보험
+    ltc?: number;               // 장기요양보험
+    ei?: number;                // 고용보험
 
     // 선택 (세금)
-    incomeTax?: number;     // 소득세
-    localTax?: number;      // 지방소득세
+    incomeTax?: number;         // 소득세
+    localTax?: number;          // 지방소득세
 
-    // 선택 (기타)
-    netWage?: number;       // 실지급액
+    // 선택 (기타 공제)
+    otherDeduction?: number;    // 기타공제
+    totalDeduction?: number;    // 공제액 합계
+    advancePayment?: number;    // 기지급액
+    netWage?: number;           // 실지급액
+
+    // 선택 (근무 정보)
+    workDays?: number;          // 근무일수
+    deductionDays?: number;     // 공제일수
+    deductionHours?: number;    // 공제시간
   };
 }
 
@@ -175,4 +217,88 @@ export interface RetirementCalculation {
   // 메타
   calculatedAt: Date;
   pdfGenerated?: boolean;
+}
+
+// ========================================
+// 급여명세서 발송 관련 타입
+// ========================================
+
+// 급여명세서 데이터
+export interface PayslipData {
+  // 기본 정보
+  businessName: string;
+  businessBizNo: string;
+  workerName: string;
+  yearMonth: string;  // YYYY-MM
+
+  // 급여 항목
+  basicWage: number;        // 기본급
+  overtimeWage?: number;    // 연장근로수당
+  nightWage?: number;       // 야간근로수당
+  holidayWage?: number;     // 휴일근로수당
+  bonusWage?: number;       // 상여금
+  otherWage?: number;       // 기타수당
+  totalWage: number;        // 총 지급액
+
+  // 공제 항목
+  nps: number;              // 국민연금
+  nhic: number;             // 건강보험
+  ltc: number;              // 장기요양보험
+  ei: number;               // 고용보험
+  incomeTax: number;        // 소득세
+  localTax: number;         // 지방소득세
+  otherDeduction?: number;  // 기타공제
+  totalDeduction: number;   // 총 공제액
+
+  // 실지급액
+  netWage: number;
+
+  // 근무 정보
+  workDays?: number;
+  workHours?: number;
+
+  // 메타
+  generatedAt: Date;
+}
+
+// 발송 채널
+export type SendChannel = 'email' | 'sms' | 'kakao';
+
+// 발송 요청
+export interface SendPayslipRequest {
+  payslipData: PayslipData;
+  channel: SendChannel;
+  recipient: {
+    email?: string;
+    phone?: string;
+  };
+  attachPdf?: boolean;  // 이메일에 PDF 첨부 여부
+  includeLink?: boolean;  // 웹 링크 포함 여부
+}
+
+// 급여명세서 토큰 (웹 링크용)
+export interface PayslipToken {
+  id: string;
+  token: string;
+  payslipData: PayslipData;
+  expiresAt: Date;
+  accessCount: number;
+  maxAccessCount: number;  // 기본 5회
+  createdAt: Date;
+}
+
+// 발송 이력
+export interface SendHistory {
+  id: string;
+  businessId: string;
+  workerId: string;
+  employmentId: string;
+  yearMonth: string;
+  channel: SendChannel;
+  recipient: string;  // 이메일 또는 전화번호
+  status: 'pending' | 'sent' | 'failed' | 'delivered';
+  errorMessage?: string;
+  tokenId?: string;  // 웹 링크용 토큰 ID
+  sentAt: Date;
+  deliveredAt?: Date;
 }

@@ -10,7 +10,7 @@ import {
   where,
   Timestamp,
 } from 'firebase/firestore';
-import { Business, Worker, Employment, Report, MonthlyWage, ExcelMapping, RetirementCalculation } from '@/types';
+import { Business, Worker, Employment, Report, MonthlyWage, ExcelMapping, RetirementCalculation, PayslipToken, SendHistory } from '@/types';
 
 // Firestore writeBatch 500건 제한 처리를 위한 청크 유틸리티
 const BATCH_LIMIT = 500;
@@ -32,6 +32,8 @@ const COLLECTIONS = {
   monthlyWages: 'monthlyWages',
   excelMappings: 'excelMappings',
   retirementCalculations: 'retirementCalculations',
+  payslipTokens: 'payslipTokens',
+  sendHistory: 'sendHistory',
 } as const;
 
 // Date <-> Timestamp 변환 (문자열도 처리)
@@ -288,6 +290,122 @@ export async function saveRetirementCalculation(calculation: RetirementCalculati
 
 export async function deleteRetirementCalculation(id: string): Promise<void> {
   await deleteDoc(doc(db, COLLECTIONS.retirementCalculations, id));
+}
+
+// === 급여명세서 토큰 ===
+export async function getPayslipTokenByToken(token: string): Promise<PayslipToken | null> {
+  const q = query(
+    collection(db, COLLECTIONS.payslipTokens),
+    where('token', '==', token)
+  );
+  const snapshot = await getDocs(q);
+  if (snapshot.empty) return null;
+
+  const docSnap = snapshot.docs[0];
+  const data = docSnap.data();
+  return {
+    ...data,
+    id: docSnap.id,
+    expiresAt: fromTimestamp(data.expiresAt),
+    createdAt: fromTimestamp(data.createdAt),
+    payslipData: {
+      ...data.payslipData,
+      generatedAt: fromTimestamp(data.payslipData.generatedAt),
+    },
+  } as PayslipToken;
+}
+
+export async function savePayslipToken(tokenData: Omit<PayslipToken, 'id'>): Promise<string> {
+  const id = doc(collection(db, COLLECTIONS.payslipTokens)).id;
+  await setDoc(doc(db, COLLECTIONS.payslipTokens, id), {
+    ...tokenData,
+    expiresAt: toTimestamp(tokenData.expiresAt),
+    createdAt: toTimestamp(tokenData.createdAt),
+    payslipData: {
+      ...tokenData.payslipData,
+      generatedAt: toTimestamp(tokenData.payslipData.generatedAt),
+    },
+  });
+  return id;
+}
+
+export async function incrementTokenAccessCount(tokenId: string): Promise<void> {
+  const tokenRef = doc(db, COLLECTIONS.payslipTokens, tokenId);
+  const snapshot = await getDocs(query(collection(db, COLLECTIONS.payslipTokens), where('__name__', '==', tokenId)));
+  if (!snapshot.empty) {
+    const data = snapshot.docs[0].data();
+    await setDoc(tokenRef, {
+      ...data,
+      accessCount: (data.accessCount || 0) + 1,
+    });
+  }
+}
+
+// === 발송 이력 ===
+export async function getSendHistoryByBusiness(businessId: string): Promise<SendHistory[]> {
+  const q = query(
+    collection(db, COLLECTIONS.sendHistory),
+    where('businessId', '==', businessId)
+  );
+  const snapshot = await getDocs(q);
+  return snapshot.docs.map((doc) => {
+    const data = doc.data();
+    return {
+      ...data,
+      id: doc.id,
+      sentAt: fromTimestamp(data.sentAt),
+      deliveredAt: data.deliveredAt ? fromTimestamp(data.deliveredAt) : undefined,
+    } as SendHistory;
+  });
+}
+
+export async function getSendHistoryByWorker(workerId: string, yearMonth?: string): Promise<SendHistory[]> {
+  let q = query(
+    collection(db, COLLECTIONS.sendHistory),
+    where('workerId', '==', workerId)
+  );
+  if (yearMonth) {
+    q = query(q, where('yearMonth', '==', yearMonth));
+  }
+  const snapshot = await getDocs(q);
+  return snapshot.docs.map((doc) => {
+    const data = doc.data();
+    return {
+      ...data,
+      id: doc.id,
+      sentAt: fromTimestamp(data.sentAt),
+      deliveredAt: data.deliveredAt ? fromTimestamp(data.deliveredAt) : undefined,
+    } as SendHistory;
+  });
+}
+
+export async function saveSendHistory(history: Omit<SendHistory, 'id'>): Promise<string> {
+  const id = doc(collection(db, COLLECTIONS.sendHistory)).id;
+  await setDoc(doc(db, COLLECTIONS.sendHistory, id), removeUndefined({
+    ...history,
+    sentAt: toTimestamp(history.sentAt),
+    deliveredAt: history.deliveredAt ? toTimestamp(history.deliveredAt) : undefined,
+  }));
+  return id;
+}
+
+export async function updateSendHistoryStatus(
+  id: string,
+  status: SendHistory['status'],
+  errorMessage?: string
+): Promise<void> {
+  const historyRef = doc(db, COLLECTIONS.sendHistory, id);
+  const updates: Record<string, unknown> = { status };
+  if (errorMessage) updates.errorMessage = errorMessage;
+  if (status === 'delivered') updates.deliveredAt = toTimestamp(new Date());
+
+  // Firestore에서 기존 문서 가져와서 업데이트
+  const q = query(collection(db, COLLECTIONS.sendHistory), where('__name__', '==', id));
+  const snapshot = await getDocs(q);
+  if (!snapshot.empty) {
+    const existingData = snapshot.docs[0].data();
+    await setDoc(historyRef, { ...existingData, ...updates });
+  }
 }
 
 // === 전체 데이터 동기화 ===
