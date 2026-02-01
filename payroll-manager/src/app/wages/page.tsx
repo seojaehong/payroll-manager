@@ -16,6 +16,8 @@ export default function WagesPage() {
   const [bulkImporting, setBulkImporting] = useState(false);
   const [statusFilter, setStatusFilter] = useState<'ALL' | 'ACTIVE' | 'INACTIVE'>('ACTIVE');
   const [sortBy, setSortBy] = useState<'joinDate' | 'name'>('joinDate');
+  const [currentPage, setCurrentPage] = useState(1);
+  const PAGE_SIZE = 20;
 
   // 선택된 사업장의 근로자 목록
   const businessWorkers = useMemo(() => {
@@ -370,6 +372,18 @@ export default function WagesPage() {
     return { totalRecords, missingRecords, completedRecords: totalRecords - missingRecords };
   }, [businessWorkers, months, monthlyWages, editingWages]);
 
+  // 페이지네이션 계산
+  const totalPages = Math.ceil(businessWorkers.length / PAGE_SIZE);
+  const paginatedWorkers = useMemo(() => {
+    const start = (currentPage - 1) * PAGE_SIZE;
+    return businessWorkers.slice(start, start + PAGE_SIZE);
+  }, [businessWorkers, currentPage]);
+
+  // 페이지 변경 시 첫 페이지로 리셋
+  useMemo(() => {
+    setCurrentPage(1);
+  }, [selectedBusiness, statusFilter]);
+
   return (
     <div>
       <h1 className="text-3xl font-semibold text-white mb-2">월별 급여 이력</h1>
@@ -609,7 +623,7 @@ export default function WagesPage() {
               </tr>
             </thead>
             <tbody>
-              {businessWorkers.map(({ worker, employment }) => {
+              {paginatedWorkers.map(({ worker, employment }) => {
                 const yearTotal = months.reduce((sum, m) => {
                   if (!isWorkedMonth(employment, m)) return sum;
                   return sum + (getWageValue(employment.id, m) || 0);
@@ -656,6 +670,48 @@ export default function WagesPage() {
               })}
             </tbody>
           </table>
+
+          {/* 페이지네이션 */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-between mt-4 pt-4 border-t border-white/10">
+              <p className="text-white/50 text-sm">
+                {businessWorkers.length}명 중 {(currentPage - 1) * PAGE_SIZE + 1}-{Math.min(currentPage * PAGE_SIZE, businessWorkers.length)}명 표시
+              </p>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setCurrentPage(1)}
+                  disabled={currentPage === 1}
+                  className="px-3 py-1 rounded bg-white/5 text-white/70 hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed"
+                >
+                  처음
+                </button>
+                <button
+                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                  className="px-3 py-1 rounded bg-white/5 text-white/70 hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed"
+                >
+                  이전
+                </button>
+                <span className="px-4 py-1 text-white">
+                  {currentPage} / {totalPages}
+                </span>
+                <button
+                  onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                  disabled={currentPage === totalPages}
+                  className="px-3 py-1 rounded bg-white/5 text-white/70 hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed"
+                >
+                  다음
+                </button>
+                <button
+                  onClick={() => setCurrentPage(totalPages)}
+                  disabled={currentPage === totalPages}
+                  className="px-3 py-1 rounded bg-white/5 text-white/70 hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed"
+                >
+                  마지막
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>
