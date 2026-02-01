@@ -302,3 +302,23 @@ export interface SendHistory {
   sentAt: Date;
   deliveredAt?: Date;
 }
+
+// ========================================
+// 엑셀 임포트 관련 타입
+// ========================================
+
+// 헤더 정보 (컬럼 인덱스와 이름)
+export interface HeaderInfo {
+  index: number;  // 0-indexed
+  name: string;
+}
+
+// 필드 정의 (임포트 매핑용)
+export interface FieldDef {
+  key: string;
+  label: string;
+  required?: boolean;
+}
+
+// 필드 그룹 (그룹화된 필드 정의)
+export type FieldGroups = Record<string, FieldDef[]>;
