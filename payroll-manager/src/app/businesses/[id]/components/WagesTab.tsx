@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import * as XLSX from 'xlsx';
-import { MonthlyWage, Worker, Employment } from '@/types';
+import { MonthlyWage, Worker, Employment, FieldGroups } from '@/types';
+import { useExcelImport, parseExcelNumber, indexToColumnLetter } from '@/hooks/useExcelImport';
 
 interface WagesTabProps {
   businessId: string;
@@ -17,19 +18,8 @@ interface WagesTabProps {
   setExcelMapping: (mapping: any) => void;
 }
 
-interface HeaderInfo {
-  index: number;
-  name: string;
-}
-
-interface FieldDef {
-  key: string;
-  label: string;
-  required?: boolean;
-}
-
 // 필드 정의 - 지급내역, 공제내역 포함
-const FIELD_GROUPS: Record<string, FieldDef[]> = {
+const FIELD_GROUPS: FieldGroups = {
   '기본정보': [
     { key: 'name', label: '이름', required: true },
     { key: 'residentNo', label: '주민번호', required: true },
@@ -81,16 +71,8 @@ export function WagesTab({
   const [importPreview, setImportPreview] = useState<any[]>([]);
   const [showMappingModal, setShowMappingModal] = useState(false);
 
-  // 엑셀 관련 상태
-  const [workbook, setWorkbook] = useState<any>(null);
-  const [sheetNames, setSheetNames] = useState<string[]>([]);
-  const [selectedSheet, setSelectedSheet] = useState('');
-  const [headers, setHeaders] = useState<HeaderInfo[]>([]);
-  const [headerRow, setHeaderRow] = useState(4);
-  const [dataStartRow, setDataStartRow] = useState(6);
-
-  // 필드 매핑 (0-indexed)
-  const [fieldMapping, setFieldMapping] = useState<Record<string, number | null>>({});
+  // 공통 훅 사용
+  const excel = useExcelImport({ defaultHeaderRow: 4, defaultDataStartRow: 6 });
 
   const months = Array.from({ length: 12 }, (_, i) => `${selectedYear}-${String(i + 1).padStart(2, '0')}`);
 
@@ -121,138 +103,63 @@ export function WagesTab({
     return { total, filled, percent: total > 0 ? Math.round((filled / total) * 100) : 100 };
   }, [businessEmployments, months, monthlyWages]);
 
-  // 헤더 추출
-  const extractHeaders = useCallback((wb: any, sheetName: string, hRow: number): HeaderInfo[] => {
-    const ws = wb.Sheets[sheetName];
-    if (!ws) return [];
-
-    const jsonData = XLSX.utils.sheet_to_json(ws, { header: 1 }) as unknown[][];
-    const result: HeaderInfo[] = [];
-
-    for (let c = 0; c < 60; c++) {
-      const h1 = jsonData[hRow - 2]?.[c];
-      const h2 = jsonData[hRow - 1]?.[c];
-      const name = [h1, h2]
-        .filter(Boolean)
-        .map(v => String(v).replace(/\r?\n/g, ' ').trim())
-        .join(' ')
-        .trim();
-
-      if (name) {
-        result.push({ index: c, name });
-      }
-    }
-
-    return result;
-  }, []);
-
-  // 기존 매핑 로드 - headerRow, dataStartRow 값도 반환
-  const loadExistingMapping = useCallback((): { sheetName: string | null; headerRow: number; dataStartRow: number } => {
+  // 기존 매핑 로드
+  const loadExistingMapping = () => {
     const existing = excelMappings.find((m: any) => m.businessId === businessId);
     if (existing) {
-      const hRow = existing.headerRow || 4;
-      const dRow = existing.dataStartRow || 6;
-      setHeaderRow(hRow);
-      setDataStartRow(dRow);
-
-      // columns를 0-indexed로 변환
-      const mapping: Record<string, number | null> = {};
-      if (existing.columns) {
-        Object.entries(existing.columns).forEach(([key, value]) => {
-          mapping[key] = value != null ? (value as number) - 1 : null;
-        });
-      }
-      setFieldMapping(mapping);
-
-      return { sheetName: existing.sheetName, headerRow: hRow, dataStartRow: dRow };
+      excel.applyMapping({
+        sheetName: existing.sheetName,
+        headerRow: existing.headerRow,
+        dataStartRow: existing.dataStartRow,
+        columns: existing.columns,
+      });
+      return existing.sheetName;
     }
-    return { sheetName: null, headerRow: 4, dataStartRow: 6 };
-  }, [businessId, excelMappings]);
+    return null;
+  };
 
   // 파일 업로드
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const data = event.target?.result;
-      const wb = XLSX.read(data, { type: 'binary' });
-      setWorkbook(wb);
-      setSheetNames(wb.SheetNames);
+    // 파일명에서 년월 추출
+    const fileNameMatch = file.name.match(/(\d{4})(\d{2})/);
+    if (fileNameMatch) {
+      setImportMonth(`${fileNameMatch[1]}-${fileNameMatch[2]}`);
+    }
 
-      // 파일명에서 년월 추출
-      const fileNameMatch = file.name.match(/(\d{4})(\d{2})/);
-      if (fileNameMatch) {
-        setImportMonth(`${fileNameMatch[1]}-${fileNameMatch[2]}`);
+    excel.handleFileUpload(file, (wb, autoSheet) => {
+      // 기존 매핑 로드
+      const savedSheet = loadExistingMapping();
+      if (savedSheet && wb.SheetNames.includes(savedSheet)) {
+        excel.handleSheetChange(savedSheet);
       }
-
-      // 기존 매핑 로드 (동기적으로 값 받아옴)
-      const { sheetName: savedSheet, headerRow: savedHeaderRow } = loadExistingMapping();
-
-      // 시트 선택
-      let autoSheet = savedSheet || '';
-      if (!autoSheet || !wb.SheetNames.includes(autoSheet)) {
-        autoSheet = wb.SheetNames.find((s: string) => s.includes('임금대장')) || wb.SheetNames[0];
-      }
-      setSelectedSheet(autoSheet);
-
-      // 헤더 추출 (저장된 headerRow 값 사용)
-      const extractedHeaders = extractHeaders(wb, autoSheet, savedHeaderRow);
-      setHeaders(extractedHeaders);
-
-      // 매핑 모달 표시
       setShowMappingModal(true);
-    };
+    });
 
-    reader.readAsBinaryString(file);
     e.target.value = '';
-  };
-
-  // 시트 변경
-  const handleSheetChange = (sheetName: string) => {
-    setSelectedSheet(sheetName);
-    if (workbook) {
-      const extractedHeaders = extractHeaders(workbook, sheetName, headerRow);
-      setHeaders(extractedHeaders);
-    }
-  };
-
-  // 헤더 행 변경
-  const handleHeaderRowChange = (newRow: number) => {
-    setHeaderRow(newRow);
-    if (workbook && selectedSheet) {
-      const extractedHeaders = extractHeaders(workbook, selectedSheet, newRow);
-      setHeaders(extractedHeaders);
-    }
   };
 
   // 미리보기 로드
   const loadPreview = () => {
-    if (!workbook || !selectedSheet) return;
+    if (!excel.workbook || !excel.selectedSheet) return;
 
-    const nameIdx = fieldMapping.name;
-    const residentNoIdx = fieldMapping.residentNo;
-    const totalWageIdx = fieldMapping.totalWage;
+    const nameIdx = excel.fieldMapping.name;
+    const residentNoIdx = excel.fieldMapping.residentNo;
+    const totalWageIdx = excel.fieldMapping.totalWage;
 
     if (nameIdx == null || residentNoIdx == null) {
       alert('이름과 주민번호 헤더를 선택해주세요.');
       return;
     }
 
-    const ws = workbook.Sheets[selectedSheet];
+    const ws = excel.workbook.Sheets[excel.selectedSheet];
     const jsonData = XLSX.utils.sheet_to_json(ws, { header: 1 }) as unknown[][];
 
     const preview: any[] = [];
 
-    const parseNum = (row: any[], idx: number | null | undefined): number | undefined => {
-      if (idx == null) return undefined;
-      const val = row[idx];
-      if (val === undefined || val === null || val === '') return undefined;
-      return typeof val === 'number' ? Math.round(val) : parseInt(String(val).replace(/,/g, '')) || 0;
-    };
-
-    for (let i = dataStartRow - 1; i < jsonData.length; i++) {
+    for (let i = excel.dataStartRow - 1; i < jsonData.length; i++) {
       const row = jsonData[i] as any[];
       if (!row || !row[nameIdx]) continue;
 
@@ -262,7 +169,7 @@ export function WagesTab({
         residentNo = residentNo.padStart(13, '0');
       }
 
-      const totalWage = parseNum(row, totalWageIdx) || 0;
+      const totalWage = parseExcelNumber(row[totalWageIdx!]) || 0;
       if (!name || totalWage === 0) continue;
 
       const matchedWorker = workers.find((w) => w.residentNo === residentNo);
@@ -270,37 +177,38 @@ export function WagesTab({
         ? businessEmployments.find(({ worker }) => worker.id === matchedWorker.id)
         : null;
 
+      const fm = excel.fieldMapping;
       preview.push({
         name,
         residentNo,
         matched: !!matchedEmp,
         totalWage,
         // 지급내역
-        basicWage: parseNum(row, fieldMapping.basicWage),
-        overtimeWeekday: parseNum(row, fieldMapping.overtimeWeekday),
-        overtimeWeekend: parseNum(row, fieldMapping.overtimeWeekend),
-        nightWage: parseNum(row, fieldMapping.nightWage),
-        holidayWage: parseNum(row, fieldMapping.holidayWage),
-        annualLeaveWage: parseNum(row, fieldMapping.annualLeaveWage),
-        bonusWage: parseNum(row, fieldMapping.bonusWage),
-        mealAllowance: parseNum(row, fieldMapping.mealAllowance),
-        carAllowance: parseNum(row, fieldMapping.carAllowance),
-        otherWage: parseNum(row, fieldMapping.otherWage),
+        basicWage: parseExcelNumber(row[fm.basicWage!]),
+        overtimeWeekday: parseExcelNumber(row[fm.overtimeWeekday!]),
+        overtimeWeekend: parseExcelNumber(row[fm.overtimeWeekend!]),
+        nightWage: parseExcelNumber(row[fm.nightWage!]),
+        holidayWage: parseExcelNumber(row[fm.holidayWage!]),
+        annualLeaveWage: parseExcelNumber(row[fm.annualLeaveWage!]),
+        bonusWage: parseExcelNumber(row[fm.bonusWage!]),
+        mealAllowance: parseExcelNumber(row[fm.mealAllowance!]),
+        carAllowance: parseExcelNumber(row[fm.carAllowance!]),
+        otherWage: parseExcelNumber(row[fm.otherWage!]),
         // 공제내역
-        incomeTax: parseNum(row, fieldMapping.incomeTax),
-        localTax: parseNum(row, fieldMapping.localTax),
-        nps: parseNum(row, fieldMapping.nps),
-        nhic: parseNum(row, fieldMapping.nhic),
-        ltc: parseNum(row, fieldMapping.ltc),
-        ei: parseNum(row, fieldMapping.ei),
-        advancePayment: parseNum(row, fieldMapping.advancePayment),
-        otherDeduction: parseNum(row, fieldMapping.otherDeduction),
-        totalDeduction: parseNum(row, fieldMapping.totalDeduction),
-        netWage: parseNum(row, fieldMapping.netWage),
+        incomeTax: parseExcelNumber(row[fm.incomeTax!]),
+        localTax: parseExcelNumber(row[fm.localTax!]),
+        nps: parseExcelNumber(row[fm.nps!]),
+        nhic: parseExcelNumber(row[fm.nhic!]),
+        ltc: parseExcelNumber(row[fm.ltc!]),
+        ei: parseExcelNumber(row[fm.ei!]),
+        advancePayment: parseExcelNumber(row[fm.advancePayment!]),
+        otherDeduction: parseExcelNumber(row[fm.otherDeduction!]),
+        totalDeduction: parseExcelNumber(row[fm.totalDeduction!]),
+        netWage: parseExcelNumber(row[fm.netWage!]),
         // 근무정보
-        workDays: parseNum(row, fieldMapping.workDays),
-        deductionDays: parseNum(row, fieldMapping.deductionDays),
-        deductionHours: parseNum(row, fieldMapping.deductionHours),
+        workDays: parseExcelNumber(row[fm.workDays!]),
+        deductionDays: parseExcelNumber(row[fm.deductionDays!]),
+        deductionHours: parseExcelNumber(row[fm.deductionHours!]),
       });
     }
 
@@ -310,18 +218,10 @@ export function WagesTab({
 
   // 매핑 저장
   const saveMapping = () => {
-    // 0-indexed를 1-indexed로 변환
-    const columns: Record<string, number | undefined> = {};
-    Object.entries(fieldMapping).forEach(([key, value]) => {
-      columns[key] = value != null ? value + 1 : undefined;
-    });
-
+    const mappingData = excel.getMappingForSave();
     setExcelMapping({
       businessId,
-      sheetName: selectedSheet,
-      headerRow,
-      dataStartRow,
-      columns,
+      ...mappingData,
     });
     alert('매핑 저장 완료! 다음부터 자동 적용됩니다.');
   };
@@ -348,7 +248,6 @@ export function WagesTab({
         employmentId: matchedEmp.employment.id,
         yearMonth: importMonth,
         totalWage: row.totalWage,
-        // 지급내역
         basicWage: row.basicWage,
         overtimeWeekday: row.overtimeWeekday,
         overtimeWeekend: row.overtimeWeekend,
@@ -359,7 +258,6 @@ export function WagesTab({
         mealAllowance: row.mealAllowance,
         carAllowance: row.carAllowance,
         otherWage: row.otherWage,
-        // 공제내역
         incomeTax: row.incomeTax,
         localTax: row.localTax,
         nps: row.nps,
@@ -370,7 +268,6 @@ export function WagesTab({
         otherDeduction: row.otherDeduction,
         totalDeduction: row.totalDeduction,
         netWage: row.netWage,
-        // 근무정보
         workDays: row.workDays,
         deductionDays: row.deductionDays,
         deductionHours: row.deductionHours,
@@ -509,19 +406,19 @@ export function WagesTab({
               <div>
                 <label className="block text-sm text-white/60 mb-2">시트</label>
                 <select
-                  value={selectedSheet}
-                  onChange={(e) => handleSheetChange(e.target.value)}
+                  value={excel.selectedSheet}
+                  onChange={(e) => excel.handleSheetChange(e.target.value)}
                   className="w-full input-glass px-4 py-2"
                 >
-                  {sheetNames.map((s) => <option key={s} value={s}>{s}</option>)}
+                  {excel.sheetNames.map((s) => <option key={s} value={s}>{s}</option>)}
                 </select>
               </div>
               <div>
                 <label className="block text-sm text-white/60 mb-2">헤더 행</label>
                 <input
                   type="number"
-                  value={headerRow}
-                  onChange={(e) => handleHeaderRowChange(parseInt(e.target.value) || 1)}
+                  value={excel.headerRow}
+                  onChange={(e) => excel.handleHeaderRowChange(parseInt(e.target.value) || 1)}
                   className="w-full input-glass px-4 py-2"
                 />
               </div>
@@ -529,8 +426,8 @@ export function WagesTab({
                 <label className="block text-sm text-white/60 mb-2">데이터 시작 행</label>
                 <input
                   type="number"
-                  value={dataStartRow}
-                  onChange={(e) => setDataStartRow(parseInt(e.target.value) || 1)}
+                  value={excel.dataStartRow}
+                  onChange={(e) => excel.setDataStartRow(parseInt(e.target.value) || 1)}
                   className="w-full input-glass px-4 py-2"
                 />
               </div>
@@ -548,25 +445,16 @@ export function WagesTab({
                         {required && <span className="text-red-400 ml-1">*</span>}
                       </label>
                       <select
-                        value={fieldMapping[key] ?? ''}
-                        onChange={(e) => setFieldMapping({
-                          ...fieldMapping,
-                          [key]: e.target.value === '' ? null : parseInt(e.target.value)
-                        })}
+                        value={excel.fieldMapping[key] ?? ''}
+                        onChange={(e) => excel.updateFieldMapping(key, e.target.value === '' ? null : parseInt(e.target.value))}
                         className="flex-1 input-glass px-3 py-1.5 text-sm"
                       >
                         <option value="">선택 안함</option>
-                        {headers.map((h) => {
-                          // 0-indexed를 열 문자로 변환 (0=A, 25=Z, 26=AA)
-                          const colLetter = h.index < 26
-                            ? String.fromCharCode(65 + h.index)
-                            : String.fromCharCode(64 + Math.floor(h.index / 26)) + String.fromCharCode(65 + (h.index % 26));
-                          return (
-                            <option key={h.index} value={h.index}>
-                              {colLetter}열: {h.name.slice(0, 15)}
-                            </option>
-                          );
-                        })}
+                        {excel.headers.map((h) => (
+                          <option key={h.index} value={h.index}>
+                            {indexToColumnLetter(h.index)}열: {h.name.slice(0, 15)}
+                          </option>
+                        ))}
                       </select>
                     </div>
                   ))}
@@ -576,9 +464,9 @@ export function WagesTab({
 
             {/* 현재 매핑 상태 표시 */}
             <div className="mt-4 p-3 bg-white/5 rounded text-xs text-white/50">
-              <strong>현재 매핑:</strong> 이름={fieldMapping.name !== null ? `${fieldMapping.name}번째 열` : '미선택'},
-              주민번호={fieldMapping.residentNo !== null ? `${fieldMapping.residentNo}번째 열` : '미선택'},
-              임금총액={fieldMapping.totalWage !== null ? `${fieldMapping.totalWage}번째 열` : '미선택'}
+              <strong>현재 매핑:</strong> 이름={excel.fieldMapping.name != null ? `${excel.fieldMapping.name}번째 열` : '미선택'},
+              주민번호={excel.fieldMapping.residentNo != null ? `${excel.fieldMapping.residentNo}번째 열` : '미선택'},
+              임금총액={excel.fieldMapping.totalWage != null ? `${excel.fieldMapping.totalWage}번째 열` : '미선택'}
             </div>
 
             {/* 버튼 */}
@@ -586,7 +474,7 @@ export function WagesTab({
               <button onClick={loadPreview} className="btn-primary flex-1">미리보기</button>
               <button onClick={saveMapping} className="btn-secondary flex-1">매핑 저장</button>
               <button
-                onClick={() => setFieldMapping({})}
+                onClick={() => excel.setFullFieldMapping({})}
                 className="btn-secondary flex-1 text-yellow-400"
               >
                 매핑 초기화
