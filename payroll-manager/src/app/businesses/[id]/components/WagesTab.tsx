@@ -42,7 +42,7 @@ const FIELD_GROUPS: FieldGroups = {
     { key: 'mealAllowance', label: '식대' },
     { key: 'carAllowance', label: '차량유지비' },
     { key: 'otherWage', label: '기타수당' },
-    { key: 'totalWage', label: '임금총액', required: true },
+    { key: 'wage', label: '임금총액', required: true },
   ],
   '공제내역': [
     { key: 'incomeTax', label: '소득세' },
@@ -115,8 +115,8 @@ export function WagesTab({
     return { total, filled, percent: total > 0 ? Math.round((filled / total) * 100) : 100 };
   }, [businessEmployments, months, monthlyWages]);
 
-  // 기존 매핑 로드
-  const loadExistingMapping = () => {
+  // 기존 매핑 로드 (workbook을 직접 전달하여 비동기 상태 문제 해결)
+  const loadExistingMapping = (wb?: XLSX.WorkBook) => {
     const existing = excelMappings.find((m: any) => m.businessId === businessId);
     if (existing) {
       excel.applyMapping({
@@ -124,7 +124,7 @@ export function WagesTab({
         headerRow: existing.headerRow,
         dataStartRow: existing.dataStartRow,
         columns: existing.columns,
-      });
+      }, wb);  // workbook 직접 전달
       return existing.sheetName;
     }
     return null;
@@ -151,8 +151,8 @@ export function WagesTab({
         setBatchFiles(batch);
         setBatchMode(true);
         // 첫 번째 파일로 매핑 설정
-        excel.handleFileUpload(batch[0].file, () => {
-          loadExistingMapping();
+        excel.handleFileUpload(batch[0].file, (wb) => {
+          loadExistingMapping(wb);  // workbook 직접 전달
           setShowMappingModal(true);
         });
       } else {
@@ -169,7 +169,7 @@ export function WagesTab({
       setBatchFiles([]);
 
       excel.handleFileUpload(file, (wb, autoSheet) => {
-        const savedSheet = loadExistingMapping();
+        const savedSheet = loadExistingMapping(wb);  // workbook 직접 전달
         if (savedSheet && wb.SheetNames.includes(savedSheet)) {
           excel.handleSheetChange(savedSheet);
         }
@@ -230,7 +230,7 @@ export function WagesTab({
           residentNo = residentNo.padStart(13, '0');
         }
 
-        const totalWage = parseExcelNumber(row[fm.totalWage!]) || 0;
+        const totalWage = parseExcelNumber(row[fm.wage!]) || 0;
         if (!name || totalWage === 0) continue;
 
         const matchedWorker = workers.find((w) => w.residentNo === residentNo);
@@ -313,7 +313,7 @@ export function WagesTab({
 
     const nameIdx = excel.fieldMapping.name;
     const residentNoIdx = excel.fieldMapping.residentNo;
-    const totalWageIdx = excel.fieldMapping.totalWage;
+    const wageIdx = excel.fieldMapping.wage;
 
     if (nameIdx == null || residentNoIdx == null) {
       alert('이름과 주민번호 헤더를 선택해주세요.');
@@ -335,7 +335,7 @@ export function WagesTab({
         residentNo = residentNo.padStart(13, '0');
       }
 
-      const totalWage = parseExcelNumber(row[totalWageIdx!]) || 0;
+      const totalWage = parseExcelNumber(row[wageIdx!]) || 0;
       if (!name || totalWage === 0) continue;
 
       // 매칭 상태 판단
@@ -697,7 +697,7 @@ export function WagesTab({
             <div className="mt-4 p-3 bg-white/5 rounded text-xs text-white/50">
               <strong>현재 매핑:</strong> 이름={excel.fieldMapping.name != null ? `${excel.fieldMapping.name}번째 열` : '미선택'},
               주민번호={excel.fieldMapping.residentNo != null ? `${excel.fieldMapping.residentNo}번째 열` : '미선택'},
-              임금총액={excel.fieldMapping.totalWage != null ? `${excel.fieldMapping.totalWage}번째 열` : '미선택'}
+              임금총액={excel.fieldMapping.wage != null ? `${excel.fieldMapping.wage}번째 열` : '미선택'}
             </div>
 
             {/* 배치 모드 파일 목록 */}

@@ -144,14 +144,22 @@ export function useExcelImport(options: UseExcelImportOptions = {}) {
 
   /**
    * 기존 매핑 적용
+   * @param mapping - 저장된 매핑 정보
+   * @param wb - 워크북 (옵션, 상태가 아직 업데이트 안된 경우 직접 전달)
    */
-  const applyMapping = useCallback((mapping: {
-    sheetName?: string;
-    headerRow?: number;
-    dataStartRow?: number;
-    columns?: Record<string, number | undefined>;
-  }) => {
-    if (mapping.headerRow) setHeaderRow(mapping.headerRow);
+  const applyMapping = useCallback((
+    mapping: {
+      sheetName?: string;
+      headerRow?: number;
+      dataStartRow?: number;
+      columns?: Record<string, number | undefined>;
+    },
+    wb?: XLSX.WorkBook
+  ) => {
+    const targetWorkbook = wb || workbook;
+    const hRow = mapping.headerRow || defaultHeaderRow;
+
+    if (mapping.headerRow) setHeaderRow(hRow);
     if (mapping.dataStartRow) setDataStartRow(mapping.dataStartRow);
 
     // columns를 0-indexed로 변환 (저장은 1-indexed)
@@ -163,11 +171,10 @@ export function useExcelImport(options: UseExcelImportOptions = {}) {
       setFieldMapping(converted);
     }
 
-    // 시트 선택
-    if (mapping.sheetName && workbook) {
+    // 시트 선택 - 직접 전달된 workbook 또는 상태의 workbook 사용
+    if (mapping.sheetName && targetWorkbook) {
       setSelectedSheet(mapping.sheetName);
-      const hRow = mapping.headerRow || defaultHeaderRow;
-      const extractedHeaders = extractHeaders(workbook, mapping.sheetName, hRow);
+      const extractedHeaders = extractHeaders(targetWorkbook, mapping.sheetName, hRow);
       setHeaders(extractedHeaders);
     }
   }, [workbook, defaultHeaderRow, extractHeaders]);

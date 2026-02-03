@@ -23,6 +23,7 @@ function chunkArray<T>(array: T[], size: number): T[][] {
   return chunks;
 }
 
+
 // 컬렉션 이름
 const COLLECTIONS = {
   businesses: 'businesses',
@@ -51,7 +52,7 @@ const fromTimestamp = (ts: Timestamp | undefined) => {
 };
 
 // undefined 값 제거 (Firestore는 undefined를 허용하지 않음)
-const removeUndefined = <T extends Record<string, unknown>>(obj: T): T => {
+const cleanUndefined = <T extends Record<string, unknown>>(obj: T): T => {
   return Object.fromEntries(
     Object.entries(obj).filter(([, v]) => v !== undefined)
   ) as T;
@@ -98,11 +99,11 @@ export async function getWorkers(): Promise<Worker[]> {
 }
 
 export async function saveWorker(worker: Worker): Promise<void> {
-  await setDoc(doc(db, COLLECTIONS.workers, worker.id), {
+  await setDoc(doc(db, COLLECTIONS.workers, worker.id), cleanUndefined({
     ...worker,
     createdAt: toTimestamp(worker.createdAt),
     updatedAt: toTimestamp(worker.updatedAt),
-  });
+  }));
 }
 
 export async function saveWorkers(workers: Worker[]): Promise<void> {
@@ -111,11 +112,11 @@ export async function saveWorkers(workers: Worker[]): Promise<void> {
     const batch = writeBatch(db);
     chunk.forEach((worker) => {
       const ref = doc(db, COLLECTIONS.workers, worker.id);
-      batch.set(ref, {
+      batch.set(ref, cleanUndefined({
         ...worker,
         createdAt: toTimestamp(worker.createdAt),
         updatedAt: toTimestamp(worker.updatedAt),
-      });
+      }));
     });
     await batch.commit();
   }
@@ -136,7 +137,7 @@ export async function getEmployments(): Promise<Employment[]> {
 }
 
 export async function saveEmployment(employment: Employment): Promise<void> {
-  await setDoc(doc(db, COLLECTIONS.employments, employment.id), removeUndefined({
+  await setDoc(doc(db, COLLECTIONS.employments, employment.id), cleanUndefined({
     ...employment,
     createdAt: toTimestamp(employment.createdAt),
     updatedAt: toTimestamp(employment.updatedAt),
@@ -149,7 +150,7 @@ export async function saveEmployments(employments: Employment[]): Promise<void> 
     const batch = writeBatch(db);
     chunk.forEach((emp) => {
       const ref = doc(db, COLLECTIONS.employments, emp.id);
-      batch.set(ref, removeUndefined({
+      batch.set(ref, cleanUndefined({
         ...emp,
         createdAt: toTimestamp(emp.createdAt),
         updatedAt: toTimestamp(emp.updatedAt),
@@ -316,10 +317,10 @@ export async function saveMonthlyWages(wages: MonthlyWage[]): Promise<void> {
     const batch = writeBatch(db);
     chunk.forEach((wage) => {
       const ref = doc(db, COLLECTIONS.monthlyWages, wage.id);
-      batch.set(ref, {
+      batch.set(ref, cleanUndefined({
         ...wage,
         createdAt: toTimestamp(wage.createdAt),
-      });
+      }));
     });
     await batch.commit();
   }
@@ -355,7 +356,12 @@ export async function getExcelMappings(): Promise<ExcelMapping[]> {
 }
 
 export async function saveExcelMapping(mapping: ExcelMapping): Promise<void> {
-  await setDoc(doc(db, COLLECTIONS.excelMappings, mapping.businessId), mapping);
+  // Firebase는 undefined 값을 허용하지 않으므로 중첩 객체도 정리
+  const cleanedMapping = {
+    ...mapping,
+    columns: cleanUndefined(mapping.columns as Record<string, unknown>),
+  };
+  await setDoc(doc(db, COLLECTIONS.excelMappings, mapping.businessId), cleanUndefined(cleanedMapping as Record<string, unknown>));
 }
 
 // === 퇴직금 계산 ===
@@ -388,7 +394,7 @@ export async function getRetirementCalculationsByBusiness(businessId: string): P
 }
 
 export async function saveRetirementCalculation(calculation: RetirementCalculation): Promise<void> {
-  await setDoc(doc(db, COLLECTIONS.retirementCalculations, calculation.id), removeUndefined({
+  await setDoc(doc(db, COLLECTIONS.retirementCalculations, calculation.id), cleanUndefined({
     ...calculation,
     calculatedAt: toTimestamp(calculation.calculatedAt),
   }));
@@ -487,7 +493,7 @@ export async function getSendHistoryByWorker(workerId: string, yearMonth?: strin
 
 export async function saveSendHistory(history: Omit<SendHistory, 'id'>): Promise<string> {
   const id = doc(collection(db, COLLECTIONS.sendHistory)).id;
-  await setDoc(doc(db, COLLECTIONS.sendHistory, id), removeUndefined({
+  await setDoc(doc(db, COLLECTIONS.sendHistory, id), cleanUndefined({
     ...history,
     sentAt: toTimestamp(history.sentAt),
     deliveredAt: history.deliveredAt ? toTimestamp(history.deliveredAt) : undefined,

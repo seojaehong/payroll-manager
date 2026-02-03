@@ -2,6 +2,9 @@
 
 /**
  * 급여명세서 발송 탭 컴포넌트
+ * - 명세서 미리보기
+ * - PDF 다운로드
+ * - 이메일/SMS/카카오 발송
  */
 
 import { useState, useMemo } from 'react';
@@ -29,6 +32,12 @@ interface WorkerSendState {
   channels?: SendChannel[];
 }
 
+// 숫자 포맷
+function formatNumber(num: number | undefined | null): string {
+  if (num === undefined || num === null || isNaN(num)) return '0';
+  return num.toLocaleString('ko-KR');
+}
+
 export function PayslipTab({
   businessId,
   business,
@@ -48,11 +57,13 @@ export function PayslipTab({
   const [sendStates, setSendStates] = useState<Record<string, WorkerSendState>>({});
   const [isBulkSending, setIsBulkSending] = useState(false);
 
+  // 미리보기 상태
+  const [previewData, setPreviewData] = useState<PayslipData | null>(null);
+
   // 해당 월의 급여 데이터가 있는 근로자 목록
   const workersWithWages = useMemo(() => {
     return businessEmployments
       .filter(({ employment }) => {
-        // 해당 월에 재직 중이었던 근로자만
         const yearMonth = selectedYearMonth;
         const joinYM = employment.joinDate?.slice(0, 7) || '';
         const leaveYM = employment.leaveDate?.slice(0, 7) || '9999-12';
@@ -64,15 +75,11 @@ export function PayslipTab({
         );
         return { employment, worker, wage };
       })
-      .filter(({ wage }) => wage); // 급여 데이터가 있는 경우만
+      .filter(({ wage }) => wage);
   }, [businessEmployments, monthlyWages, selectedYearMonth]);
 
   // 급여명세서 데이터 생성
-  const createPayslipData = (
-    worker: Worker,
-    wage: MonthlyWage
-  ): PayslipData => {
-    // 공제 합계 계산
+  const createPayslipData = (worker: Worker, wage: MonthlyWage): PayslipData => {
     const totalDeduction =
       (wage.nps || 0) +
       (wage.nhic || 0) +
@@ -82,10 +89,7 @@ export function PayslipTab({
       (wage.localTax || 0) +
       (wage.otherDeduction || 0);
 
-    // 연장근로 합산 (평일 + 주말)
     const overtimeTotal = (wage.overtimeWage || 0) + (wage.overtimeWeekday || 0) + (wage.overtimeWeekend || 0);
-
-    // 기타수당 계산 (식대 + 차량유지비 + 연차수당 + otherWage)
     const otherWageTotal = (wage.mealAllowance || 0) + (wage.carAllowance || 0) + (wage.annualLeaveWage || 0) + (wage.otherWage || 0);
 
     return {
@@ -93,15 +97,13 @@ export function PayslipTab({
       businessBizNo: business.bizNo,
       workerName: worker.name,
       yearMonth: wage.yearMonth,
-      // 지급 항목 (값이 있는 항목은 모두 전달)
-      basicWage: wage.basicWage ?? wage.totalWage, // 기본급이 없으면 총액 사용
+      basicWage: wage.basicWage ?? wage.totalWage,
       overtimeWage: overtimeTotal || undefined,
       nightWage: wage.nightWage || undefined,
       holidayWage: wage.holidayWage || undefined,
       bonusWage: wage.bonusWage || undefined,
       otherWage: otherWageTotal || undefined,
       totalWage: wage.totalWage,
-      // 공제 항목
       nps: wage.nps || 0,
       nhic: wage.nhic || 0,
       ltc: wage.ltc || 0,
@@ -110,11 +112,16 @@ export function PayslipTab({
       localTax: wage.localTax || 0,
       otherDeduction: wage.otherDeduction,
       totalDeduction,
-      // 실수령액
       netWage: wage.netWage || wage.totalWage - totalDeduction,
       workDays: wage.workDays,
       generatedAt: new Date(),
     };
+  };
+
+  // 미리보기 열기
+  const handlePreview = (worker: Worker, wage: MonthlyWage) => {
+    const data = createPayslipData(worker, wage);
+    setPreviewData(data);
   };
 
   // 전체 선택/해제
@@ -155,17 +162,12 @@ export function PayslipTab({
   };
 
   // 개별 발송
-  const handleSendToWorker = async (
-    worker: Worker,
-    employment: Employment,
-    wage: MonthlyWage
-  ) => {
+  const handleSendToWorker = async (worker: Worker, employment: Employment, wage: MonthlyWage) => {
     if (selectedChannels.size === 0) {
       alert('발송 채널을 선택해주세요.');
       return;
     }
 
-    // 이메일/전화번호 확인
     const channels = Array.from(selectedChannels);
     if (channels.includes('email') && !worker.email) {
       alert(`${worker.name}의 이메일 정보가 없습니다.`);
@@ -190,10 +192,7 @@ export function PayslipTab({
         body: JSON.stringify({
           payslipData,
           channels,
-          recipient: {
-            email: worker.email,
-            phone: worker.phone,
-          },
+          recipient: { email: worker.email, phone: worker.phone },
           attachPdf,
           includeLink,
           businessId,
@@ -216,11 +215,7 @@ export function PayslipTab({
       } else {
         setSendStates((prev) => ({
           ...prev,
-          [worker.id]: {
-            status: 'error',
-            message: result.error || '발송 실패',
-            channels,
-          },
+          [worker.id]: { status: 'error', message: result.error || '발송 실패', channels },
         }));
       }
     } catch (error) {
@@ -246,18 +241,14 @@ export function PayslipTab({
       return;
     }
 
-    const confirm = window.confirm(
-      `${selectedWorkers.size}명에게 급여명세서를 발송하시겠습니까?`
-    );
+    const confirm = window.confirm(`${selectedWorkers.size}명에게 급여명세서를 발송하시겠습니까?`);
     if (!confirm) return;
 
     setIsBulkSending(true);
 
-    // 선택된 근로자들에게 순차 발송
     for (const item of workersWithWages) {
       if (selectedWorkers.has(item.worker.id) && item.wage) {
         await handleSendToWorker(item.worker, item.employment, item.wage);
-        // 발송 간격 (rate limit 방지)
         await new Promise((resolve) => setTimeout(resolve, 500));
       }
     }
@@ -266,7 +257,7 @@ export function PayslipTab({
     alert('일괄 발송이 완료되었습니다.');
   };
 
-  // 연월 선택 옵션 생성
+  // 연월 옵션
   const yearMonthOptions = useMemo(() => {
     const options: string[] = [];
     const now = new Date();
@@ -281,20 +272,52 @@ export function PayslipTab({
     <div>
       {/* 헤더 */}
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-semibold text-white">급여명세서 발송</h2>
-        <div className="flex items-center gap-4">
-          {/* 연월 선택 */}
-          <select
-            value={selectedYearMonth}
-            onChange={(e) => setSelectedYearMonth(e.target.value)}
-            className="bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white"
+        <div>
+          <h2 className="text-xl font-semibold text-white">급여명세서</h2>
+          <p className="text-white/40 text-sm mt-1">
+            {workersWithWages.length}명의 급여 데이터
+          </p>
+        </div>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => {
+              const [y, m] = selectedYearMonth.split('-').map(Number);
+              const prev = new Date(y, m - 2, 1);
+              setSelectedYearMonth(`${prev.getFullYear()}-${String(prev.getMonth() + 1).padStart(2, '0')}`);
+            }}
+            className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/60 hover:text-white transition-all"
           >
-            {yearMonthOptions.map((ym) => (
-              <option key={ym} value={ym} className="bg-gray-800">
-                {ym.replace('-', '년 ')}월
-              </option>
-            ))}
-          </select>
+            ←
+          </button>
+          <div className="px-4 py-2 bg-white/10 rounded-xl border border-white/10">
+            <select
+              value={selectedYearMonth}
+              onChange={(e) => setSelectedYearMonth(e.target.value)}
+              className="bg-transparent text-white font-semibold text-lg focus:outline-none cursor-pointer"
+            >
+              {yearMonthOptions.map((ym) => {
+                const [y, m] = ym.split('-');
+                return (
+                  <option key={ym} value={ym} className="bg-slate-800">
+                    {y}년 {parseInt(m)}월
+                  </option>
+                );
+              })}
+            </select>
+          </div>
+          <button
+            onClick={() => {
+              const [y, m] = selectedYearMonth.split('-').map(Number);
+              const next = new Date(y, m, 1);
+              const nextYm = `${next.getFullYear()}-${String(next.getMonth() + 1).padStart(2, '0')}`;
+              if (yearMonthOptions.includes(nextYm)) {
+                setSelectedYearMonth(nextYm);
+              }
+            }}
+            className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/60 hover:text-white transition-all"
+          >
+            →
+          </button>
         </div>
       </div>
 
@@ -318,7 +341,7 @@ export function PayslipTab({
               onChange={() => toggleChannel('sms')}
               className="rounded"
             />
-            <span className="text-white/80">📱 문자 (SMS)</span>
+            <span className="text-white/80">📱 문자</span>
           </label>
           <label className="flex items-center gap-2 cursor-pointer">
             <input
@@ -334,21 +357,11 @@ export function PayslipTab({
         {selectedChannels.has('email') && (
           <div className="flex gap-4 text-sm">
             <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={attachPdf}
-                onChange={(e) => setAttachPdf(e.target.checked)}
-                className="rounded"
-              />
+              <input type="checkbox" checked={attachPdf} onChange={(e) => setAttachPdf(e.target.checked)} className="rounded" />
               <span className="text-white/60">PDF 첨부</span>
             </label>
             <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={includeLink}
-                onChange={(e) => setIncludeLink(e.target.checked)}
-                className="rounded"
-              />
+              <input type="checkbox" checked={includeLink} onChange={(e) => setIncludeLink(e.target.checked)} className="rounded" />
               <span className="text-white/60">웹 링크 포함</span>
             </label>
           </div>
@@ -358,16 +371,11 @@ export function PayslipTab({
       {/* 근로자 목록 */}
       {workersWithWages.length === 0 ? (
         <div className="text-center py-12">
-          <p className="text-white/40">
-            {selectedYearMonth.replace('-', '년 ')}월 급여 데이터가 없습니다.
-          </p>
-          <p className="text-white/30 text-sm mt-2">
-            &apos;급여 이력&apos; 탭에서 급여 데이터를 먼저 업로드해주세요.
-          </p>
+          <p className="text-white/40">{selectedYearMonth.replace('-', '년 ')}월 급여 데이터가 없습니다.</p>
+          <p className="text-white/30 text-sm mt-2">&apos;급여 이력&apos; 탭에서 급여 데이터를 먼저 업로드해주세요.</p>
         </div>
       ) : (
         <>
-          {/* 일괄 작업 버튼 */}
           <div className="flex items-center justify-between mb-4">
             <label className="flex items-center gap-2 cursor-pointer">
               <input
@@ -376,9 +384,7 @@ export function PayslipTab({
                 onChange={toggleSelectAll}
                 className="rounded"
               />
-              <span className="text-white/60 text-sm">
-                전체 선택 ({selectedWorkers.size}/{workersWithWages.length})
-              </span>
+              <span className="text-white/60 text-sm">전체 선택 ({selectedWorkers.size}/{workersWithWages.length})</span>
             </label>
             <button
               onClick={handleBulkSend}
@@ -393,133 +399,283 @@ export function PayslipTab({
             </button>
           </div>
 
-          {/* 테이블 */}
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="text-left text-white/50 text-sm border-b border-white/10">
-                  <th className="pb-3 w-10"></th>
-                  <th className="pb-3">근로자</th>
-                  <th className="pb-3 text-right">지급액</th>
-                  <th className="pb-3 text-right">공제액</th>
-                  <th className="pb-3 text-right">실수령액</th>
-                  <th className="pb-3 text-center">상태</th>
-                  <th className="pb-3 text-center">작업</th>
-                </tr>
-              </thead>
-              <tbody>
-                {workersWithWages.map(({ worker, employment, wage }) => {
-                  const state = sendStates[worker.id];
-                  return (
-                    <tr key={worker.id} className="border-b border-white/5">
-                      <td className="py-3">
-                        <input
-                          type="checkbox"
-                          checked={selectedWorkers.has(worker.id)}
-                          onChange={() => toggleSelectWorker(worker.id)}
-                          className="rounded"
-                        />
-                      </td>
-                      <td className="py-3">
-                        <div>
-                          <p className="text-white font-medium">{worker.name}</p>
-                          <p className="text-white/40 text-xs">
-                            {worker.email || worker.phone || '연락처 없음'}
-                          </p>
-                        </div>
-                      </td>
-                      <td className="py-3 text-right text-white/80">
-                        {wage?.totalWage.toLocaleString()}원
-                      </td>
-                      <td className="py-3 text-right text-red-400">
-                        {wage
-                          ? (
-                              (wage.nps || 0) +
-                              (wage.nhic || 0) +
-                              (wage.ltc || 0) +
-                              (wage.ei || 0) +
-                              (wage.incomeTax || 0) +
-                              (wage.localTax || 0)
-                            ).toLocaleString()
-                          : 0}
-                        원
-                      </td>
-                      <td className="py-3 text-right text-green-400 font-medium">
-                        {wage?.netWage?.toLocaleString() ||
-                          (wage
-                            ? (
-                                wage.totalWage -
-                                ((wage.nps || 0) +
-                                  (wage.nhic || 0) +
-                                  (wage.ltc || 0) +
-                                  (wage.ei || 0) +
-                                  (wage.incomeTax || 0) +
-                                  (wage.localTax || 0))
-                              ).toLocaleString()
-                            : 0)}
-                        원
-                      </td>
-                      <td className="py-3 text-center">
-                        {state?.status === 'sending' && (
-                          <span className="text-yellow-400 text-sm">발송 중...</span>
-                        )}
-                        {state?.status === 'success' && (
-                          <span className="text-green-400 text-sm">✓ {state.message}</span>
-                        )}
-                        {state?.status === 'error' && (
-                          <span className="text-red-400 text-sm" title={state.message}>
-                            ✕ 실패
-                          </span>
-                        )}
-                        {!state && <span className="text-white/30 text-sm">-</span>}
-                      </td>
-                      <td className="py-3 text-center">
-                        <div className="flex items-center justify-center gap-2">
-                          <button
-                            onClick={() => wage && handleDownloadPdf(worker, wage)}
-                            className="text-white/50 hover:text-white text-sm"
-                            title="PDF 다운로드"
-                          >
-                            📥
-                          </button>
-                          <button
-                            onClick={() =>
-                              wage && handleSendToWorker(worker, employment, wage)
-                            }
-                            disabled={state?.status === 'sending'}
-                            className={`text-sm ${
-                              state?.status === 'sending'
-                                ? 'text-white/30'
-                                : 'text-blue-400 hover:text-blue-300'
-                            }`}
-                            title="발송"
-                          >
-                            📤
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+          <div className="space-y-2">
+            {workersWithWages.map(({ worker, employment, wage }) => {
+              const state = sendStates[worker.id];
+              const totalDeduction = wage
+                ? (wage.nps || 0) + (wage.nhic || 0) + (wage.ltc || 0) + (wage.ei || 0) + (wage.incomeTax || 0) + (wage.localTax || 0)
+                : 0;
+              const netWage = wage?.netWage || (wage ? wage.totalWage - totalDeduction : 0);
+              const hasContact = worker.email || worker.phone;
+
+              return (
+                <div
+                  key={worker.id}
+                  className={`flex items-center gap-4 p-4 rounded-xl transition-all ${
+                    selectedWorkers.has(worker.id)
+                      ? 'bg-blue-500/10 border border-blue-500/30'
+                      : 'bg-white/5 border border-transparent hover:bg-white/8'
+                  }`}
+                >
+                  <input
+                    type="checkbox"
+                    checked={selectedWorkers.has(worker.id)}
+                    onChange={() => toggleSelectWorker(worker.id)}
+                    className="w-5 h-5 rounded-md bg-white/10 border-white/20 text-blue-500"
+                  />
+
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="text-white font-semibold">{worker.name}</span>
+                      {!hasContact && (
+                        <span className="px-2 py-0.5 text-xs bg-yellow-500/20 text-yellow-400 rounded-full">연락처 없음</span>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-3 mt-1 text-sm">
+                      {worker.email && <span className="text-white/50">✉ {worker.email}</span>}
+                      {worker.phone && <span className="text-white/50">☎ {worker.phone}</span>}
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-6 text-right">
+                    <div>
+                      <p className="text-white/40 text-xs">지급</p>
+                      <p className="text-white font-medium">{wage?.totalWage.toLocaleString()}</p>
+                    </div>
+                    <div>
+                      <p className="text-white/40 text-xs">공제</p>
+                      <p className="text-red-400/80">-{totalDeduction.toLocaleString()}</p>
+                    </div>
+                    <div className="pl-4 border-l border-white/10">
+                      <p className="text-white/40 text-xs">실수령</p>
+                      <p className="text-green-400 font-bold text-lg">{netWage.toLocaleString()}</p>
+                    </div>
+                  </div>
+
+                  <div className="w-24 text-center">
+                    {state?.status === 'sending' && <span className="text-yellow-400 text-sm">발송중...</span>}
+                    {state?.status === 'success' && <span className="text-green-400 text-sm">✓ 완료</span>}
+                    {state?.status === 'error' && <span className="text-red-400 text-sm" title={state.message}>✕ 실패</span>}
+                    {!state && <span className="text-white/20 text-sm">대기</span>}
+                  </div>
+
+                  {/* 작업 버튼 */}
+                  <div className="flex items-center gap-1">
+                    <button
+                      onClick={() => wage && handlePreview(worker, wage)}
+                      className="p-2.5 rounded-lg bg-white/5 hover:bg-white/10 text-white/60 hover:text-white transition-all"
+                      title="명세서 보기"
+                    >
+                      👁
+                    </button>
+                    <button
+                      onClick={() => wage && handleDownloadPdf(worker, wage)}
+                      className="p-2.5 rounded-lg bg-white/5 hover:bg-white/10 text-white/60 hover:text-white transition-all"
+                      title="PDF 다운로드"
+                    >
+                      📥
+                    </button>
+                    <button
+                      onClick={() => wage && handleSendToWorker(worker, employment, wage)}
+                      disabled={state?.status === 'sending' || !hasContact}
+                      className={`p-2.5 rounded-lg transition-all ${
+                        state?.status === 'sending' || !hasContact
+                          ? 'bg-white/5 text-white/20 cursor-not-allowed'
+                          : 'bg-blue-500/20 hover:bg-blue-500/30 text-blue-400'
+                      }`}
+                      title={hasContact ? '발송' : '연락처 없음'}
+                    >
+                      📤
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </>
       )}
 
-      {/* 안내 메시지 */}
+      {/* 안내 */}
       <div className="mt-6 p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg">
-        <h4 className="text-blue-400 font-medium mb-2">📋 발송 안내</h4>
+        <h4 className="text-blue-400 font-medium mb-2">📋 안내</h4>
         <ul className="text-white/60 text-sm space-y-1">
-          <li>• 이메일: SMTP 설정이 필요합니다 (.env.local)</li>
-          <li>• 문자(SMS): CoolSMS API 키가 필요합니다</li>
-          <li>• 카카오톡: 카카오 비즈니스 채널 및 알림톡 템플릿 승인이 필요합니다</li>
-          <li>• 웹 링크는 7일간 유효하며, 최대 5회 조회 가능합니다</li>
+          <li>• 👁 명세서 보기: 발송 전 미리보기</li>
+          <li>• 📥 PDF 다운로드: 로컬에 PDF 저장</li>
+          <li>• 📤 발송: 이메일/SMS/카카오톡 전송</li>
         </ul>
       </div>
 
-      {/* 발송 이력 */}
       <SendHistoryList businessId={businessId} yearMonth={selectedYearMonth} />
+
+      {/* 명세서 미리보기 모달 */}
+      {previewData && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-auto">
+            {/* 명세서 내용 */}
+            <div className="p-8">
+              {/* 헤더 */}
+              <div className="text-center mb-6 pb-4 border-b-4 border-blue-600">
+                <h1 className="text-3xl font-bold text-blue-600">급여명세서</h1>
+                <p className="text-gray-600 mt-2">{previewData.yearMonth.replace('-', '년 ')}월</p>
+              </div>
+
+              {/* 기본 정보 */}
+              <div className="bg-gray-50 p-4 rounded-lg mb-6">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <span className="text-gray-500 text-sm">사업장</span>
+                    <p className="font-semibold text-gray-900">{previewData.businessName}</p>
+                  </div>
+                  <div>
+                    <span className="text-gray-500 text-sm">사업자번호</span>
+                    <p className="text-gray-700">{previewData.businessBizNo}</p>
+                  </div>
+                  <div>
+                    <span className="text-gray-500 text-sm">성명</span>
+                    <p className="font-bold text-xl text-gray-900">{previewData.workerName}</p>
+                  </div>
+                  <div>
+                    <span className="text-gray-500 text-sm">귀속연월</span>
+                    <p className="text-gray-700">{previewData.yearMonth}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* 지급/공제 */}
+              <div className="grid grid-cols-2 gap-6 mb-6">
+                {/* 지급 내역 */}
+                <div>
+                  <h3 className="font-semibold text-blue-600 border-b-2 border-blue-600 pb-2 mb-3">지급 내역</h3>
+                  <div className="space-y-2">
+                    {previewData.basicWage != null && (
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">기본급</span>
+                        <span className="font-medium">{formatNumber(previewData.basicWage)}원</span>
+                      </div>
+                    )}
+                    {previewData.overtimeWage != null && previewData.overtimeWage > 0 && (
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">연장근로수당</span>
+                        <span className="font-medium">{formatNumber(previewData.overtimeWage)}원</span>
+                      </div>
+                    )}
+                    {previewData.nightWage != null && previewData.nightWage > 0 && (
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">야간근로수당</span>
+                        <span className="font-medium">{formatNumber(previewData.nightWage)}원</span>
+                      </div>
+                    )}
+                    {previewData.holidayWage != null && previewData.holidayWage > 0 && (
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">휴일근로수당</span>
+                        <span className="font-medium">{formatNumber(previewData.holidayWage)}원</span>
+                      </div>
+                    )}
+                    {previewData.bonusWage != null && previewData.bonusWage > 0 && (
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">상여금</span>
+                        <span className="font-medium">{formatNumber(previewData.bonusWage)}원</span>
+                      </div>
+                    )}
+                    {previewData.otherWage != null && previewData.otherWage > 0 && (
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">기타수당</span>
+                        <span className="font-medium">{formatNumber(previewData.otherWage)}원</span>
+                      </div>
+                    )}
+                    <div className="flex justify-between pt-2 border-t bg-blue-50 p-2 rounded -mx-2">
+                      <span className="font-bold text-blue-700">지급 합계</span>
+                      <span className="font-bold text-blue-700">{formatNumber(previewData.totalWage)}원</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 공제 내역 */}
+                <div>
+                  <h3 className="font-semibold text-red-600 border-b-2 border-red-600 pb-2 mb-3">공제 내역</h3>
+                  <div className="space-y-2">
+                    {previewData.nps > 0 && (
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">국민연금</span>
+                        <span className="font-medium">{formatNumber(previewData.nps)}원</span>
+                      </div>
+                    )}
+                    {previewData.nhic > 0 && (
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">건강보험</span>
+                        <span className="font-medium">{formatNumber(previewData.nhic)}원</span>
+                      </div>
+                    )}
+                    {previewData.ltc > 0 && (
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">장기요양보험</span>
+                        <span className="font-medium">{formatNumber(previewData.ltc)}원</span>
+                      </div>
+                    )}
+                    {previewData.ei > 0 && (
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">고용보험</span>
+                        <span className="font-medium">{formatNumber(previewData.ei)}원</span>
+                      </div>
+                    )}
+                    {previewData.incomeTax > 0 && (
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">소득세</span>
+                        <span className="font-medium">{formatNumber(previewData.incomeTax)}원</span>
+                      </div>
+                    )}
+                    {previewData.localTax > 0 && (
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">지방소득세</span>
+                        <span className="font-medium">{formatNumber(previewData.localTax)}원</span>
+                      </div>
+                    )}
+                    {previewData.otherDeduction != null && previewData.otherDeduction > 0 && (
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">기타공제</span>
+                        <span className="font-medium">{formatNumber(previewData.otherDeduction)}원</span>
+                      </div>
+                    )}
+                    <div className="flex justify-between pt-2 border-t bg-red-50 p-2 rounded -mx-2">
+                      <span className="font-bold text-red-700">공제 합계</span>
+                      <span className="font-bold text-red-700">{formatNumber(previewData.totalDeduction)}원</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* 실수령액 */}
+              <div className="bg-blue-600 text-white p-6 rounded-xl flex justify-between items-center">
+                <span className="text-xl font-semibold">실수령액</span>
+                <span className="text-3xl font-bold">{formatNumber(previewData.netWage)}원</span>
+              </div>
+
+              {/* 근무정보 */}
+              {previewData.workDays && (
+                <div className="mt-4 p-3 bg-gray-50 rounded-lg text-sm text-gray-600">
+                  근무일수: <strong>{previewData.workDays}일</strong>
+                </div>
+              )}
+            </div>
+
+            {/* 모달 버튼 */}
+            <div className="flex gap-3 p-4 border-t bg-gray-50 rounded-b-2xl">
+              <button
+                onClick={() => downloadPayslipPDF(previewData, `급여명세서_${previewData.workerName}_${previewData.yearMonth}`)}
+                className="flex-1 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700"
+              >
+                📥 PDF 다운로드
+              </button>
+              <button
+                onClick={() => setPreviewData(null)}
+                className="flex-1 py-3 bg-gray-200 text-gray-700 rounded-lg font-medium hover:bg-gray-300"
+              >
+                닫기
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
