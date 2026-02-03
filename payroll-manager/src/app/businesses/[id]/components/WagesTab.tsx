@@ -186,6 +186,10 @@ export function WagesTab({
 
     setBatchProcessing(true);
     let totalImported = 0;
+    let totalSkipped = 0;
+    let noWorkerCount = 0;
+    let noEmploymentCount = 0;
+    const fileResults: { yearMonth: string; imported: number; skipped: number }[] = [];
 
     for (const { file, yearMonth } of batchFiles) {
       // 파일 읽기
@@ -198,16 +202,23 @@ export function WagesTab({
       const wb = XLSX.read(data, { type: 'binary' });
       const savedSheet = excelMappings.find((m: any) => m.businessId === businessId)?.sheetName || wb.SheetNames[0];
       const ws = wb.Sheets[savedSheet];
-      if (!ws) continue;
+      if (!ws) {
+        fileResults.push({ yearMonth, imported: 0, skipped: 0 });
+        continue;
+      }
 
       const jsonData = XLSX.utils.sheet_to_json(ws, { header: 1 }) as unknown[][];
       const fm = excel.fieldMapping;
       const nameIdx = fm.name;
       const residentNoIdx = fm.residentNo;
 
-      if (nameIdx == null || residentNoIdx == null) continue;
+      if (nameIdx == null || residentNoIdx == null) {
+        fileResults.push({ yearMonth, imported: 0, skipped: 0 });
+        continue;
+      }
 
       const newWages: MonthlyWage[] = [];
+      let fileSkipped = 0;
 
       for (let i = excel.dataStartRow - 1; i < jsonData.length; i++) {
         const row = jsonData[i] as any[];
@@ -223,10 +234,18 @@ export function WagesTab({
         if (!name || totalWage === 0) continue;
 
         const matchedWorker = workers.find((w) => w.residentNo === residentNo);
-        if (!matchedWorker) continue;
+        if (!matchedWorker) {
+          noWorkerCount++;
+          fileSkipped++;
+          continue;
+        }
 
         const matchedEmp = businessEmployments.find(({ worker }) => worker.id === matchedWorker.id);
-        if (!matchedEmp) continue;
+        if (!matchedEmp) {
+          noEmploymentCount++;
+          fileSkipped++;
+          continue;
+        }
 
         newWages.push(removeUndefined({
           id: `${matchedEmp.employment.id}-${yearMonth}`,
@@ -264,14 +283,29 @@ export function WagesTab({
         addMonthlyWages(newWages);
         totalImported += newWages.length;
       }
+      totalSkipped += fileSkipped;
+      fileResults.push({ yearMonth, imported: newWages.length, skipped: fileSkipped });
     }
 
     setBatchProcessing(false);
     setBatchMode(false);
     setBatchFiles([]);
     setShowMappingModal(false);
-    alert(`일괄 임포트 완료! ${batchFiles.length}개 파일, 총 ${totalImported}건 저장`);
+
+    // 상세 결과 메시지
+    let message = `일괄 임포트 완료!\n\n`;
+    message += `📁 처리: ${batchFiles.length}개 파일\n`;
+    message += `✅ 성공: ${totalImported}건\n`;
+    if (totalSkipped > 0) {
+      message += `⚠️ 건너뜀: ${totalSkipped}건\n`;
+      if (noWorkerCount > 0) message += `   - 미등록 근로자: ${noWorkerCount}건\n`;
+      if (noEmploymentCount > 0) message += `   - 타사업장 소속: ${noEmploymentCount}건\n`;
+    }
+    alert(message);
   };
+
+  // 매칭 상태 타입
+  type MatchStatus = 'matched' | 'no_worker' | 'no_employment';
 
   // 미리보기 로드
   const loadPreview = () => {
@@ -304,16 +338,33 @@ export function WagesTab({
       const totalWage = parseExcelNumber(row[totalWageIdx!]) || 0;
       if (!name || totalWage === 0) continue;
 
+      // 매칭 상태 판단
       const matchedWorker = workers.find((w) => w.residentNo === residentNo);
       const matchedEmp = matchedWorker
         ? businessEmployments.find(({ worker }) => worker.id === matchedWorker.id)
         : null;
 
+      let matchStatus: MatchStatus;
+      let matchReason: string;
+
+      if (matchedEmp) {
+        matchStatus = 'matched';
+        matchReason = '매칭 성공';
+      } else if (!matchedWorker) {
+        matchStatus = 'no_worker';
+        matchReason = `미등록 근로자 (주민번호: ${residentNo.slice(0, 6)}-*******)`;
+      } else {
+        matchStatus = 'no_employment';
+        matchReason = `다른 사업장 소속 (${matchedWorker.name})`;
+      }
+
       const fm = excel.fieldMapping;
       preview.push({
         name,
         residentNo,
-        matched: !!matchedEmp,
+        matched: matchStatus === 'matched',
+        matchStatus,
+        matchReason,
         totalWage,
         // 지급내역
         basicWage: parseExcelNumber(row[fm.basicWage!]),
@@ -495,7 +546,14 @@ export function WagesTab({
         {importPreview.length > 0 && (
           <div className="mt-4">
             <div className="flex justify-between items-center mb-2">
-              <span className="text-white/60 text-sm">미리보기 ({importPreview.length}명)</span>
+              <span className="text-white/60 text-sm">
+                미리보기 ({importPreview.length}명)
+                {importPreview.filter(p => !p.matched).length > 0 && (
+                  <span className="ml-2 text-yellow-400">
+                    ⚠ 매칭 실패 {importPreview.filter(p => !p.matched).length}명
+                  </span>
+                )}
+              </span>
               <button
                 onClick={() => setShowMappingModal(true)}
                 className="text-sm text-blue-400 hover:text-blue-300"
@@ -503,6 +561,30 @@ export function WagesTab({
                 매핑 다시 설정
               </button>
             </div>
+
+            {/* 매칭 실패 요약 */}
+            {importPreview.filter(p => !p.matched).length > 0 && (
+              <div className="mb-3 p-3 bg-yellow-500/10 border border-yellow-500/30 rounded text-sm">
+                <div className="text-yellow-400 font-medium mb-2">매칭 실패 원인:</div>
+                <div className="space-y-1 text-white/70">
+                  {importPreview.filter(p => p.matchStatus === 'no_worker').length > 0 && (
+                    <div className="flex items-center gap-2">
+                      <span className="text-red-400">●</span>
+                      <span>미등록 근로자: {importPreview.filter(p => p.matchStatus === 'no_worker').length}명</span>
+                      <span className="text-xs text-white/50">→ 근로자 등록 필요</span>
+                    </div>
+                  )}
+                  {importPreview.filter(p => p.matchStatus === 'no_employment').length > 0 && (
+                    <div className="flex items-center gap-2">
+                      <span className="text-orange-400">●</span>
+                      <span>다른 사업장 소속: {importPreview.filter(p => p.matchStatus === 'no_employment').length}명</span>
+                      <span className="text-xs text-white/50">→ 고용관계 확인 필요</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
             <div className="max-h-60 overflow-auto">
             <table className="w-full table-glass text-sm">
               <thead>
@@ -511,18 +593,24 @@ export function WagesTab({
                   <th className="px-3 py-2 text-right">임금총액</th>
                   <th className="px-3 py-2 text-right">공제액</th>
                   <th className="px-3 py-2 text-right">실지급액</th>
-                  <th className="px-3 py-2 text-center">매칭</th>
+                  <th className="px-3 py-2 text-left">상태</th>
                 </tr>
               </thead>
               <tbody>
                 {importPreview.map((row, i) => (
-                  <tr key={i} className={row.matched ? '' : 'opacity-50'}>
+                  <tr key={i} className={row.matched ? '' : 'bg-red-500/5'}>
                     <td className="px-3 py-2 text-white">{row.name}</td>
                     <td className="px-3 py-2 text-right text-white/80">{row.totalWage?.toLocaleString() || 0}</td>
                     <td className="px-3 py-2 text-right text-red-400">{row.totalDeduction?.toLocaleString() || 0}</td>
                     <td className="px-3 py-2 text-right text-green-400">{row.netWage?.toLocaleString() || 0}</td>
-                    <td className="px-3 py-2 text-center">
-                      {row.matched ? <span className="text-green-400">O</span> : <span className="text-red-400">X</span>}
+                    <td className="px-3 py-2">
+                      {row.matched ? (
+                        <span className="text-green-400">✓ 매칭</span>
+                      ) : (
+                        <span className={row.matchStatus === 'no_worker' ? 'text-red-400' : 'text-orange-400'} title={row.matchReason}>
+                          ✗ {row.matchStatus === 'no_worker' ? '미등록' : '타사업장'}
+                        </span>
+                      )}
                     </td>
                   </tr>
                 ))}

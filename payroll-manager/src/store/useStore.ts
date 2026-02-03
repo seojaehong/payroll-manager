@@ -279,21 +279,21 @@ interface AppState {
   businesses: Business[];
   addBusiness: (business: Business) => void;
   updateBusiness: (id: string, data: Partial<Business>) => void;
-  deleteBusiness: (id: string) => void;
+  deleteBusiness: (id: string) => Promise<void>;
 
   // 근로자
   workers: Worker[];
   addWorker: (worker: Worker) => void;
   addWorkers: (workers: Worker[]) => void;
   updateWorker: (id: string, data: Partial<Worker>) => void;
-  deleteWorker: (id: string) => void;
+  deleteWorker: (id: string) => Promise<void>;
 
   // 고용 관계
   employments: Employment[];
   addEmployment: (employment: Employment) => void;
   addEmployments: (employments: Employment[]) => void;
   updateEmployment: (id: string, data: Partial<Employment>) => void;
-  deleteEmployment: (id: string) => void;
+  deleteEmployment: (id: string) => Promise<void>;
   deleteEmploymentsByBusiness: (businessId: string) => Promise<number>;
 
   // 신고 이력
@@ -457,11 +457,33 @@ export const useStore = create<AppState>()(
           firestore.saveBusiness(newBusiness).catch(console.error);
         }
       },
-      deleteBusiness: (id) => {
+      deleteBusiness: async (id) => {
+        const state = get();
+        // 1. 해당 사업장의 employments 찾기
+        const businessEmployments = state.employments.filter((e) => e.businessId === id);
+        const employmentIds = businessEmployments.map((e) => e.id);
+
+        // 2. Store에서 cascade 삭제
         set((state) => ({
           businesses: state.businesses.filter((b) => b.id !== id),
+          employments: state.employments.filter((e) => e.businessId !== id),
+          monthlyWages: state.monthlyWages.filter((mw) => !employmentIds.includes(mw.employmentId)),
+          retirementCalculations: state.retirementCalculations.filter((r) => r.businessId !== id),
+          excelMappings: state.excelMappings.filter((m) => m.businessId !== id),
         }));
-        firestore.deleteBusiness(id).catch(console.error);
+
+        // 3. Firestore에서 cascade 삭제 (비동기)
+        try {
+          await Promise.all([
+            firestore.deleteMonthlyWagesByEmployments(employmentIds),
+            firestore.deleteEmploymentsByBusiness(id),
+            firestore.deleteRetirementCalculationsByBusiness(id),
+            firestore.deleteExcelMapping(id).catch(() => {}), // 매핑 없을 수도 있음
+            firestore.deleteBusiness(id),
+          ]);
+        } catch (error) {
+          console.error('사업장 cascade 삭제 실패:', error);
+        }
       },
 
       // 근로자
@@ -485,10 +507,29 @@ export const useStore = create<AppState>()(
           firestore.saveWorker(newWorker).catch(console.error);
         }
       },
-      deleteWorker: (id) => {
+      deleteWorker: async (id) => {
+        const state = get();
+        // 1. 해당 근로자의 employments 찾기
+        const workerEmployments = state.employments.filter((e) => e.workerId === id);
+        const employmentIds = workerEmployments.map((e) => e.id);
+
+        // 2. Store에서 cascade 삭제
         set((state) => ({
           workers: state.workers.filter((w) => w.id !== id),
+          employments: state.employments.filter((e) => e.workerId !== id),
+          monthlyWages: state.monthlyWages.filter((mw) => !employmentIds.includes(mw.employmentId)),
         }));
+
+        // 3. Firestore에서 cascade 삭제 (비동기)
+        try {
+          await Promise.all([
+            firestore.deleteMonthlyWagesByEmployments(employmentIds),
+            firestore.deleteEmploymentsByWorker(id),
+            firestore.deleteWorker(id),
+          ]);
+        } catch (error) {
+          console.error('근로자 cascade 삭제 실패:', error);
+        }
       },
 
       // 고용 관계
@@ -512,10 +553,22 @@ export const useStore = create<AppState>()(
           firestore.saveEmployment(newEmployment).catch(console.error);
         }
       },
-      deleteEmployment: (id) => {
+      deleteEmployment: async (id) => {
+        // 1. Store에서 cascade 삭제
         set((state) => ({
           employments: state.employments.filter((e) => e.id !== id),
+          monthlyWages: state.monthlyWages.filter((mw) => mw.employmentId !== id),
         }));
+
+        // 2. Firestore에서 cascade 삭제 (비동기)
+        try {
+          await Promise.all([
+            firestore.deleteMonthlyWagesByEmployment(id),
+            firestore.deleteEmployment(id),
+          ]);
+        } catch (error) {
+          console.error('고용관계 cascade 삭제 실패:', error);
+        }
       },
       deleteEmploymentsByBusiness: async (businessId) => {
         const state = get();

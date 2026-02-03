@@ -166,13 +166,101 @@ export async function deleteEmploymentsByBusiness(businessId: string): Promise<s
 
   if (snapshot.empty) return deletedIds;
 
-  const batch = writeBatch(db);
-  snapshot.docs.forEach((docSnap) => {
-    batch.delete(docSnap.ref);
-    deletedIds.push(docSnap.id);
-  });
-  await batch.commit();
+  const chunks = chunkArray(snapshot.docs, BATCH_LIMIT);
+  for (const chunk of chunks) {
+    const batch = writeBatch(db);
+    chunk.forEach((docSnap) => {
+      batch.delete(docSnap.ref);
+      deletedIds.push(docSnap.id);
+    });
+    await batch.commit();
+  }
   return deletedIds;
+}
+
+export async function deleteWorker(id: string): Promise<void> {
+  await deleteDoc(doc(db, COLLECTIONS.workers, id));
+}
+
+export async function deleteEmployment(id: string): Promise<void> {
+  await deleteDoc(doc(db, COLLECTIONS.employments, id));
+}
+
+export async function deleteEmploymentsByWorker(workerId: string): Promise<string[]> {
+  const q = query(collection(db, COLLECTIONS.employments), where('workerId', '==', workerId));
+  const snapshot = await getDocs(q);
+  const deletedIds: string[] = [];
+
+  if (snapshot.empty) return deletedIds;
+
+  const chunks = chunkArray(snapshot.docs, BATCH_LIMIT);
+  for (const chunk of chunks) {
+    const batch = writeBatch(db);
+    chunk.forEach((docSnap) => {
+      batch.delete(docSnap.ref);
+      deletedIds.push(docSnap.id);
+    });
+    await batch.commit();
+  }
+  return deletedIds;
+}
+
+export async function deleteMonthlyWagesByEmployment(employmentId: string): Promise<number> {
+  const q = query(collection(db, COLLECTIONS.monthlyWages), where('employmentId', '==', employmentId));
+  const snapshot = await getDocs(q);
+
+  if (snapshot.empty) return 0;
+
+  const chunks = chunkArray(snapshot.docs, BATCH_LIMIT);
+  for (const chunk of chunks) {
+    const batch = writeBatch(db);
+    chunk.forEach((docSnap) => batch.delete(docSnap.ref));
+    await batch.commit();
+  }
+  return snapshot.size;
+}
+
+export async function deleteMonthlyWagesByEmployments(employmentIds: string[]): Promise<number> {
+  if (employmentIds.length === 0) return 0;
+
+  let totalDeleted = 0;
+  // Firestore 'in' 쿼리는 최대 30개까지만 지원
+  const idChunks = chunkArray(employmentIds, 30);
+
+  for (const idChunk of idChunks) {
+    const q = query(collection(db, COLLECTIONS.monthlyWages), where('employmentId', 'in', idChunk));
+    const snapshot = await getDocs(q);
+
+    if (!snapshot.empty) {
+      const docChunks = chunkArray(snapshot.docs, BATCH_LIMIT);
+      for (const docChunk of docChunks) {
+        const batch = writeBatch(db);
+        docChunk.forEach((docSnap) => batch.delete(docSnap.ref));
+        await batch.commit();
+      }
+      totalDeleted += snapshot.size;
+    }
+  }
+  return totalDeleted;
+}
+
+export async function deleteRetirementCalculationsByBusiness(businessId: string): Promise<number> {
+  const q = query(collection(db, COLLECTIONS.retirementCalculations), where('businessId', '==', businessId));
+  const snapshot = await getDocs(q);
+
+  if (snapshot.empty) return 0;
+
+  const chunks = chunkArray(snapshot.docs, BATCH_LIMIT);
+  for (const chunk of chunks) {
+    const batch = writeBatch(db);
+    chunk.forEach((docSnap) => batch.delete(docSnap.ref));
+    await batch.commit();
+  }
+  return snapshot.size;
+}
+
+export async function deleteExcelMapping(businessId: string): Promise<void> {
+  await deleteDoc(doc(db, COLLECTIONS.excelMappings, businessId));
 }
 
 // === 월별 급여 ===
