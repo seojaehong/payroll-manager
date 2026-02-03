@@ -99,9 +99,10 @@ export function truncateTo10(amount: number): number {
   return Math.floor(amount / 10) * 10;
 }
 
-// 근속연수공제 계산 (2025년 기준, 소득세법 시행령 별표2)
+// 근속연수공제 계산 (2026년 기준, 소득세법 시행령 별표2)
+// 주의: 근속연수 1년 미만은 1년으로 올림 (소득세법 제48조)
 export function getServiceYearDeduction(serviceYears: number): number {
-  const years = Math.floor(serviceYears);
+  const years = Math.ceil(serviceYears); // 1년 미만 올림 처리
 
   if (years <= 5) {
     return years * 1000000; // 5년 이하: 연 100만원
@@ -114,10 +115,12 @@ export function getServiceYearDeduction(serviceYears: number): number {
   }
 }
 
-// 환산급여 계산 (퇴직금 ÷ 근속연수 × 12)
-export function getConvertedIncome(retirementPay: number, serviceYears: number): number {
-  if (serviceYears === 0) return 0;
-  return Math.round((retirementPay / serviceYears) * 12);
+// 환산급여 계산 ((퇴직소득 - 근속연수공제) × 12 ÷ 근속연수)
+// 근속연수는 올림 적용
+export function getConvertedIncome(afterDeduction: number, serviceYears: number): number {
+  const years = Math.ceil(serviceYears);
+  if (years === 0) return 0;
+  return Math.round((afterDeduction * 12) / years);
 }
 
 // 환산급여 기준 소득세율표 (2025년 기준, 소득세법 제55조)
@@ -141,15 +144,18 @@ function getTaxRate(convertedIncome: number): { rate: number; deduction: number 
   }
 }
 
-// 퇴직소득세 계산
+// 퇴직소득세 계산 (2026년 기준)
 export function calculateRetirementTax(
   retirementPay: number,
   serviceYears: number
-): { retirementTax: number; localTax: number; taxableIncome: number } {
+): { retirementTax: number; localTax: number; taxableIncome: number; convertedIncome: number; convertedDeduction: number } {
+  // 근속연수 올림 처리
+  const years = Math.ceil(serviceYears);
+
   // 1. 근속연수공제
   const serviceYearDeduction = getServiceYearDeduction(serviceYears);
 
-  // 2. 환산급여 (퇴직금 - 근속연수공제) ÷ 근속연수 × 12
+  // 2. 환산급여 = (퇴직소득 - 근속연수공제) × 12 ÷ 근속연수
   const afterDeduction = Math.max(0, retirementPay - serviceYearDeduction);
   const convertedIncome = getConvertedIncome(afterDeduction, serviceYears);
 
@@ -175,12 +181,12 @@ export function calculateRetirementTax(
   const convertedTax = Math.max(0, taxableIncome * rate - deduction);
 
   // 6. 퇴직소득세 = 환산산출세액 × 근속연수 ÷ 12 (10원 미만 절사)
-  const retirementTax = truncateTo10((convertedTax * serviceYears) / 12);
+  const retirementTax = truncateTo10((convertedTax * years) / 12);
 
   // 7. 지방소득세 = 퇴직소득세 × 10% (10원 미만 절사)
   const localTax = truncateTo10(retirementTax * 0.1);
 
-  return { retirementTax, localTax, taxableIncome };
+  return { retirementTax, localTax, taxableIncome, convertedIncome, convertedDeduction };
 }
 
 // 전체 퇴직금 계산
@@ -215,7 +221,7 @@ export function calculateFullRetirement(
 
   // 퇴직소득세 계산
   const serviceYearDeduction = getServiceYearDeduction(totalYears);
-  const { retirementTax, localTax, taxableIncome } = calculateRetirementTax(retirementPay, totalYears);
+  const { retirementTax, localTax, taxableIncome, convertedIncome, convertedDeduction } = calculateRetirementTax(retirementPay, totalYears);
 
   // 실수령액
   const netRetirementPay = retirementPay - retirementTax - localTax;
@@ -238,6 +244,8 @@ export function calculateFullRetirement(
     retirementPay,
 
     serviceYearDeduction,
+    convertedIncome,
+    convertedDeduction,
     taxableIncome,
     retirementTax,
     localRetirementTax: localTax,

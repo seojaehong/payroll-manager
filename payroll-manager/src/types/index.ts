@@ -205,9 +205,11 @@ export interface RetirementCalculation {
   // 퇴직금
   retirementPay: number;       // 퇴직금 (세전)
 
-  // 퇴직소득세
+  // 퇴직소득세 계산
   serviceYearDeduction: number;  // 근속연수공제
-  taxableIncome: number;         // 과세표준
+  convertedIncome: number;       // 환산급여
+  convertedDeduction: number;    // 환산급여공제
+  taxableIncome: number;         // 과세표준 (환산급여 - 환산급여공제)
   retirementTax: number;         // 퇴직소득세
   localRetirementTax: number;    // 지방소득세 (10%)
 
