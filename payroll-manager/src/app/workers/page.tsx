@@ -2,33 +2,42 @@
 
 import { useStore } from '@/store/useStore';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { RetireModal } from '@/components/ui/RetireModal';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 export default function WorkersPage() {
-  const { workers, businesses, employments, updateEmployment } = useStore();
+  const workers = useStore((state) => state.workers);
+  const employments = useStore((state) => state.employments);
+  const updateEmployment = useStore((state) => state.updateEmployment);
+  const selectedBusinessId = useStore((state) => state.selectedBusinessId);
+
   const [search, setSearch] = useState('');
-  const [filterBusiness, setFilterBusiness] = useState('');
   const [filterStatus, setFilterStatus] = useState<'ALL' | 'ACTIVE' | 'INACTIVE'>('ALL');
   const [retireModal, setRetireModal] = useState<{ employmentId: string; workerName: string } | null>(null);
 
-  const workersWithEmployment = workers.map((worker) => {
-    const employment = employments.find((e) => e.workerId === worker.id);
-    const business = employment ? businesses.find((b) => b.id === employment.businessId) : null;
-    return { worker, employment, business };
-  });
+  // 선택된 사업장의 근로자만 표시
+  const workersWithEmployment = useMemo(() => {
+    if (!selectedBusinessId) return [];
 
-  const filtered = workersWithEmployment.filter(({ worker, employment, business }) => {
+    return employments
+      .filter((e) => e.businessId === selectedBusinessId)
+      .map((employment) => {
+        const worker = workers.find((w) => w.id === employment.workerId);
+        return { worker, employment };
+      })
+      .filter(({ worker }) => worker !== undefined) as { worker: typeof workers[0]; employment: typeof employments[0] }[];
+  }, [selectedBusinessId, employments, workers]);
+
+  const filtered = workersWithEmployment.filter(({ worker, employment }) => {
     const matchSearch =
       worker.name.includes(search) ||
-      worker.residentNo.includes(search) ||
-      business?.name.includes(search);
-    const matchBusiness = !filterBusiness || employment?.businessId === filterBusiness;
+      worker.residentNo.includes(search);
     const matchStatus =
       filterStatus === 'ALL' ||
       (filterStatus === 'ACTIVE' && employment?.status === 'ACTIVE') ||
       (filterStatus === 'INACTIVE' && employment?.status === 'INACTIVE');
-    return matchSearch && matchBusiness && matchStatus;
+    return matchSearch && matchStatus;
   });
 
   const handleRetire = (leaveDate: string, leaveReason: string) => {
@@ -48,11 +57,12 @@ export default function WorkersPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-3xl font-semibold text-white">근로자 관리</h1>
-          <p className="text-white/40 mt-1">근로자 정보를 관리합니다</p>
-        </div>
+      <PageHeader
+        breadcrumbs={[{ label: '근로자 관리' }]}
+        title="근로자 관리"
+        description="근로자 정보를 관리합니다"
+      />
+      <div className="flex justify-end mb-6">
         <Link href="/workers/new" className="btn-primary">
           + 근로자 추가
         </Link>
@@ -63,21 +73,11 @@ export default function WorkersPage() {
         <div className="flex gap-4">
           <input
             type="text"
-            placeholder="이름, 주민번호, 사업장으로 검색..."
+            placeholder="이름, 주민번호로 검색..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="flex-1 input-glass px-4 py-3"
           />
-          <select
-            value={filterBusiness}
-            onChange={(e) => setFilterBusiness(e.target.value)}
-            className="input-glass px-4 py-3 min-w-[180px]"
-          >
-            <option value="">전체 사업장</option>
-            {businesses.map((b) => (
-              <option key={b.id} value={b.id}>{b.name}</option>
-            ))}
-          </select>
           <select
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value as 'ALL' | 'ACTIVE' | 'INACTIVE')}
@@ -117,22 +117,22 @@ export default function WorkersPage() {
               <tr className="text-left">
                 <th className="px-6 py-4">이름</th>
                 <th className="px-6 py-4">주민등록번호</th>
-                <th className="px-6 py-4">사업장</th>
                 <th className="px-6 py-4">입사일</th>
+                <th className="px-6 py-4">퇴사일</th>
                 <th className="px-6 py-4">월평균보수</th>
                 <th className="px-6 py-4">상태</th>
                 <th className="px-6 py-4">작업</th>
               </tr>
             </thead>
             <tbody>
-              {filtered.map(({ worker, employment, business }) => (
+              {filtered.map(({ worker, employment }) => (
                 <tr key={worker.id}>
                   <td className="px-6 py-4 text-white font-medium">{worker.name}</td>
                   <td className="px-6 py-4 text-white/60 font-mono text-sm">
                     {formatResidentNo(worker.residentNo)}
                   </td>
-                  <td className="px-6 py-4 text-white/60">{business?.name || '-'}</td>
                   <td className="px-6 py-4 text-white/60">{employment?.joinDate || '-'}</td>
+                  <td className="px-6 py-4 text-white/60">{employment?.leaveDate || '-'}</td>
                   <td className="px-6 py-4 text-white/60">
                     {employment?.monthlyWage ? employment.monthlyWage.toLocaleString() + '원' : '-'}
                   </td>
@@ -167,7 +167,9 @@ export default function WorkersPage() {
       </div>
 
       <div className="mt-6 text-sm text-white/40">
-        전체 {workers.length}명 | 재직 {employments.filter((e) => e.status === 'ACTIVE').length}명 | 퇴사 {employments.filter((e) => e.status === 'INACTIVE').length}명
+        전체 {workersWithEmployment.length}명 |
+        재직 {workersWithEmployment.filter(({ employment }) => employment?.status === 'ACTIVE').length}명 |
+        퇴사 {workersWithEmployment.filter(({ employment }) => employment?.status === 'INACTIVE').length}명
       </div>
 
       {/* 퇴사 처리 모달 */}

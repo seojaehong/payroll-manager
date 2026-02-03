@@ -1,13 +1,22 @@
 'use client';
 
 import { useStore } from '@/store/useStore';
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useRef } from 'react';
 import { MonthlyWage } from '@/types';
 import * as XLSX from 'xlsx';
+import { PageHeader } from '@/components/ui/PageHeader';
+import { useToast } from '@/components/ui/Toast';
 
 export default function WagesPage() {
-  const { businesses, workers, employments, monthlyWages, addMonthlyWages, excelMappings } = useStore();
-  const [selectedBusiness, setSelectedBusiness] = useState('');
+  const workers = useStore((state) => state.workers);
+  const employments = useStore((state) => state.employments);
+  const monthlyWages = useStore((state) => state.monthlyWages);
+  const addMonthlyWages = useStore((state) => state.addMonthlyWages);
+  const excelMappings = useStore((state) => state.excelMappings);
+  const setExcelMapping = useStore((state) => state.setExcelMapping);
+  const selectedBusiness = useStore((state) => state.selectedBusinessId);
+  const toast = useToast();
+
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear() - 1); // 기본 전년도
   const [editingWages, setEditingWages] = useState<Record<string, Record<string, number>>>({});
   const [importMonth, setImportMonth] = useState('');
@@ -18,6 +27,13 @@ export default function WagesPage() {
   const [sortBy, setSortBy] = useState<'joinDate' | 'name'>('joinDate');
   const [currentPage, setCurrentPage] = useState(1);
   const PAGE_SIZE = 20;
+
+  // 시트 선택 관련 상태
+  const [availableSheets, setAvailableSheets] = useState<string[]>([]);
+  const [selectedSheet, setSelectedSheet] = useState<string>('');
+  const [pendingWorkbook, setPendingWorkbook] = useState<XLSX.WorkBook | null>(null);
+  const [pendingFile, setPendingFile] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // 선택된 사업장의 근로자 목록
   const businessWorkers = useMemo(() => {
@@ -114,6 +130,107 @@ export default function WagesPage() {
     }
   };
 
+  // 시트에서 데이터 추출하는 함수
+  const extractDataFromSheet = useCallback((wb: XLSX.WorkBook, sheetName: string, file: File, showSheetSelectOnFail = false) => {
+    const mapping = excelMappings.find((m) => m.businessId === selectedBusiness);
+    const dataStartRow = mapping?.dataStartRow || 6;
+    const nameCol = mapping?.columns.name || 2;
+    const residentNoCol = mapping?.columns.residentNo || 4;
+    // 급여 컬럼: 매핑에서 가져오기 (wage = 임금총액)
+    const wageCol = mapping?.columns.wage || 21;
+
+    console.log('[급여 업로드] 매핑 정보:', {
+      sheetName,
+      dataStartRow,
+      nameCol,
+      residentNoCol,
+      wageCol,
+      mappingExists: !!mapping,
+    });
+
+    const ws = wb.Sheets[sheetName];
+    if (!ws) {
+      console.error('[급여 업로드] 시트를 찾을 수 없음:', sheetName);
+      return;
+    }
+
+    const jsonData = XLSX.utils.sheet_to_json(ws, { header: 1 }) as unknown[][];
+    console.log('[급여 업로드] 총 행 수:', jsonData.length, '데이터 시작:', dataStartRow);
+
+    // 파일명에서 년월 추출
+    const fileNameMatch = file.name.match(/(\d{4})(\d{2})/);
+    if (fileNameMatch) {
+      setImportMonth(`${fileNameMatch[1]}-${fileNameMatch[2]}`);
+    }
+
+    const preview: typeof importPreview = [];
+    for (let i = dataStartRow - 1; i < jsonData.length; i++) {
+      const row = jsonData[i];
+      if (!row || !row[nameCol - 1]) continue;
+
+      const name = String(row[nameCol - 1] || '').trim();
+      let residentNo = String(row[residentNoCol - 1] || '').replace(/-/g, '').trim();
+      if (residentNo.length < 13 && !isNaN(Number(residentNo))) {
+        residentNo = residentNo.padStart(13, '0');
+      }
+      const wageRaw = row[wageCol - 1];
+      const wage = typeof wageRaw === 'number'
+        ? Math.round(wageRaw)
+        : parseInt(String(wageRaw).replace(/,/g, '')) || 0;
+
+      if (name && wage > 0) {
+        const matchedWorker = workers.find((w) => w.residentNo === residentNo);
+        preview.push({ name, residentNo, wage, matched: !!matchedWorker });
+      }
+    }
+
+    console.log('[급여 업로드] 추출 결과:', preview.length, '건');
+
+    // 0건 로드 시 다른 시트 선택 옵션 제공
+    if (preview.length === 0) {
+      const otherSheets = wb.SheetNames.filter(s => s !== sheetName);
+      if (otherSheets.length > 0 && showSheetSelectOnFail) {
+        toast.show(`${sheetName}에서 데이터를 찾을 수 없습니다. 다른 시트를 선택하세요.`, 'error');
+        setAvailableSheets(wb.SheetNames);
+        setSelectedSheet(otherSheets[0]);
+        setPendingWorkbook(wb);
+        setPendingFile(file);
+        return;
+      } else if (otherSheets.length > 0) {
+        // 자동 진행했는데 실패 → 시트 선택 UI 표시
+        toast.show(`${sheetName}에서 데이터 없음. 시트를 선택하세요.`, 'info');
+        setAvailableSheets(wb.SheetNames);
+        setSelectedSheet(sheetName);
+        setPendingWorkbook(wb);
+        setPendingFile(file);
+        return;
+      }
+    }
+
+    setImportPreview(preview);
+    setAvailableSheets([]);
+    setPendingWorkbook(null);
+    setPendingFile(null);
+
+    // 시트 선택 저장 (성공 시에만)
+    if (preview.length > 0 && selectedBusiness && mapping) {
+      setExcelMapping({ ...mapping, sheetName });
+      toast.show(`${sheetName}에서 ${preview.length}건 로드`, 'success');
+    } else if (preview.length > 0) {
+      toast.show(`${sheetName}에서 ${preview.length}건 로드`, 'success');
+    } else if (preview.length === 0) {
+      toast.show(`데이터를 찾을 수 없습니다. [엑셀 Import]에서 매핑을 확인하세요.`, 'error');
+    }
+  }, [selectedBusiness, excelMappings, workers, setExcelMapping, toast]);
+
+  // 시트 선택 핸들러
+  const handleSheetSelect = useCallback((sheetName: string) => {
+    setSelectedSheet(sheetName);
+    if (pendingWorkbook && pendingFile) {
+      extractDataFromSheet(pendingWorkbook, sheetName, pendingFile, true);
+    }
+  }, [pendingWorkbook, pendingFile, extractDataFromSheet]);
+
   // 엑셀 임포트 핸들러
   const handleExcelImport = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -123,61 +240,46 @@ export default function WagesPage() {
     reader.onload = (event) => {
       const data = event.target?.result;
       const wb = XLSX.read(data, { type: 'binary' });
-
-      // 매핑 설정 가져오기
       const mapping = excelMappings.find((m) => m.businessId === selectedBusiness);
-      const sheetName = mapping?.sheetName || '임금대장';
-      const dataStartRow = mapping?.dataStartRow || 6;
-      const nameCol = mapping?.columns.name || 2;
-      const residentNoCol = mapping?.columns.residentNo || 4;
-      const wageCol = 21; // 임금총액 열 U열 (고정)
 
-      const ws = wb.Sheets[sheetName];
-      if (!ws) {
-        alert(`'${sheetName}' 시트를 찾을 수 없습니다.`);
+      // 1. "임금대장" 포함 시트 찾기
+      const wageSheets = wb.SheetNames.filter((s: string) => s.includes('임금대장'));
+
+      // 2. 저장된 시트명이 있고 존재하면 시도 (실패 시 시트 선택 UI 표시)
+      if (mapping?.sheetName && wb.SheetNames.includes(mapping.sheetName)) {
+        extractDataFromSheet(wb, mapping.sheetName, file, true);
         return;
       }
 
-      const jsonData = XLSX.utils.sheet_to_json(ws, { header: 1 }) as unknown[][];
+      // 3. 임금대장 시트가 1개면 자동 진행 (실패 시 시트 선택 UI 표시)
+      if (wageSheets.length === 1) {
+        extractDataFromSheet(wb, wageSheets[0], file, true);
+        return;
+      }
 
-      // 파일명에서 년월 추출 시도 (예: 쿠우쿠우부평점_202501.xlsx)
+      // 4. 임금대장 시트가 여러 개 또는 없으면 선택 UI 표시
+      if (wageSheets.length > 1) {
+        setAvailableSheets(wageSheets);
+        setSelectedSheet(wageSheets[0]);
+      } else {
+        // 임금대장 시트가 없으면 전체 시트 목록 표시
+        setAvailableSheets(wb.SheetNames);
+        setSelectedSheet(wb.SheetNames[0]);
+      }
+
+      setPendingWorkbook(wb);
+      setPendingFile(file);
+
+      // 파일명에서 년월 추출
       const fileNameMatch = file.name.match(/(\d{4})(\d{2})/);
       if (fileNameMatch) {
         setImportMonth(`${fileNameMatch[1]}-${fileNameMatch[2]}`);
       }
-
-      const preview: typeof importPreview = [];
-      for (let i = dataStartRow - 1; i < jsonData.length; i++) {
-        const row = jsonData[i];
-        if (!row || !row[nameCol - 1]) continue;
-
-        const name = String(row[nameCol - 1] || '').trim();
-        let residentNo = String(row[residentNoCol - 1] || '').replace(/-/g, '').trim();
-        if (residentNo.length < 13 && !isNaN(Number(residentNo))) {
-          residentNo = residentNo.padStart(13, '0');
-        }
-        const wageRaw = row[wageCol - 1];
-        const wage = typeof wageRaw === 'number'
-          ? Math.round(wageRaw)
-          : parseInt(String(wageRaw).replace(/,/g, '')) || 0;
-
-        if (name && wage > 0) {
-          const matchedWorker = workers.find((w) => w.residentNo === residentNo);
-          preview.push({
-            name,
-            residentNo,
-            wage,
-            matched: !!matchedWorker,
-          });
-        }
-      }
-
-      setImportPreview(preview);
     };
 
     reader.readAsBinaryString(file);
-    e.target.value = ''; // 같은 파일 다시 선택 가능하도록
-  }, [selectedBusiness, excelMappings, workers]);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  }, [selectedBusiness, excelMappings, extractDataFromSheet]);
 
   // 다중 파일 일괄 업로드 핸들러
   const handleBulkImport = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -186,11 +288,14 @@ export default function WagesPage() {
 
     setBulkImporting(true);
     const mapping = excelMappings.find((m) => m.businessId === selectedBusiness);
-    const sheetName = mapping?.sheetName || '임금대장';
+    let baseSheetName = mapping?.sheetName || '임금대장';
     const dataStartRow = mapping?.dataStartRow || 6;
     const nameCol = mapping?.columns.name || 2;
     const residentNoCol = mapping?.columns.residentNo || 4;
-    const wageCol = 21;
+    // 급여 컬럼: 매핑에서 가져오기 (wage = 임금총액)
+    const wageCol = mapping?.columns.wage || 21;
+
+    console.log('[일괄 업로드] 매핑:', { baseSheetName, dataStartRow, nameCol, residentNoCol, wageCol });
 
     const processedFiles: typeof bulkImportFiles = [];
 
@@ -208,7 +313,16 @@ export default function WagesPage() {
       });
 
       const wb = XLSX.read(data, { type: 'array' });
-      const ws = wb.Sheets[sheetName];
+      // 시트 찾기: 저장된 시트명 → "임금대장" 포함 시트 → 첫 번째 시트
+      let sheetName = baseSheetName;
+      let ws = wb.Sheets[sheetName];
+      if (!ws) {
+        const fallbackSheet = wb.SheetNames.find((s: string) => s.includes('임금대장')) || wb.SheetNames[0];
+        if (fallbackSheet) {
+          sheetName = fallbackSheet;
+          ws = wb.Sheets[sheetName];
+        }
+      }
       if (!ws) continue;
 
       const jsonData = XLSX.utils.sheet_to_json(ws, { header: 1 }) as unknown[][];
@@ -385,22 +499,14 @@ export default function WagesPage() {
 
   return (
     <div>
-      <h1 className="text-3xl font-semibold text-white mb-2">월별 급여 이력</h1>
-      <p className="text-white/40 mb-8">상실신고 보수총액 계산을 위한 실제 급여 데이터를 입력합니다</p>
+      <PageHeader
+        breadcrumbs={[{ label: '급여 이력' }]}
+        title="월별 급여 이력"
+        description="상실신고 보수총액 계산을 위한 실제 급여 데이터를 입력합니다"
+      />
 
       <div className="glass p-6 mb-6">
-        <div className="grid grid-cols-3 gap-4 mb-6">
-          <div>
-            <label className="block text-sm font-medium text-white/60 mb-2">사업장</label>
-            <select
-              value={selectedBusiness}
-              onChange={(e) => setSelectedBusiness(e.target.value)}
-              className="w-full input-glass px-4 py-3"
-            >
-              <option value="">사업장 선택</option>
-              {businesses.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
-            </select>
-          </div>
+        <div className="grid grid-cols-2 gap-4 mb-6">
           <div>
             <label className="block text-sm font-medium text-white/60 mb-2">연도</label>
             <select
@@ -489,15 +595,43 @@ export default function WagesPage() {
         <div className="glass p-6 mb-6">
           <h2 className="text-lg font-semibold text-white mb-4">단일 파일 임포트</h2>
           <div className="grid grid-cols-4 gap-4 items-end">
-            <div className="col-span-2">
+            <div className={availableSheets.length > 0 ? 'col-span-1' : 'col-span-2'}>
               <label className="block text-sm font-medium text-white/60 mb-2">급여대장 엑셀 파일</label>
               <input
+                ref={fileInputRef}
                 type="file"
                 accept=".xlsx,.xls"
                 onChange={handleExcelImport}
                 className="w-full input-glass px-4 py-3 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-blue-500/20 file:text-blue-400 hover:file:bg-blue-500/30"
               />
             </div>
+
+            {/* 시트 선택 - 여러 시트가 있을 때만 표시 */}
+            {availableSheets.length > 0 && (
+              <div className="col-span-1 animate-fade-in">
+                <label className="block text-sm font-medium text-white/60 mb-2">
+                  시트 선택 <span className="text-blue-400">({availableSheets.length}개)</span>
+                </label>
+                <div className="flex gap-2">
+                  <select
+                    value={selectedSheet}
+                    onChange={(e) => setSelectedSheet(e.target.value)}
+                    className="flex-1 input-glass px-4 py-3"
+                  >
+                    {availableSheets.map((sheet) => (
+                      <option key={sheet} value={sheet}>{sheet}</option>
+                    ))}
+                  </select>
+                  <button
+                    onClick={() => handleSheetSelect(selectedSheet)}
+                    className="px-4 py-3 bg-blue-500 hover:bg-blue-400 text-white rounded-xl transition-colors"
+                  >
+                    확인
+                  </button>
+                </div>
+              </div>
+            )}
+
             <div>
               <label className="block text-sm font-medium text-white/60 mb-2">적용 월</label>
               <input
@@ -556,7 +690,8 @@ export default function WagesPage() {
           {/* 필터 및 정렬 */}
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold text-white">
-              급여 목록 ({businessWorkers.length}명)
+              <span className="text-blue-400">{selectedYear}년</span> 급여 목록
+              <span className="text-white/50 font-normal ml-2">({businessWorkers.length}명)</span>
             </h3>
             <div className="flex items-center gap-4">
               {/* 상태 필터 */}
@@ -609,19 +744,24 @@ export default function WagesPage() {
           </div>
 
           <table className="table-glass text-sm min-w-max">
-            <thead className="sticky top-0 bg-black/80">
+            <thead className="sticky top-0 bg-slate-900/95 backdrop-blur-sm z-20">
               <tr>
-                <th className="px-3 py-2 text-left sticky left-0 bg-black/80 z-10">이름</th>
-                <th className="px-3 py-2 text-left sticky left-[80px] bg-black/80 z-10">입사일</th>
-                {months.map((m) => (
-                  <th key={m} className="px-3 py-2 text-center min-w-[100px]">
-                    {m.split('-')[1]}월
+                <th className="px-4 py-3 text-left sticky left-0 bg-slate-900/95 z-10">
+                  <span className="text-white font-semibold">근로자</span>
+                </th>
+                {months.map((m, idx) => (
+                  <th key={m} className="px-2 py-3 text-center min-w-[90px]">
+                    <span className={`text-sm font-medium ${idx === new Date().getMonth() ? 'text-blue-400' : 'text-white/70'}`}>
+                      {parseInt(m.split('-')[1])}월
+                    </span>
                   </th>
                 ))}
-                <th className="px-3 py-2 text-right">합계</th>
+                <th className="px-4 py-3 text-right">
+                  <span className="text-white/70 font-medium">연간합계</span>
+                </th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-white/5">
               {paginatedWorkers.map(({ worker, employment }) => {
                 const yearTotal = months.reduce((sum, m) => {
                   if (!isWorkedMonth(employment, m)) return sum;
@@ -629,10 +769,17 @@ export default function WagesPage() {
                 }, 0);
 
                 return (
-                  <tr key={worker.id} className="hover:bg-white/5">
-                    <td className="px-3 py-2 text-white sticky left-0 bg-black/50">{worker.name}</td>
-                    <td className="px-3 py-2 text-white/60 sticky left-[80px] bg-black/50 text-xs">
-                      {employment.joinDate || '-'}
+                  <tr key={worker.id} className="hover:bg-white/5 transition-colors">
+                    <td className="px-4 py-3 sticky left-0 bg-slate-900/80 backdrop-blur-sm z-10">
+                      <div className="flex flex-col">
+                        <span className="text-white font-medium">{worker.name}</span>
+                        <span className="text-white/40 text-xs">
+                          {employment.joinDate?.slice(5).replace('-', '/')} 입사
+                          {employment.status === 'INACTIVE' && (
+                            <span className="ml-1 text-red-400/70">· 퇴사</span>
+                          )}
+                        </span>
+                      </div>
                     </td>
                     {months.map((yearMonth) => {
                       const worked = isWorkedMonth(employment, yearMonth);
@@ -640,29 +787,35 @@ export default function WagesPage() {
                       const isEdited = editingWages[employment.id]?.[yearMonth] !== undefined;
 
                       return (
-                        <td key={yearMonth} className="px-1 py-1">
+                        <td key={yearMonth} className="px-1 py-2">
                           {worked ? (
                             <input
                               type="text"
                               value={value?.toLocaleString() || ''}
                               onChange={(e) => handleWageChange(employment.id, yearMonth, e.target.value)}
-                              placeholder="0"
-                              className={`w-full px-2 py-1 text-right text-sm rounded bg-white/5 border ${
+                              placeholder="미입력"
+                              className={`w-full px-2 py-2 text-right text-sm rounded-lg transition-all ${
                                 isEdited
-                                  ? 'border-blue-500/50 bg-blue-500/10'
+                                  ? 'border-2 border-blue-500/60 bg-blue-500/15 text-blue-100 shadow-sm shadow-blue-500/20'
                                   : value
-                                  ? 'border-green-500/30'
-                                  : 'border-red-500/30'
-                              } focus:outline-none focus:border-blue-500`}
+                                  ? 'border border-white/10 bg-white/5 text-white'
+                                  : 'border border-dashed border-white/20 bg-transparent text-white/30 placeholder:text-white/20'
+                              } focus:outline-none focus:border-blue-500 focus:bg-blue-500/10`}
                             />
                           ) : (
-                            <span className="text-white/20 text-center block">-</span>
+                            <div className="px-2 py-2 text-center">
+                              <span className="text-white/10">—</span>
+                            </div>
                           )}
                         </td>
                       );
                     })}
-                    <td className="px-3 py-2 text-right text-white font-medium">
-                      {yearTotal > 0 ? yearTotal.toLocaleString() : '-'}
+                    <td className="px-4 py-3 text-right">
+                      {yearTotal > 0 ? (
+                        <span className="text-white font-semibold">{yearTotal.toLocaleString()}</span>
+                      ) : (
+                        <span className="text-white/20">—</span>
+                      )}
                     </td>
                   </tr>
                 );

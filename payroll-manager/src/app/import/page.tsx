@@ -1,9 +1,11 @@
 'use client';
 
 import { useStore } from '@/store/useStore';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import * as XLSX from 'xlsx';
 import { Worker, Employment } from '@/types';
+import { PageHeader } from '@/components/ui/PageHeader';
+import { useToast } from '@/components/ui/Toast';
 
 interface ImportRow {
   name: string;
@@ -11,6 +13,8 @@ interface ImportRow {
   joinDate: string;
   leaveDate?: string;
   wage: number;
+  phone?: string;   // 명세서 발송용
+  email?: string;   // 명세서 발송용
 }
 
 interface HeaderInfo {
@@ -18,18 +22,60 @@ interface HeaderInfo {
   name: string;
 }
 
-// 필드 정의
-const FIELDS = [
-  { key: 'name', label: '이름', required: true },
-  { key: 'residentNo', label: '주민번호', required: true },
-  { key: 'joinDate', label: '입사일', required: false },
-  { key: 'leaveDate', label: '퇴사일', required: false },
-  { key: 'wage', label: '보수월액/임금총액', required: false },
-];
+// 필드 그룹 정의
+const FIELD_GROUPS = {
+  기본정보: [
+    { key: 'name', label: '이름', required: true },
+    { key: 'residentNo', label: '주민번호', required: true },
+    { key: 'joinDate', label: '입사일', required: false },
+    { key: 'leaveDate', label: '퇴사일', required: false },
+    { key: 'phone', label: '전화번호', required: false },
+    { key: 'email', label: '이메일', required: false },
+  ],
+  지급항목: [
+    { key: 'basicWage', label: '기본급', required: false },
+    { key: 'overtimeWage', label: '연장근로수당', required: false },
+    { key: 'nightWage', label: '야간근로수당', required: false },
+    { key: 'holidayWage', label: '휴일근로수당', required: false },
+    { key: 'annualLeaveWage', label: '연차수당', required: false },
+    { key: 'bonusWage', label: '상여금', required: false },
+    { key: 'mealAllowance', label: '식대', required: false },
+    { key: 'carAllowance', label: '차량유지비', required: false },
+    { key: 'otherWage', label: '기타수당', required: false },
+    { key: 'wage', label: '임금총액(세전)', required: false },
+  ],
+  공제항목: [
+    { key: 'nps', label: '국민연금', required: false },
+    { key: 'nhic', label: '건강보험', required: false },
+    { key: 'ltc', label: '장기요양보험', required: false },
+    { key: 'ei', label: '고용보험', required: false },
+    { key: 'incomeTax', label: '소득세', required: false },
+    { key: 'localTax', label: '지방소득세', required: false },
+    { key: 'otherDeduction', label: '기타공제', required: false },
+    { key: 'totalDeduction', label: '공제액합계', required: false },
+    { key: 'advancePayment', label: '기지급액', required: false },
+  ],
+  결과: [
+    { key: 'netWage', label: '실지급액', required: false },
+    { key: 'workDays', label: '근무일수', required: false },
+    { key: 'deductionDays', label: '공제일수', required: false },
+    { key: 'deductionHours', label: '공제시간', required: false },
+  ],
+};
+
+// 모든 필드 키 배열 (초기화용)
+const ALL_FIELD_KEYS = Object.values(FIELD_GROUPS).flat().map(f => f.key);
 
 export default function ImportPage() {
-  const { businesses, workers, addWorkers, addEmployments, deleteEmploymentsByBusiness, excelMappings, setExcelMapping } = useStore();
-  const [selectedBusiness, setSelectedBusiness] = useState('');
+  const businesses = useStore((state) => state.businesses);
+  const workers = useStore((state) => state.workers);
+  const addWorkers = useStore((state) => state.addWorkers);
+  const addEmployments = useStore((state) => state.addEmployments);
+  const deleteEmploymentsByBusiness = useStore((state) => state.deleteEmploymentsByBusiness);
+  const excelMappings = useStore((state) => state.excelMappings);
+  const setExcelMapping = useStore((state) => state.setExcelMapping);
+  const selectedBusiness = useStore((state) => state.selectedBusinessId);
+  const toast = useToast();
   const [previewData, setPreviewData] = useState<ImportRow[]>([]);
   const [fileName, setFileName] = useState('');
   const [sheets, setSheets] = useState<string[]>([]);
@@ -44,17 +90,25 @@ export default function ImportPage() {
   const [dataStartRow, setDataStartRow] = useState(6);
 
   // 필드별 선택된 헤더 인덱스 (null = 선택 안함)
-  const [fieldMapping, setFieldMapping] = useState<Record<string, number | null>>({
-    name: null,
-    residentNo: null,
-    joinDate: null,
-    leaveDate: null,
-    wage: null,
+  const [fieldMapping, setFieldMapping] = useState<Record<string, number | null>>(() => {
+    const initial: Record<string, number | null> = {};
+    ALL_FIELD_KEYS.forEach(key => { initial[key] = null; });
+    return initial;
   });
 
   const business = businesses.find((b) => b.id === selectedBusiness);
 
-  // 헤더 추출 (2행 병합)
+  // 사업장 변경 시 상태 초기화
+  useEffect(() => {
+    setPreviewData([]);
+    setFileName('');
+    setSheets([]);
+    setSelectedSheet('');
+    setWorkbook(null);
+    setHeaders([]);
+  }, [selectedBusiness]);
+
+  // 헤더 추출 (지정된 행 + 이전 행 병합 시도)
   const extractHeaders = useCallback((wb: XLSX.WorkBook, sheetName: string, hRow: number): HeaderInfo[] => {
     const ws = wb.Sheets[sheetName];
     if (!ws) return [];
@@ -62,10 +116,18 @@ export default function ImportPage() {
     const jsonData = XLSX.utils.sheet_to_json(ws, { header: 1 }) as unknown[][];
     const result: HeaderInfo[] = [];
 
+    // 지정된 헤더 행 (1-indexed → 0-indexed)
+    const headerRowIdx = hRow - 1;
+    const prevRowIdx = hRow - 2;
+
     for (let c = 0; c < 60; c++) {
-      const h1 = jsonData[hRow - 2]?.[c];
-      const h2 = jsonData[hRow - 1]?.[c];
-      const name = [h1, h2]
+      // 지정 행의 헤더
+      const mainHeader = jsonData[headerRowIdx]?.[c];
+      // 이전 행 (병합 헤더가 있을 수 있음)
+      const prevHeader = prevRowIdx >= 0 ? jsonData[prevRowIdx]?.[c] : null;
+
+      // 병합: 이전 행 + 현재 행
+      const name = [prevHeader, mainHeader]
         .filter(Boolean)
         .map(v => String(v).replace(/\r?\n/g, ' ').trim())
         .join(' ')
@@ -87,13 +149,12 @@ export default function ImportPage() {
       setHeaderRow(hRow);
       setDataStartRow(existing.dataStartRow || 6);
       // columns는 1-indexed로 저장되어 있으므로 0-indexed로 변환
-      setFieldMapping({
-        name: existing.columns.name != null ? existing.columns.name - 1 : null,
-        residentNo: existing.columns.residentNo != null ? existing.columns.residentNo - 1 : null,
-        joinDate: existing.columns.joinDate != null ? existing.columns.joinDate - 1 : null,
-        leaveDate: existing.columns.leaveDate != null ? existing.columns.leaveDate - 1 : null,
-        wage: existing.columns.wage != null ? existing.columns.wage - 1 : null,
+      const cols = existing.columns as Record<string, number | undefined>;
+      const loaded: Record<string, number | null> = {};
+      ALL_FIELD_KEYS.forEach(key => {
+        loaded[key] = cols[key] != null ? cols[key]! - 1 : null;
       });
+      setFieldMapping(loaded);
       return { sheetName: existing.sheetName, headerRow: hRow };
     }
     return { sheetName: null, headerRow: 4 };
@@ -113,7 +174,9 @@ export default function ImportPage() {
       setSheets(wb.SheetNames);
 
       // 기존 매핑 로드 (동기적으로 headerRow 값 받아옴)
-      const { sheetName: savedSheet, headerRow: savedHeaderRow } = loadExistingMapping(selectedBusiness);
+      const { sheetName: savedSheet, headerRow: savedHeaderRow } = selectedBusiness
+        ? loadExistingMapping(selectedBusiness)
+        : { sheetName: null, headerRow: 4 };
 
       // 시트 선택
       let autoSheet = savedSheet || '';
@@ -156,7 +219,7 @@ export default function ImportPage() {
     const residentNoIdx = fieldMapping.residentNo;
 
     if (nameIdx === null || residentNoIdx === null) {
-      alert('이름과 주민번호 헤더를 선택해주세요.');
+      toast.show('이름과 주민번호 헤더를 선택해주세요.', 'error');
       return;
     }
 
@@ -179,6 +242,9 @@ export default function ImportPage() {
       const joinDateRaw = fieldMapping.joinDate !== null ? row[fieldMapping.joinDate] : null;
       const leaveDateRaw = fieldMapping.leaveDate !== null ? row[fieldMapping.leaveDate] : null;
       const wageRaw = fieldMapping.wage !== null ? row[fieldMapping.wage] : 0;
+      // 전화번호/이메일 추출 (명세서 발송용)
+      const phoneRaw = fieldMapping.phone !== null ? row[fieldMapping.phone] : null;
+      const emailRaw = fieldMapping.email !== null ? row[fieldMapping.email] : null;
 
       const parseDate = (val: unknown): string => {
         if (!val) return '';
@@ -201,40 +267,62 @@ export default function ImportPage() {
       const joinDate = parseDate(joinDateRaw);
       const leaveDate = parseDate(leaveDateRaw);
       const wage = typeof wageRaw === 'number' ? wageRaw : parseInt(String(wageRaw).replace(/,/g, '')) || 0;
+      // 전화번호 정규화 (숫자만 추출 후 포맷)
+      const phone = phoneRaw ? String(phoneRaw).replace(/[^0-9]/g, '') : undefined;
+      const email = emailRaw ? String(emailRaw).trim() : undefined;
 
       if (name && residentNo.length >= 6) {
-        rows.push({ name, residentNo, joinDate, leaveDate: leaveDate || undefined, wage });
+        rows.push({ name, residentNo, joinDate, leaveDate: leaveDate || undefined, wage, phone, email });
       }
     }
 
     setPreviewData(rows);
   };
 
-  // 매핑 저장
+  // 매핑 저장 (undefined 값 제외 - Firebase 호환)
   const saveMapping = () => {
     if (!selectedBusiness) return;
 
     // 0-indexed를 1-indexed로 변환하여 저장
+    // Firebase는 undefined 값을 허용하지 않으므로 필터링
+    const columns: Record<string, number> = {
+      // 필수 필드는 기본값 1
+      name: fieldMapping.name !== null ? fieldMapping.name + 1 : 1,
+      residentNo: fieldMapping.residentNo !== null ? fieldMapping.residentNo + 1 : 1,
+      joinDate: fieldMapping.joinDate !== null ? fieldMapping.joinDate + 1 : 1,
+      leaveDate: fieldMapping.leaveDate !== null ? fieldMapping.leaveDate + 1 : 1,
+      wage: fieldMapping.wage !== null ? fieldMapping.wage + 1 : 1,
+    };
+
+    // 선택 필드는 값이 있을 때만 추가 (undefined 방지)
+    ALL_FIELD_KEYS.forEach(key => {
+      if (!['name', 'residentNo', 'joinDate', 'leaveDate', 'wage'].includes(key)) {
+        if (fieldMapping[key] !== null) {
+          columns[key] = fieldMapping[key]! + 1;
+        }
+      }
+    });
+
     setExcelMapping({
       businessId: selectedBusiness,
       sheetName: selectedSheet,
       headerRow,
       dataStartRow,
-      columns: {
-        name: fieldMapping.name !== null ? fieldMapping.name + 1 : 1,
-        residentNo: fieldMapping.residentNo !== null ? fieldMapping.residentNo + 1 : 1,
-        joinDate: fieldMapping.joinDate !== null ? fieldMapping.joinDate + 1 : 1,
-        leaveDate: fieldMapping.leaveDate !== null ? fieldMapping.leaveDate + 1 : 1,
-        wage: fieldMapping.wage !== null ? fieldMapping.wage + 1 : 1,
+      columns: columns as typeof columns & {
+        name: number;
+        residentNo: number;
+        joinDate: number;
+        leaveDate: number;
+        wage: number;
       },
     });
-    alert('매핑 설정이 저장되었습니다. 다음부터 자동 적용됩니다.');
+    toast.show('매핑 설정이 저장되었습니다.', 'success');
   };
 
   // Import 실행
   const handleImport = async () => {
     if (!selectedBusiness || previewData.length === 0) {
-      alert('사업장을 선택하고 데이터를 미리보기하세요.');
+      toast.show('사업장을 선택하고 데이터를 미리보기하세요.', 'error');
       return;
     }
 
@@ -327,13 +415,13 @@ export default function ImportPage() {
       if (newEmployments.length > 0) addEmployments(newEmployments);
 
       const resultMsg = overwriteMode
-        ? `Import 완료!\n- 기존 삭제: ${deletedCount}명\n- 신규 근로자: ${newWorkerCount}명\n- 고용관계 추가: ${newEmploymentCount}명`
-        : `Import 완료!\n- 신규 근로자: ${newWorkerCount}명\n- 고용관계 추가: ${newEmploymentCount}명\n- 중복 스킵: ${skippedCount}명`;
-      alert(resultMsg);
+        ? `Import 완료! 기존 삭제: ${deletedCount}명, 신규: ${newWorkerCount}명, 추가: ${newEmploymentCount}명`
+        : `Import 완료! 신규: ${newWorkerCount}명, 추가: ${newEmploymentCount}명, 중복 스킵: ${skippedCount}명`;
+      toast.show(resultMsg, 'success');
       setPreviewData([]);
     } catch (error) {
       console.error('Import 에러:', error);
-      alert('Import 중 오류가 발생했습니다.');
+      toast.show('Import 중 오류가 발생했습니다.', 'error');
     } finally {
       setIsImporting(false);
     }
@@ -341,28 +429,17 @@ export default function ImportPage() {
 
   return (
     <div>
-      <h1 className="text-3xl font-semibold text-white mb-2">엑셀 Import</h1>
-      <p className="text-white/40 mb-8">급여대장에서 근로자 정보를 가져옵니다 (사업장별 1회 설정 후 자동 적용)</p>
+      <PageHeader
+        breadcrumbs={[{ label: '엑셀 Import' }]}
+        title="엑셀 Import"
+        description="급여대장에서 근로자 정보를 가져옵니다 (사업장별 1회 설정 후 자동 적용)"
+      />
 
       <div className="grid grid-cols-2 gap-6">
         {/* 설정 패널 */}
         <div className="space-y-6">
           <div className="glass p-6">
-            <h2 className="text-lg font-semibold text-white mb-4">1. 사업장 선택</h2>
-            <select
-              value={selectedBusiness}
-              onChange={(e) => setSelectedBusiness(e.target.value)}
-              className="w-full input-glass px-4 py-3"
-            >
-              <option value="">사업장 선택</option>
-              {businesses.map((b) => (
-                <option key={b.id} value={b.id}>{b.name}</option>
-              ))}
-            </select>
-          </div>
-
-          <div className="glass p-6">
-            <h2 className="text-lg font-semibold text-white mb-4">2. 급여대장 파일</h2>
+            <h2 className="text-lg font-semibold text-white mb-4">1. 급여대장 파일</h2>
             <input
               type="file"
               accept=".xlsx,.xls"
@@ -376,7 +453,7 @@ export default function ImportPage() {
           {sheets.length > 0 && (
             <>
               <div className="glass p-6">
-                <h2 className="text-lg font-semibold text-white mb-4">3. 시트 및 행 설정</h2>
+                <h2 className="text-lg font-semibold text-white mb-4">2. 시트 및 행 설정</h2>
                 <div className="space-y-4">
                   <div>
                     <label className="block text-sm text-white/60 mb-2">시트</label>
@@ -413,39 +490,46 @@ export default function ImportPage() {
 
               {headers.length > 0 && (
                 <div className="glass p-6">
-                  <h2 className="text-lg font-semibold text-white mb-4">4. 헤더 매핑</h2>
-                  <p className="text-sm text-white/40 mb-4">각 필드에 해당하는 엑셀 헤더를 선택하세요</p>
-                  <div className="space-y-3">
-                    {FIELDS.map(({ key, label, required }) => (
-                      <div key={key} className="flex items-center gap-4">
-                        <label className="w-32 text-sm text-white/70">
-                          {label}
-                          {required && <span className="text-red-400 ml-1">*</span>}
-                        </label>
-                        <select
-                          value={fieldMapping[key] ?? ''}
-                          onChange={(e) => setFieldMapping({
-                            ...fieldMapping,
-                            [key]: e.target.value === '' ? null : parseInt(e.target.value)
-                          })}
-                          className="flex-1 input-glass px-4 py-2"
-                        >
-                          <option value="">-- 선택 안함 --</option>
-                          {headers.map((h) => {
-                            const colLetter = h.index < 26
-                              ? String.fromCharCode(65 + h.index)
-                              : String.fromCharCode(64 + Math.floor(h.index / 26)) + String.fromCharCode(65 + (h.index % 26));
-                            return (
-                              <option key={h.index} value={h.index}>
-                                {colLetter}열: {h.name}
-                              </option>
-                            );
-                          })}
-                        </select>
+                  <h2 className="text-lg font-semibold text-white mb-4">3. 헤더 매핑</h2>
+                  <p className="text-sm text-white/40 mb-4">각 필드에 해당하는 엑셀 헤더를 선택하세요 (급여명세서 생성에 사용됩니다)</p>
+                  <div className="space-y-6 max-h-[400px] overflow-y-auto pr-2">
+                    {Object.entries(FIELD_GROUPS).map(([groupName, fields]) => (
+                      <div key={groupName}>
+                        <h3 className="text-sm font-medium text-white/60 mb-3 sticky top-0 bg-slate-800/90 py-1">{groupName}</h3>
+                        <div className="space-y-2">
+                          {fields.map(({ key, label, required }) => (
+                            <div key={key} className="flex items-center gap-3">
+                              <label className="w-28 text-sm text-white/70 truncate">
+                                {label}
+                                {required && <span className="text-red-400 ml-1">*</span>}
+                              </label>
+                              <select
+                                value={fieldMapping[key] ?? ''}
+                                onChange={(e) => setFieldMapping({
+                                  ...fieldMapping,
+                                  [key]: e.target.value === '' ? null : parseInt(e.target.value)
+                                })}
+                                className="flex-1 input-glass px-3 py-1.5 text-sm"
+                              >
+                                <option value="">-- 선택 안함 --</option>
+                                {headers.map((h) => {
+                                  const colLetter = h.index < 26
+                                    ? String.fromCharCode(65 + h.index)
+                                    : String.fromCharCode(64 + Math.floor(h.index / 26)) + String.fromCharCode(65 + (h.index % 26));
+                                  return (
+                                    <option key={h.index} value={h.index}>
+                                      {colLetter}: {h.name}
+                                    </option>
+                                  );
+                                })}
+                              </select>
+                            </div>
+                          ))}
+                        </div>
                       </div>
                     ))}
                   </div>
-                  <div className="flex gap-4 mt-6">
+                  <div className="flex gap-4 mt-6 pt-4 border-t border-white/10">
                     <button onClick={loadPreview} className="btn-secondary flex-1">미리보기</button>
                     <button onClick={saveMapping} className="btn-primary flex-1">매핑 저장</button>
                   </div>

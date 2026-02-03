@@ -126,8 +126,8 @@ export default function BusinessDetailPage() {
 
       {/* 수정 모달 */}
       {isEditing && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="glass p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
+          <div className="bg-slate-800 border border-white/10 rounded-2xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl">
             <h2 className="text-xl font-semibold text-white mb-4">사업장 정보 수정</h2>
             <div className="grid grid-cols-2 gap-4">
               <div>

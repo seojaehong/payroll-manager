@@ -168,6 +168,10 @@ export interface ExcelMapping {
     workDays?: number;          // 근무일수
     deductionDays?: number;     // 공제일수
     deductionHours?: number;    // 공제시간
+
+    // 선택 (명세서 발송용)
+    phone?: number;             // 전화번호
+    email?: number;             // 이메일
   };
 }
 

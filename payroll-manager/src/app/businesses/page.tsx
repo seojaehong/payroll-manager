@@ -3,6 +3,7 @@
 import { useStore } from '@/store/useStore';
 import Link from 'next/link';
 import { useState } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 export default function BusinessesPage() {
   const { businesses, employments, deleteBusiness } = useStore();
@@ -28,11 +29,12 @@ export default function BusinessesPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-3xl font-semibold text-white">사업장 관리</h1>
-          <p className="text-white/40 mt-1">등록된 사업장을 관리합니다</p>
-        </div>
+      <PageHeader
+        breadcrumbs={[{ label: '사업장 관리' }]}
+        title="사업장 관리"
+        description="등록된 사업장을 관리합니다"
+      />
+      <div className="flex justify-end mb-6">
         <Link href="/businesses/new" className="btn-primary">
           + 사업장 추가
         </Link>

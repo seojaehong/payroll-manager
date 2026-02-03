@@ -1,17 +1,30 @@
 'use client';
 
 import { useStore } from '@/store/useStore';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
+import { PageHeader } from '@/components/ui/PageHeader';
+import { MonthPicker } from '@/components/ui/MonthPicker';
 
 export default function ReportsPage() {
-  const { businesses, workers, employments, monthlyWages, addReport } = useStore();
-  const [selectedBusiness, setSelectedBusiness] = useState('');
+  const businesses = useStore((state) => state.businesses);
+  const workers = useStore((state) => state.workers);
+  const employments = useStore((state) => state.employments);
+  const monthlyWages = useStore((state) => state.monthlyWages);
+  const addReport = useStore((state) => state.addReport);
+  const selectedBusiness = useStore((state) => state.selectedBusinessId);
+
   const [reportType, setReportType] = useState<'ACQUIRE' | 'LOSE'>('ACQUIRE');
   const [targetMonth, setTargetMonth] = useState(new Date().toISOString().slice(0, 7));
   const [selectedWorkerIds, setSelectedWorkerIds] = useState<Set<string>>(new Set());
   const [showAllWorkers, setShowAllWorkers] = useState(false);
+
+  // 사업장 변경 시 선택 초기화
+  useEffect(() => {
+    setSelectedWorkerIds(new Set());
+    setShowAllWorkers(false);
+  }, [selectedBusiness]);
 
   // 전체 근로자 목록 (선택 가능)
   const allWorkers = useMemo(() => {
@@ -53,13 +66,6 @@ export default function ReportsPage() {
     setSelectedWorkerIds(newSelected);
   };
 
-  // 사업장/유형/월 변경 시 자동 선택
-  const handleBusinessChange = (bizId: string) => {
-    setSelectedBusiness(bizId);
-    setSelectedWorkerIds(new Set());
-    setShowAllWorkers(false);
-  };
-
   const handleTypeChange = (type: 'ACQUIRE' | 'LOSE') => {
     setReportType(type);
     setTimeout(handleFilterChange, 0);
@@ -90,22 +96,35 @@ export default function ReportsPage() {
   };
 
   const generateAcquireExcel = () => {
+    if (!selectedBusiness) return;
     const business = businesses.find((b) => b.id === selectedBusiness);
     if (!business || targetWorkers.length === 0) return alert('대상 근로자가 없습니다.');
 
-    const header = [
-      '*주민등록번호', '*성명', '*대표자여부', '영문성명', '국적', '체류자격',
-      '*소득월액', '*자격취득일', '*취득월납부', '*취득부호', '특수직종', '상이사유', '직역연금',
-      '*피부양자', '*보수월액', '*자격취득일', '*취득부호', '감면부호', '회계명', '직종명',
-      '*월평균보수', '*자격취득일', '*직종부호', '*근로시간', '부과구분', '부과사유', '*계약직', '종료일',
-      '*월평균보수', '*자격취득일', '직종부호', '근로시간', '부과구분', '부과사유', '계약직', '종료일',
+    // 그룹 헤더 (Row 0)
+    const groupHeader = [
+      '가입자정보', '', '', '', '', '',
+      '국민연금(소득월액상이사유는 국민연금 소속 직원이 접수하는 경우에만 입력합니다.)', '', '', '', '', '', '',
+      '건강보험', '', '', '', '', '', '',
+      '고용보험', '', '', '', '', '', '', '',
+      '산재보험', '', '', '', '', '', '', '',
+      '비고', ''
+    ];
+
+    // 컬럼 헤더 (Row 1)
+    const columnHeader = [
+      '*주민등록번호', '*성명', '*대표자여부', '영문성명(외국인)', '국적', '체류자격',
+      '*소득월액', '*자격취득일', '*취득월납부여부', '*자격취득부호', '특수직종부호', '소득월액상이사유(1.국외근로수당 , 2.사후정산)', '직역연금구분(1.직역연금가입자, 2.직역연금수급권자, 0.없음)',
+      '*피부양자신청', '*보수월액', '*자격취득일', '*자격취득부호', '보험료/감면부호', '공무원/교직원(회계명)', '공무원/교직원(직종명)',
+      '*월평균보수', '*자격취득일', '*직종부호', '*주소정근로시간', '보험료부과구분(부호)', '보험료부과구분(사유)', '*계약직여부', '계약종료년월',
+      '*월평균보수', '*자격취득일', '직종부호', '주소정근로시간', '보험료부과구분(부호)', '보험료부과구분(사유)', '계약직여부', '계약종료년월',
       '오류메세지', '경고메세지'
     ];
 
     const dataRows = targetWorkers.map(({ worker, employment }) => {
       const dt = employment.joinDate.replace(/-/g, '');
+      const rno = worker.residentNo.replace(/-/g, '');
       return [
-        worker.residentNo, worker.name, employment.isRepresentative ? 'Y' : 'N',
+        rno, worker.name, employment.isRepresentative ? 'Y' : 'N',
         worker.englishName || '', worker.nationality || '100', worker.stayStatus || '',
         employment.npsYn ? employment.monthlyWage : '', employment.npsYn ? dt : '',
         employment.npsYn ? '1' : '', employment.npsYn ? '1' : '', '', '', '0',
@@ -114,11 +133,12 @@ export default function ReportsPage() {
         employment.gyYn ? employment.monthlyWage : '', employment.gyYn ? dt : '',
         employment.gyYn ? employment.jikjongCode : '', employment.gyYn ? employment.workHours : '',
         '', '', employment.isContract ? '1' : '2', employment.isContract ? employment.contractEndDate?.replace(/-/g, '') : '',
-        employment.sjYn ? employment.monthlyWage : '', employment.sjYn ? dt : '', '', '', '', '', '', '', '', ''
+        employment.sjYn ? employment.monthlyWage : '', employment.sjYn ? dt : '', '', '', '', '', '', '',
+        '', ''
       ];
     });
 
-    const ws = XLSX.utils.aoa_to_sheet([header, ...dataRows]);
+    const ws = XLSX.utils.aoa_to_sheet([groupHeader, columnHeader, ...dataRows]);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, '취득신고');
 
@@ -213,6 +233,7 @@ export default function ReportsPage() {
   };
 
   const generateLoseExcel = () => {
+    if (!selectedBusiness) return;
     const business = businesses.find((b) => b.id === selectedBusiness);
     if (!business || targetWorkers.length === 0) return alert('대상 근로자가 없습니다.');
 
@@ -235,22 +256,23 @@ export default function ReportsPage() {
     }
 
     const header = [
-      '성명', '주민등록번호', '지역번호', '국번', '뒷번호',
-      '연금상실일', '연금상실부호', '납부여부',
-      '건강상실일', '건강상실부호', '당해보수총액', '당해근무월수', '전년보수총액', '전년근무월수',
-      '고용상실일', '상실사유코드', '구체적사유', '당해보수총액', '전년보수총액',
-      '산재상실일', '당해보수총액', '전년보수총액'
+      '성명', '주민(외국인)등록번호국내거소신고번호', '전화(지역번호)', '전화(국번)', '전화(뒷번호)',
+      '국민연금상실일', '국민연금상실부호', '국민연금초일취득당월상실자납부여부',
+      '건강보험상실일', '건강보험상실부호', '건강보험당해년도보수총액', '건강보험당해년도근무개월수', '건강보험전년도보수총액', '건강보험전년도근무개월수',
+      '고용보험상실연월일', '고용보험상실사유구분코드', '고용보험구체적사유', '고용보험해당연도보수총액', '고용보험전년도보수총액',
+      '산재보험상실연월일', '산재보험해당연도보수총액', '산재보험전년도보수총액'
     ];
 
     const dataRows = targetWorkers.map(({ worker, employment }) => {
       const dt = employment.leaveDate?.replace(/-/g, '') || '';
       const phone = worker.phone?.split('-') || ['', '', ''];
+      const rno = worker.residentNo.replace(/-/g, '');
 
       const { currentYearTotal, currentYearMonths, prevYearTotal, prevYearMonths } =
         calculateWages(employment.id, employment.leaveDate!, employment.joinDate);
 
       return [
-        worker.name, worker.residentNo, phone[0], phone[1], phone[2],
+        worker.name, rno, phone[0], phone[1], phone[2],
         // 연금
         employment.npsYn ? dt : '', employment.npsYn ? (employment.leaveReason || '11') : '', '',
         // 건강 (당해/전년 분리)
@@ -289,11 +311,14 @@ export default function ReportsPage() {
 
   return (
     <div>
-      <h1 className="text-3xl font-semibold text-white mb-2">신고서 생성</h1>
-      <p className="text-white/40 mb-8">취득/상실 신고 엑셀을 생성합니다</p>
+      <PageHeader
+        breadcrumbs={[{ label: '신고서 생성' }]}
+        title="신고서 생성"
+        description="취득/상실 신고 엑셀을 생성합니다"
+      />
 
       <div className="glass p-6 mb-6">
-        <div className="grid grid-cols-3 gap-4 mb-6">
+        <div className="grid grid-cols-2 gap-4 mb-6">
           <div>
             <label className="block text-sm font-medium text-white/60 mb-2">신고 유형</label>
             <select
@@ -307,23 +332,10 @@ export default function ReportsPage() {
           </div>
           <div>
             <label className="block text-sm font-medium text-white/60 mb-2">대상 월</label>
-            <input
-              type="month"
+            <MonthPicker
               value={targetMonth}
-              onChange={(e) => handleMonthChange(e.target.value)}
-              className="w-full input-glass px-4 py-3"
+              onChange={handleMonthChange}
             />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-white/60 mb-2">사업장</label>
-            <select
-              value={selectedBusiness}
-              onChange={(e) => handleBusinessChange(e.target.value)}
-              className="w-full input-glass px-4 py-3"
-            >
-              <option value="">사업장 선택</option>
-              {businesses.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
-            </select>
           </div>
         </div>
 
@@ -359,9 +371,7 @@ export default function ReportsPage() {
             </button>
           )}
         </div>
-        {!selectedBusiness ? (
-          <p className="text-white/40 text-center py-12">사업장을 선택하세요</p>
-        ) : displayWorkers.length === 0 ? (
+        {displayWorkers.length === 0 ? (
           <p className="text-white/40 text-center py-12">
             {showAllWorkers ? '등록된 근로자가 없습니다' : `${targetMonth}에 ${reportType === 'ACQUIRE' ? '입사' : '퇴사'}한 근로자가 없습니다`}
           </p>

@@ -4,6 +4,7 @@ import { useStore } from '@/store/useStore';
 import { useState } from 'react';
 import * as XLSX from 'xlsx';
 import { Business } from '@/types';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 // 데이터 정합성 검증 결과 타입
 interface IntegrityReport {
@@ -231,8 +232,11 @@ export default function SettingsPage() {
 
   return (
     <div>
-      <h1 className="text-3xl font-semibold text-white mb-2">설정</h1>
-      <p className="text-white/40 mb-8">데이터 백업 및 관리</p>
+      <PageHeader
+        breadcrumbs={[{ label: '설정' }]}
+        title="설정"
+        description="데이터 백업 및 관리"
+      />
 
       <div className="space-y-6 max-w-2xl">
         {/* 데이터 현황 */}

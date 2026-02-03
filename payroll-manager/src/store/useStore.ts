@@ -275,6 +275,11 @@ interface AppState {
   syncToCloud: () => Promise<void>;
   loadFromCloud: () => Promise<void>;
 
+  // 선택된 사업장 (컨텍스트)
+  selectedBusinessId: string | null;
+  setSelectedBusiness: (id: string | null) => void;
+  getSelectedBusiness: () => Business | null;
+
   // 사업장
   businesses: Business[];
   addBusiness: (business: Business) => void;
@@ -327,6 +332,17 @@ export const useStore = create<AppState>()(
       lastSyncAt: null,
       syncError: null,
 
+      // 선택된 사업장 (컨텍스트)
+      selectedBusinessId: null,
+      setSelectedBusiness: (id) => {
+        set({ selectedBusinessId: id });
+      },
+      getSelectedBusiness: () => {
+        const state = get();
+        if (!state.selectedBusinessId) return null;
+        return state.businesses.find((b) => b.id === state.selectedBusinessId) || null;
+      },
+
       initializeData: () => {
         const state = get();
         if (!state.initialized && state.businesses.length === 0) {
@@ -359,6 +375,12 @@ export const useStore = create<AppState>()(
 
           set(updates);
         }
+
+        // 사업장 미선택 시 첫 번째 사업장 자동 선택
+        const currentState = get();
+        if (!currentState.selectedBusinessId && currentState.businesses.length > 0) {
+          set({ selectedBusinessId: currentState.businesses[0].id });
+        }
       },
 
       // Firebase에서 데이터 로드
@@ -369,8 +391,11 @@ export const useStore = create<AppState>()(
 
           // 클라우드에 데이터가 있으면 로드
           if (data.businesses.length > 0 || data.workers.length > 0) {
+            const currentSelectedId = get().selectedBusinessId;
+            const newBusinesses = data.businesses.length > 0 ? data.businesses : get().businesses;
+
             set({
-              businesses: data.businesses.length > 0 ? data.businesses : get().businesses,
+              businesses: newBusinesses,
               workers: data.workers,
               employments: data.employments,
               reports: data.reports,
@@ -380,6 +405,10 @@ export const useStore = create<AppState>()(
               syncing: false,
               lastSyncAt: new Date(),
               syncError: null,
+              // 사업장 미선택 시 첫 번째 사업장 자동 선택
+              selectedBusinessId: currentSelectedId && newBusinesses.some(b => b.id === currentSelectedId)
+                ? currentSelectedId
+                : newBusinesses[0]?.id || null,
             });
           } else {
             // 클라우드가 비어있으면 로컬 데이터 업로드

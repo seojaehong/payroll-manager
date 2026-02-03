@@ -4,9 +4,12 @@ import { useStore } from '@/store/useStore';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Business } from '@/types';
+import Link from 'next/link';
+import { useToast } from '@/components/ui/Toast';
 
 export default function NewBusinessPage() {
   const router = useRouter();
+  const toast = useToast();
   const { addBusiness } = useStore();
 
   const [form, setForm] = useState({
@@ -27,7 +30,7 @@ export default function NewBusinessPage() {
     e.preventDefault();
 
     if (!form.name || !form.bizNo) {
-      alert('사업장명과 사업자번호는 필수입니다.');
+      toast.show('사업장명과 사업자번호는 필수입니다.', 'error');
       return;
     }
 
@@ -54,8 +57,24 @@ export default function NewBusinessPage() {
 
   return (
     <div>
-      <h1 className="text-3xl font-semibold text-white mb-2">사업장 추가</h1>
-      <p className="text-white/40 mb-8">새로운 사업장을 등록합니다</p>
+      {/* 상단 네비게이션 */}
+      <div className="flex items-center gap-2 text-sm text-white/40 mb-6">
+        <Link href="/businesses" className="hover:text-white transition-colors">
+          사업장 관리
+        </Link>
+        <span>›</span>
+        <span className="text-white">새 사업장</span>
+      </div>
+
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <h1 className="text-3xl font-semibold text-white">사업장 추가</h1>
+          <p className="text-white/40 mt-1">새로운 사업장을 등록합니다</p>
+        </div>
+        <Link href="/businesses" className="btn-secondary">
+          ← 목록으로
+        </Link>
+      </div>
 
       <form onSubmit={handleSubmit} className="max-w-2xl">
         <div className="glass p-8 space-y-8">

@@ -396,7 +396,44 @@ Learning and improvements derived from the UX refactoring project.
   - Business context always visible in header
   - Month selection UI much more user-friendly
 
-### Additional Completed Items (2026-02-03 Update)
+### Additional Completed Items (2026-02-03 Final Update)
+
+- **Payslip Preview Feature (PayslipTab.tsx)**
+  - Added 👁 preview button for each worker's payslip
+  - Preview modal shows full payslip details (지급/공제 내역)
+  - 📥 PDF download button with html2canvas + jsPDF
+  - 📤 Send button for email/kakao distribution
+  - Korean font support in PDF generation
+  - Status: Implemented and tested
+
+- **Duplicate Page Consolidation**
+  - Problem: `/payslip` page and `PayslipTab` in business detail were separate implementations
+  - User feedback: "조너선 아이브 스티브잡스가 이렇게 중복된 기능을 중구난방으로 해놓겠냐고"
+  - Solution: `/payslip` page now redirects to business detail page
+  - File: `src/app/payslip/page.tsx` - Changed to redirect component
+  - Status: Fixed - single source of truth for payslip management
+
+- **Excel 2-Row Merged Header Auto-Mapping (useExcelImport.ts)**
+  - Problem: Excel files with 2-row merged headers weren't being auto-mapped
+  - Solution: Added merged cell detection and value propagation
+  - Added 30+ field aliases for Korean payroll terminology
+  - Added `runAutoMapping()` function for manual trigger
+  - Added "자동 매핑" button in WagesTab
+  - Status: Implemented and tested with real payroll Excel files
+
+- **Firebase saveMonthlyWages Fix**
+  - Problem: Wages not persisting after navigation - Firebase "undefined field value" error
+  - Root Cause: `saveMonthlyWages` in firestore.ts wasn't using `cleanUndefined` wrapper
+  - Solution: Wrapped `batch.set` data with `cleanUndefined()`
+  - File: `src/lib/firestore.ts:saveMonthlyWages()`
+  - Status: Fixed - wages now properly save and persist
+
+- **CLAUDE.md Design Principles Update**
+  - Added Jonathan Ive & Steve Jobs design review perspective
+  - Added pre-implementation checks for duplicate/conflicting features
+  - Added development review principles for code quality
+  - Added checklist: before/after feature implementation
+  - Status: Documented in project guidelines
 
 - **Critical Wage Upload Bug Fixes (3 issues)**
   1. **React Async State Bug in useExcelImport.ts**
@@ -513,12 +550,15 @@ Learning and improvements derived from the UX refactoring project.
 | Metric | Before | After | Change |
 |--------|--------|-------|--------|
 | PageHeader Consistency | 11% | 100% | +89% |
-| Overall UX Consistency | 56% | 95% | +39% |
+| Overall UX Consistency | 56% | 98% | +42% |
 | Pages with Toast Feedback | 0% | 100% | +100% |
 | Code Duplication (UI) | High | Low | Reduced |
+| Duplicate Pages | 2 (payslip) | 1 | Consolidated |
 | TypeScript Errors | 0 | 0 | Maintained |
 | Component Reusability | Low | High | Improved |
 | Business Context Coverage | 0% | 100% | +100% |
+| Excel Auto-Mapping | Manual | 30+ aliases | Automated |
+| Payslip Preview | None | Full modal | New feature |
 
 ---
 
@@ -638,9 +678,12 @@ The business-centric approach with zustand state management provides a solid fou
 16. `src/hooks/useExcelImport.ts` - **Critical Fix: applyMapping async state bug**
 17. `src/app/businesses/[id]/components/WagesTab.tsx` - **Critical Fix: totalWage → wage field**
 
-**Total Files Modified**: 17
+18. `src/app/businesses/[id]/components/PayslipTab.tsx` - **Payslip preview modal + PDF download**
+19. `CLAUDE.md` - Design review principles + pre-implementation checks
+
+**Total Files Modified**: 19
 **Total Files Created**: 3
-**Total Changes**: 20 files
+**Total Changes**: 22 files
 
 ---
 

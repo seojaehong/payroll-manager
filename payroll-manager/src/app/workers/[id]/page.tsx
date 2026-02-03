@@ -1,31 +1,34 @@
 'use client';
 
 import { useStore } from '@/store/useStore';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { useState } from 'react';
-import { Worker, Employment } from '@/types';
+import { useRouter, useParams } from 'next/navigation';
+import { useState, useEffect } from 'react';
 import { CodeSelect } from '@/components/ui/CodeSelect';
+import Link from 'next/link';
 import { useToast } from '@/components/ui/Toast';
 
-export default function NewWorkerPage() {
+export default function EditWorkerPage() {
   const router = useRouter();
+  const params = useParams();
   const toast = useToast();
-  const addWorker = useStore((state) => state.addWorker);
-  const addEmployment = useStore((state) => state.addEmployment);
+  const workerId = params.id as string;
+
+  const workers = useStore((state) => state.workers);
+  const employments = useStore((state) => state.employments);
+  const updateWorker = useStore((state) => state.updateWorker);
+  const updateEmployment = useStore((state) => state.updateEmployment);
   const selectedBusinessId = useStore((state) => state.selectedBusinessId);
-  const businesses = useStore((state) => state.businesses);
 
-  // 선택된 사업장 정보
-  const selectedBusiness = businesses.find((b) => b.id === selectedBusinessId);
-
+  const [loading, setLoading] = useState(true);
   const [form, setForm] = useState({
     name: '',
     residentNo: '',
     phone: '',
+    email: '',
     nationality: '100',
-    joinDate: new Date().toISOString().slice(0, 10),
-    monthlyWage: 2060740,
+    joinDate: '',
+    leaveDate: '',
+    monthlyWage: 0,
     jikjongCode: '532',
     workHours: 40,
     isContract: false,
@@ -36,11 +39,44 @@ export default function NewWorkerPage() {
     nhicYn: true,
   });
 
+  // 근로자 및 고용 정보 로드
+  const worker = workers.find((w) => w.id === workerId);
+  const employment = employments.find(
+    (e) => e.workerId === workerId && e.businessId === selectedBusinessId
+  );
+
+  useEffect(() => {
+    if (worker && employment) {
+      setForm({
+        name: worker.name,
+        residentNo: worker.residentNo,
+        phone: worker.phone || '',
+        email: worker.email || '',
+        nationality: worker.nationality || '100',
+        joinDate: employment.joinDate || '',
+        leaveDate: employment.leaveDate || '',
+        monthlyWage: employment.monthlyWage || 0,
+        jikjongCode: employment.jikjongCode || '532',
+        workHours: employment.workHours || 40,
+        isContract: employment.isContract || false,
+        contractEndDate: employment.contractEndDate || '',
+        gyYn: employment.gyYn ?? true,
+        sjYn: employment.sjYn ?? true,
+        npsYn: employment.npsYn ?? true,
+        nhicYn: employment.nhicYn ?? true,
+      });
+      setLoading(false);
+    } else if (workers.length > 0) {
+      // 데이터 로드됐는데 근로자를 찾을 수 없음
+      setLoading(false);
+    }
+  }, [worker, employment, workers.length]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!selectedBusinessId) {
-      toast.show('사업장을 선택해주세요.', 'error');
+    if (!worker || !employment) {
+      toast.show('근로자 정보를 찾을 수 없습니다.', 'error');
       return;
     }
 
@@ -49,31 +85,20 @@ export default function NewWorkerPage() {
       return;
     }
 
-    const cleanResidentNo = form.residentNo.replace(/-/g, '');
-    if (cleanResidentNo.length !== 13) {
-      toast.show('주민등록번호는 13자리입니다.', 'error');
-      return;
-    }
-
-    const workerId = crypto.randomUUID();
-    const employmentId = crypto.randomUUID();
-
-    const newWorker: Worker = {
-      id: workerId,
+    // 근로자 정보 업데이트
+    updateWorker(workerId, {
       name: form.name,
-      residentNo: cleanResidentNo,
-      nationality: form.nationality,
+      residentNo: form.residentNo.replace(/-/g, ''),
       phone: form.phone || undefined,
-      createdAt: new Date(),
+      email: form.email || undefined,
+      nationality: form.nationality,
       updatedAt: new Date(),
-    };
+    });
 
-    const newEmployment: Employment = {
-      id: employmentId,
-      workerId,
-      businessId: selectedBusinessId,
-      status: 'ACTIVE',
+    // 고용 정보 업데이트
+    updateEmployment(employment.id, {
       joinDate: form.joinDate,
+      leaveDate: form.leaveDate || undefined,
       monthlyWage: form.monthlyWage,
       jikjongCode: form.jikjongCode,
       workHours: form.workHours,
@@ -83,14 +108,38 @@ export default function NewWorkerPage() {
       sjYn: form.sjYn,
       npsYn: form.npsYn,
       nhicYn: form.nhicYn,
-      createdAt: new Date(),
       updatedAt: new Date(),
-    };
+    });
 
-    addWorker(newWorker);
-    addEmployment(newEmployment);
+    toast.show('저장되었습니다.', 'success');
     router.push('/workers');
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <p className="text-white/40">로딩 중...</p>
+      </div>
+    );
+  }
+
+  if (!worker || !employment) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh]">
+        <div className="text-6xl mb-6">😕</div>
+        <h2 className="text-2xl font-semibold text-white mb-2">근로자를 찾을 수 없습니다</h2>
+        <p className="text-white/40 mb-6">해당 근로자가 현재 사업장에 존재하지 않습니다.</p>
+        <div className="flex gap-4">
+          <button onClick={() => router.back()} className="btn-secondary">
+            ← 이전 페이지
+          </button>
+          <Link href="/workers" className="btn-primary">
+            근로자 목록으로
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -100,13 +149,13 @@ export default function NewWorkerPage() {
           근로자 관리
         </Link>
         <span>›</span>
-        <span className="text-white">새 근로자</span>
+        <span className="text-white">{worker.name}</span>
       </div>
 
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-semibold text-white">근로자 추가</h1>
-          <p className="text-white/40 mt-1">새로운 근로자를 등록합니다</p>
+          <h1 className="text-3xl font-semibold text-white">근로자 수정</h1>
+          <p className="text-white/40 mt-1">{worker.name}님의 정보를 수정합니다</p>
         </div>
         <Link href="/workers" className="btn-secondary">
           ← 목록으로
@@ -126,7 +175,6 @@ export default function NewWorkerPage() {
                   value={form.name}
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
                   className="w-full input-glass px-4 py-3"
-                  placeholder="홍길동"
                 />
               </div>
               <div>
@@ -136,7 +184,6 @@ export default function NewWorkerPage() {
                   value={form.residentNo}
                   onChange={(e) => setForm({ ...form, residentNo: e.target.value })}
                   className="w-full input-glass px-4 py-3"
-                  placeholder="950526-2401425"
                 />
               </div>
               <div>
@@ -147,6 +194,16 @@ export default function NewWorkerPage() {
                   onChange={(e) => setForm({ ...form, phone: e.target.value })}
                   className="w-full input-glass px-4 py-3"
                   placeholder="010-1234-5678"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-white/60 mb-2">이메일</label>
+                <input
+                  type="email"
+                  value={form.email}
+                  onChange={(e) => setForm({ ...form, email: e.target.value })}
+                  className="w-full input-glass px-4 py-3"
+                  placeholder="example@email.com"
                 />
               </div>
               <div>
@@ -170,17 +227,20 @@ export default function NewWorkerPage() {
             <h2 className="text-lg font-semibold text-white mb-4">고용 정보</h2>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-white/60 mb-2">사업장</label>
-                <div className="w-full input-glass px-4 py-3 bg-white/5 text-white">
-                  {selectedBusiness?.name || '사업장을 먼저 선택하세요'}
-                </div>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-white/60 mb-2">입사일 *</label>
+                <label className="block text-sm font-medium text-white/60 mb-2">입사일</label>
                 <input
                   type="date"
                   value={form.joinDate}
                   onChange={(e) => setForm({ ...form, joinDate: e.target.value })}
+                  className="w-full input-glass px-4 py-3"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-white/60 mb-2">퇴사일</label>
+                <input
+                  type="date"
+                  value={form.leaveDate}
+                  onChange={(e) => setForm({ ...form, leaveDate: e.target.value })}
                   className="w-full input-glass px-4 py-3"
                 />
               </div>
