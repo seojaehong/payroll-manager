@@ -15,7 +15,7 @@ export default function NewWorkerPage() {
     residentNo: '',
     phone: '',
     nationality: '100',
-    businessId: businesses[0]?.id || '',
+    businessId: '',  // 사용자가 직접 선택하도록 빈 값으로 시작
     joinDate: new Date().toISOString().slice(0, 10),
     monthlyWage: 2060740,
     jikjongCode: '532',
