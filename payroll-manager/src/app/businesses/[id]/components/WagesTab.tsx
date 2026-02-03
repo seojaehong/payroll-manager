@@ -738,10 +738,16 @@ export function WagesTab({
                   <button onClick={loadPreview} className="btn-primary flex-1">미리보기</button>
                   <button onClick={saveMapping} className="btn-secondary flex-1">매핑 저장</button>
                   <button
+                    onClick={() => excel.runAutoMapping()}
+                    className="btn-secondary flex-1 text-green-400"
+                  >
+                    자동 매핑
+                  </button>
+                  <button
                     onClick={() => excel.setFullFieldMapping({})}
                     className="btn-secondary flex-1 text-yellow-400"
                   >
-                    매핑 초기화
+                    초기화
                   </button>
                   <button onClick={() => setShowMappingModal(false)} className="btn-secondary flex-1">취소</button>
                 </>
