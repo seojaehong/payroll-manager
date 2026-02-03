@@ -205,6 +205,24 @@ export async function deleteEmploymentsByWorker(workerId: string): Promise<strin
   return deletedIds;
 }
 
+export async function deleteMonthlyWage(id: string): Promise<void> {
+  await deleteDoc(doc(db, COLLECTIONS.monthlyWages, id));
+}
+
+export async function deleteMonthlyWages(ids: string[]): Promise<number> {
+  if (ids.length === 0) return 0;
+
+  const chunks = chunkArray(ids, BATCH_LIMIT);
+  for (const chunk of chunks) {
+    const batch = writeBatch(db);
+    chunk.forEach((id) => {
+      batch.delete(doc(db, COLLECTIONS.monthlyWages, id));
+    });
+    await batch.commit();
+  }
+  return ids.length;
+}
+
 export async function deleteMonthlyWagesByEmployment(employmentId: string): Promise<number> {
   const q = query(collection(db, COLLECTIONS.monthlyWages), where('employmentId', '==', employmentId));
   const snapshot = await getDocs(q);

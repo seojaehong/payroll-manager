@@ -304,6 +304,7 @@ interface AppState {
   monthlyWages: MonthlyWage[];
   addMonthlyWage: (wage: MonthlyWage) => void;
   addMonthlyWages: (wages: MonthlyWage[]) => void;
+  deleteMonthlyWages: (ids: string[]) => Promise<void>;
   getMonthlyWagesByEmployment: (employmentId: string, year?: number) => MonthlyWage[];
 
   // 엑셀 매핑
@@ -614,6 +615,21 @@ export const useStore = create<AppState>()(
           if (year && !mw.yearMonth.startsWith(String(year))) return false;
           return true;
         });
+      },
+      deleteMonthlyWages: async (ids) => {
+        if (ids.length === 0) return;
+
+        // Store에서 삭제
+        set((state) => ({
+          monthlyWages: state.monthlyWages.filter((mw) => !ids.includes(mw.id)),
+        }));
+
+        // Firestore에서 삭제
+        try {
+          await firestore.deleteMonthlyWages(ids);
+        } catch (error) {
+          console.error('급여 삭제 실패:', error);
+        }
       },
 
       // 엑셀 매핑

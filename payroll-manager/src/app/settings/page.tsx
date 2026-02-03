@@ -77,9 +77,11 @@ export default function SettingsPage() {
       await store.deleteEmployment(emp.id);
     }
 
-    // 고아 급여는 store에서 직접 제거 (deleteEmployment cascade로 안 잡히는 것들)
-    // 이미 employmentIds에 없는 것들이므로 store 상태만 업데이트
-    // (firestore에서도 삭제 필요하면 추가 로직 필요)
+    // 고아 급여 삭제
+    if (orphanedWages.length > 0) {
+      const wageIds = orphanedWages.map(w => w.id);
+      await store.deleteMonthlyWages(wageIds);
+    }
 
     alert(`정리 완료!\n- 고용관계 ${orphanedEmployments.length}건 삭제\n- 급여 ${orphanedWages.length}건 삭제`);
     setShowIntegrityModal(false);
