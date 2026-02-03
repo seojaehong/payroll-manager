@@ -6,6 +6,7 @@
 
 import { useState, useMemo } from 'react';
 import { downloadPayslipPDF } from '@/lib/payslip-pdf';
+import { SendHistoryList } from '@/components/ui/SendHistoryList';
 import type { PayslipData, SendChannel, MonthlyWage, Worker, Employment, Business } from '@/types';
 
 interface BusinessEmployment {
@@ -516,6 +517,9 @@ export function PayslipTab({
           <li>• 웹 링크는 7일간 유효하며, 최대 5회 조회 가능합니다</li>
         </ul>
       </div>
+
+      {/* 발송 이력 */}
+      <SendHistoryList businessId={businessId} yearMonth={selectedYearMonth} />
     </div>
   );
 }
