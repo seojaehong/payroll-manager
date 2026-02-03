@@ -4,6 +4,7 @@ import { useStore } from '@/store/useStore';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Worker, Employment } from '@/types';
+import { CodeSelect } from '@/components/ui/CodeSelect';
 
 export default function NewWorkerPage() {
   const router = useRouter();
@@ -172,16 +173,12 @@ export default function NewWorkerPage() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-white/60 mb-2">직종코드</label>
-                <select
+                <CodeSelect
+                  type="jikjong"
                   value={form.jikjongCode}
-                  onChange={(e) => setForm({ ...form, jikjongCode: e.target.value })}
-                  className="w-full input-glass px-4 py-3"
-                >
-                  <option value="532">532 - 식당 서비스원</option>
-                  <option value="531">531 - 주방장 및 조리사</option>
-                  <option value="941">941 - 건물 청소원</option>
-                  <option value="312">312 - 경리 사무원</option>
-                </select>
+                  onChange={(code) => setForm({ ...form, jikjongCode: code })}
+                  className="[&_button]:input-glass [&_button]:px-4 [&_button]:py-3"
+                />
               </div>
               <div>
                 <label className="block text-sm font-medium text-white/60 mb-2">주소정근로시간</label>

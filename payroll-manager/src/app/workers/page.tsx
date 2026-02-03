@@ -3,12 +3,14 @@
 import { useStore } from '@/store/useStore';
 import Link from 'next/link';
 import { useState } from 'react';
+import { RetireModal } from '@/components/ui/RetireModal';
 
 export default function WorkersPage() {
   const { workers, businesses, employments, updateEmployment } = useStore();
   const [search, setSearch] = useState('');
   const [filterBusiness, setFilterBusiness] = useState('');
   const [filterStatus, setFilterStatus] = useState<'ALL' | 'ACTIVE' | 'INACTIVE'>('ALL');
+  const [retireModal, setRetireModal] = useState<{ employmentId: string; workerName: string } | null>(null);
 
   const workersWithEmployment = workers.map((worker) => {
     const employment = employments.find((e) => e.workerId === worker.id);
@@ -29,15 +31,14 @@ export default function WorkersPage() {
     return matchSearch && matchBusiness && matchStatus;
   });
 
-  const handleRetire = (employmentId: string, workerName: string) => {
-    const leaveDate = prompt(`${workerName}의 퇴사일을 입력하세요 (YYYY-MM-DD):`, new Date().toISOString().slice(0, 10));
-    if (leaveDate) {
-      updateEmployment(employmentId, {
-        status: 'INACTIVE',
-        leaveDate,
-        leaveReason: '11',
-      });
-    }
+  const handleRetire = (leaveDate: string, leaveReason: string) => {
+    if (!retireModal) return;
+    updateEmployment(retireModal.employmentId, {
+      status: 'INACTIVE',
+      leaveDate,
+      leaveReason,
+    });
+    setRetireModal(null);
   };
 
   const formatResidentNo = (no: string) => {
@@ -150,7 +151,7 @@ export default function WorkersPage() {
                       </Link>
                       {employment?.status === 'ACTIVE' && (
                         <button
-                          onClick={() => handleRetire(employment.id, worker.name)}
+                          onClick={() => setRetireModal({ employmentId: employment.id, workerName: worker.name })}
                           className="px-3 py-1.5 text-sm text-orange-400 hover:bg-orange-500/10 rounded-lg transition-colors"
                         >
                           퇴사처리
@@ -168,6 +169,14 @@ export default function WorkersPage() {
       <div className="mt-6 text-sm text-white/40">
         전체 {workers.length}명 | 재직 {employments.filter((e) => e.status === 'ACTIVE').length}명 | 퇴사 {employments.filter((e) => e.status === 'INACTIVE').length}명
       </div>
+
+      {/* 퇴사 처리 모달 */}
+      <RetireModal
+        workerName={retireModal?.workerName || ''}
+        isOpen={!!retireModal}
+        onClose={() => setRetireModal(null)}
+        onConfirm={handleRetire}
+      />
     </div>
   );
 }
