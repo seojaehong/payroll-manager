@@ -373,6 +373,7 @@ export async function downloadRetirementPDF(
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
-    alert('HTML 파일이 다운로드되었습니다. 브라우저에서 열어 PDF로 인쇄하세요.');
+    // Note: 성공 메시지는 호출하는 컴포넌트에서 toast로 표시
+    console.log('HTML 파일이 다운로드되었습니다.');
   }
 }

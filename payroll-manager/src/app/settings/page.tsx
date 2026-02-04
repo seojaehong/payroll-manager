@@ -5,6 +5,7 @@ import { useState } from 'react';
 import * as XLSX from 'xlsx';
 import { Business } from '@/types';
 import { PageHeader } from '@/components/ui/PageHeader';
+import { useToast } from '@/components/ui/Toast';
 
 // 데이터 정합성 검증 결과 타입
 interface IntegrityReport {
@@ -16,6 +17,7 @@ interface IntegrityReport {
 
 export default function SettingsPage() {
   const store = useStore();
+  const toast = useToast();
   const [importPreview, setImportPreview] = useState<Partial<Business>[]>([]);
   const [showPreview, setShowPreview] = useState(false);
   const [integrityReport, setIntegrityReport] = useState<IntegrityReport | null>(null);
@@ -65,7 +67,7 @@ export default function SettingsPage() {
     const { orphanedEmployments, orphanedWages } = integrityReport;
 
     if (orphanedEmployments.length === 0 && orphanedWages.length === 0) {
-      alert('정리할 고아 데이터가 없습니다.');
+      toast.show('정리할 고아 데이터가 없습니다.', 'info');
       return;
     }
 
@@ -84,7 +86,7 @@ export default function SettingsPage() {
       await store.deleteMonthlyWages(wageIds);
     }
 
-    alert(`정리 완료!\n- 고용관계 ${orphanedEmployments.length}건 삭제\n- 급여 ${orphanedWages.length}건 삭제`);
+    toast.show(`고아 데이터 정리 완료 (고용관계 ${orphanedEmployments.length}건, 급여 ${orphanedWages.length}건 삭제)`, 'success');
     setShowIntegrityModal(false);
     setIntegrityReport(null);
   };
@@ -153,7 +155,7 @@ export default function SettingsPage() {
         setImportPreview(businesses);
         setShowPreview(true);
       } else {
-        alert('가져올 데이터가 없습니다.');
+        toast.show('가져올 데이터가 없습니다.', 'info');
       }
     };
     reader.readAsArrayBuffer(file);
@@ -174,7 +176,7 @@ export default function SettingsPage() {
       }
     });
 
-    alert(`사업장 ${added}개 추가, ${skipped}개 중복/스킵`);
+    toast.show(`사업장 ${added}개 추가, ${skipped}개 중복/스킵`, 'success');
     setShowPreview(false);
     setImportPreview([]);
   };
@@ -213,11 +215,11 @@ export default function SettingsPage() {
           data.reports?.forEach((r: unknown) => store.addReport(r as Parameters<typeof store.addReport>[0]));
           data.excelMappings?.forEach((m: unknown) => store.setExcelMapping(m as Parameters<typeof store.setExcelMapping>[0]));
 
-          alert('백업 데이터를 불러왔습니다.');
+          toast.show('백업 데이터를 불러왔습니다.', 'success');
           window.location.reload();
         }
       } catch {
-        alert('잘못된 백업 파일입니다.');
+        toast.show('잘못된 백업 파일입니다.', 'error');
       }
     };
     reader.readAsText(file);
@@ -402,9 +404,9 @@ export default function SettingsPage() {
                 onClick={async () => {
                   try {
                     await store.loadFromCloud();
-                    alert('클라우드에서 데이터를 불러왔습니다.');
+                    toast.show('클라우드에서 데이터를 불러왔습니다.', 'success');
                   } catch (e) {
-                    alert('불러오기 실패: ' + String(e));
+                    toast.show('불러오기 실패: ' + String(e), 'error');
                   }
                 }}
                 disabled={store.syncing}
@@ -416,9 +418,9 @@ export default function SettingsPage() {
                 onClick={async () => {
                   try {
                     await store.syncToCloud();
-                    alert('클라우드에 저장되었습니다.');
+                    toast.show('클라우드에 저장되었습니다.', 'success');
                   } catch (e) {
-                    alert('저장 실패: ' + String(e));
+                    toast.show('저장 실패: ' + String(e), 'error');
                   }
                 }}
                 disabled={store.syncing}

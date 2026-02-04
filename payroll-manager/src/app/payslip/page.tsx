@@ -15,8 +15,8 @@ export default function PayslipRedirectPage() {
 
   useEffect(() => {
     if (selectedBusinessId) {
-      // 사업장 상세 페이지로 리다이렉트
-      router.replace(`/businesses/${selectedBusinessId}`);
+      // 사업장 상세 페이지의 급여 관리 탭 > 명세서 발송 서브탭으로 리다이렉트
+      router.replace(`/businesses/${selectedBusinessId}?tab=payslip`);
     }
   }, [selectedBusinessId, router]);
 

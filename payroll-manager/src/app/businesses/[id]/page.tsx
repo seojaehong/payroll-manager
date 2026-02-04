@@ -1,21 +1,23 @@
 'use client';
 
 import { useStore } from '@/store/useStore';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useState, useMemo, useCallback } from 'react';
 import Link from 'next/link';
 import { WorkersTab } from './components/WorkersTab';
 import { WagesTab } from './components/WagesTab';
 import { ReportsTab } from './components/ReportsTab';
-import { ImportTab } from './components/ImportTab';
 import { RetirementTab } from './components/RetirementTab';
 import { PayslipTab } from './components/PayslipTab';
 
-type TabType = 'workers' | 'wages' | 'payslip' | 'reports' | 'import' | 'retirement';
+// 탭 간소화: 6개 → 4개 (Import 제거, 급여+명세서 통합)
+type TabType = 'workers' | 'wages' | 'retirement' | 'reports';
+type WagesSubTab = 'history' | 'payslip';
 
 export default function BusinessDetailPage() {
   const params = useParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const businessId = params.id as string;
 
   const {
@@ -24,7 +26,14 @@ export default function BusinessDetailPage() {
     addWorker, addEmployment, addMonthlyWages, addReport, updateBusiness, setExcelMapping,
   } = useStore();
 
-  const [activeTab, setActiveTab] = useState<TabType>('workers');
+  // URL query param으로 기본 탭 지정 지원 (?tab=wages, ?tab=reports 등)
+  // 'payslip' param은 wages 탭의 payslip 서브탭으로 변환 (하위 호환성)
+  const urlTab = searchParams.get('tab');
+  const validTabs: TabType[] = ['workers', 'wages', 'retirement', 'reports'];
+  const isPayslipParam = urlTab === 'payslip';
+  const initialTab: TabType = isPayslipParam ? 'wages' : (urlTab && validTabs.includes(urlTab as TabType) ? urlTab as TabType : 'workers');
+  const [activeTab, setActiveTab] = useState<TabType>(initialTab);
+  const [wagesSubTab, setWagesSubTab] = useState<WagesSubTab>(isPayslipParam ? 'payslip' : 'history');
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear() - 1);
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState({
@@ -94,13 +103,12 @@ export default function BusinessDetailPage() {
     );
   }
 
+  // 간소화된 4개 탭 (Import 제거, 급여+명세서 통합)
   const tabs: { id: TabType; label: string; icon: string }[] = [
     { id: 'workers', label: '근로자', icon: '👥' },
-    { id: 'wages', label: '급여 이력', icon: '💰' },
-    { id: 'payslip', label: '명세서 발송', icon: '📨' },
+    { id: 'wages', label: '급여 관리', icon: '💰' },
     { id: 'retirement', label: '퇴직금', icon: '💼' },
     { id: 'reports', label: '신고서', icon: '📝' },
-    { id: 'import', label: 'Import', icon: '📥' },
   ];
 
   return (
@@ -303,17 +311,54 @@ export default function BusinessDetailPage() {
           />
         )}
         {activeTab === 'wages' && (
-          <WagesTab
-            businessId={businessId}
-            businessEmployments={businessEmployments}
-            monthlyWages={monthlyWages}
-            selectedYear={selectedYear}
-            setSelectedYear={setSelectedYear}
-            addMonthlyWages={addMonthlyWages}
-            excelMappings={excelMappings}
-            workers={workers}
-            setExcelMapping={setExcelMapping}
-          />
+          <div>
+            {/* 급여 관리 서브 탭 */}
+            <div className="flex gap-2 mb-6 border-b border-white/10 pb-4">
+              <button
+                onClick={() => setWagesSubTab('history')}
+                className={`px-4 py-2 rounded-lg transition-all ${
+                  wagesSubTab === 'history'
+                    ? 'bg-blue-500/20 text-blue-400 font-medium'
+                    : 'text-white/50 hover:bg-white/5 hover:text-white/80'
+                }`}
+              >
+                📊 급여 이력
+              </button>
+              <button
+                onClick={() => setWagesSubTab('payslip')}
+                className={`px-4 py-2 rounded-lg transition-all ${
+                  wagesSubTab === 'payslip'
+                    ? 'bg-blue-500/20 text-blue-400 font-medium'
+                    : 'text-white/50 hover:bg-white/5 hover:text-white/80'
+                }`}
+              >
+                📨 명세서 발송
+              </button>
+            </div>
+
+            {/* 급여 관리 서브 탭 컨텐츠 */}
+            {wagesSubTab === 'history' && (
+              <WagesTab
+                businessId={businessId}
+                businessEmployments={businessEmployments}
+                monthlyWages={monthlyWages}
+                selectedYear={selectedYear}
+                setSelectedYear={setSelectedYear}
+                addMonthlyWages={addMonthlyWages}
+                excelMappings={excelMappings}
+                workers={workers}
+                setExcelMapping={setExcelMapping}
+              />
+            )}
+            {wagesSubTab === 'payslip' && (
+              <PayslipTab
+                businessId={businessId}
+                business={business}
+                businessEmployments={businessEmployments}
+                monthlyWages={monthlyWages}
+              />
+            )}
+          </div>
         )}
         {activeTab === 'retirement' && (
           <RetirementTab
@@ -326,14 +371,6 @@ export default function BusinessDetailPage() {
             addRetirementCalculation={addRetirementCalculation}
           />
         )}
-        {activeTab === 'payslip' && (
-          <PayslipTab
-            businessId={businessId}
-            business={business}
-            businessEmployments={businessEmployments}
-            monthlyWages={monthlyWages}
-          />
-        )}
         {activeTab === 'reports' && (
           <ReportsTab
             businessId={businessId}
@@ -343,16 +380,6 @@ export default function BusinessDetailPage() {
             reports={reports}
             addReport={addReport}
             addMonthlyWages={addMonthlyWages}
-          />
-        )}
-        {activeTab === 'import' && (
-          <ImportTab
-            businessId={businessId}
-            business={business}
-            workers={workers}
-            excelMappings={excelMappings}
-            addWorker={addWorker}
-            addEmployment={addEmployment}
           />
         )}
       </div>

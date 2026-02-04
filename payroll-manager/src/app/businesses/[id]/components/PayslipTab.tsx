@@ -10,6 +10,7 @@
 import { useState, useMemo } from 'react';
 import { downloadPayslipPDF } from '@/lib/payslip-pdf';
 import { SendHistoryList } from '@/components/ui/SendHistoryList';
+import { useToast } from '@/components/ui/Toast';
 import type { PayslipData, SendChannel, MonthlyWage, Worker, Employment, Business } from '@/types';
 
 interface BusinessEmployment {
@@ -44,6 +45,8 @@ export function PayslipTab({
   businessEmployments,
   monthlyWages,
 }: PayslipTabProps) {
+  const toast = useToast();
+
   // 상태
   const [selectedYearMonth, setSelectedYearMonth] = useState(() => {
     const now = new Date();
@@ -164,17 +167,17 @@ export function PayslipTab({
   // 개별 발송
   const handleSendToWorker = async (worker: Worker, employment: Employment, wage: MonthlyWage) => {
     if (selectedChannels.size === 0) {
-      alert('발송 채널을 선택해주세요.');
+      toast.show('발송 채널을 선택해주세요.', 'error');
       return;
     }
 
     const channels = Array.from(selectedChannels);
     if (channels.includes('email') && !worker.email) {
-      alert(`${worker.name}의 이메일 정보가 없습니다.`);
+      toast.show(`${worker.name}의 이메일 정보가 없습니다.`, 'error');
       return;
     }
     if ((channels.includes('sms') || channels.includes('kakao')) && !worker.phone) {
-      alert(`${worker.name}의 전화번호 정보가 없습니다.`);
+      toast.show(`${worker.name}의 전화번호 정보가 없습니다.`, 'error');
       return;
     }
 
@@ -233,11 +236,11 @@ export function PayslipTab({
   // 일괄 발송
   const handleBulkSend = async () => {
     if (selectedWorkers.size === 0) {
-      alert('발송할 근로자를 선택해주세요.');
+      toast.show('발송할 근로자를 선택해주세요.', 'error');
       return;
     }
     if (selectedChannels.size === 0) {
-      alert('발송 채널을 선택해주세요.');
+      toast.show('발송 채널을 선택해주세요.', 'error');
       return;
     }
 
@@ -254,7 +257,7 @@ export function PayslipTab({
     }
 
     setIsBulkSending(false);
-    alert('일괄 발송이 완료되었습니다.');
+    toast.show('일괄 발송이 완료되었습니다.', 'success');
   };
 
   // 연월 옵션

@@ -4,6 +4,7 @@ import { useState, useMemo } from 'react';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import { MonthlyWage, Worker, Employment } from '@/types';
+import { useToast } from '@/components/ui/Toast';
 
 export interface ReportsTabProps {
   businessId: string;
@@ -24,6 +25,7 @@ export function ReportsTab({
   addReport,
   addMonthlyWages,
 }: ReportsTabProps) {
+  const toast = useToast();
   const [reportType, setReportType] = useState<'ACQUIRE' | 'LOSE'>('ACQUIRE');
   const [targetMonth, setTargetMonth] = useState(new Date().toISOString().slice(0, 7));
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
@@ -135,7 +137,7 @@ export function ReportsTab({
 
   // 취득신고 생성
   const generateAcquireExcel = () => {
-    if (selectedWorkers.length === 0) return alert('대상자를 선택하세요.');
+    if (selectedWorkers.length === 0) return toast.show('대상자를 선택하세요.', 'error');
 
     const header = [
       '*주민등록번호', '*성명', '*대표자여부', '영문성명', '국적', '체류자격',
@@ -175,12 +177,12 @@ export function ReportsTab({
       workerCount: selectedWorkers.length, status: 'DRAFT', createdAt: new Date(),
     });
 
-    alert(`${fileName} 파일이 생성되었습니다.`);
+    toast.show(`${fileName} 파일이 생성되었습니다.`, 'success');
   };
 
   // 상실신고 생성
   const generateLoseExcel = () => {
-    if (selectedWorkers.length === 0) return alert('대상자를 선택하세요.');
+    if (selectedWorkers.length === 0) return toast.show('대상자를 선택하세요.', 'error');
 
     // 급여 데이터 누락 확인
     const missingData: { name: string; missing: string[] }[] = [];
@@ -248,7 +250,7 @@ export function ReportsTab({
       workerCount: selectedWorkers.length, status: 'DRAFT', createdAt: new Date(),
     });
 
-    alert(`${fileName} 파일이 생성되었습니다.`);
+    toast.show(`${fileName} 파일이 생성되었습니다.`, 'success');
   };
 
   const handleGenerate = () => {
@@ -404,7 +406,7 @@ export function ReportsTab({
               <button
                 onClick={() => {
                   if (!addMonthlyWages) {
-                    alert('급여 추가 기능이 없습니다.');
+                    toast.show('급여 추가 기능이 없습니다.', 'error');
                     return;
                   }
                   // 누락된 급여를 평균보수로 채우기
@@ -422,7 +424,7 @@ export function ReportsTab({
                   });
                   addMonthlyWages(newWages);
                   setShowAutoFillModal(false);
-                  alert(`${newWages.length}건의 급여 데이터가 자동 생성되었습니다.\n다시 신고서를 생성하세요.`);
+                  toast.show(`${newWages.length}건의 급여 데이터가 자동 생성되었습니다. 다시 신고서를 생성하세요.`, 'success');
                 }}
                 className="btn-primary flex-1"
               >
@@ -431,7 +433,7 @@ export function ReportsTab({
               <button
                 onClick={() => {
                   if (!addMonthlyWages) {
-                    alert('급여 추가 기능이 없습니다.');
+                    toast.show('급여 추가 기능이 없습니다.', 'error');
                     return;
                   }
                   // 0원으로 채우기
@@ -449,7 +451,7 @@ export function ReportsTab({
                   });
                   addMonthlyWages(newWages);
                   setShowAutoFillModal(false);
-                  alert(`${newWages.length}건의 급여 데이터가 0원으로 생성되었습니다.\n다시 신고서를 생성하세요.`);
+                  toast.show(`${newWages.length}건의 급여 데이터가 0원으로 생성되었습니다. 다시 신고서를 생성하세요.`, 'success');
                 }}
                 className="btn-secondary flex-1"
               >

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import * as XLSX from 'xlsx';
 import { MonthlyWage, Worker, Employment, FieldGroups } from '@/types';
 import { useExcelImport, parseExcelNumber, indexToColumnLetter } from '@/hooks/useExcelImport';
+import { useToast } from '@/components/ui/Toast';
 
 // undefined 필드 제거 (Firestore는 undefined 허용 안함)
 function removeUndefined<T extends Record<string, any>>(obj: T): T {
@@ -74,6 +75,7 @@ export function WagesTab({
   workers,
   setExcelMapping,
 }: WagesTabProps) {
+  const toast = useToast();
   const [importMonth, setImportMonth] = useState('');
   const [importPreview, setImportPreview] = useState<any[]>([]);
   const [showMappingModal, setShowMappingModal] = useState(false);
@@ -156,7 +158,7 @@ export function WagesTab({
           setShowMappingModal(true);
         });
       } else {
-        alert('파일명에서 년월을 추출할 수 없습니다. (예: 202501_급여.xlsx)');
+        toast.show('파일명에서 년월을 추출할 수 없습니다. (예: 202501_급여.xlsx)', 'error');
       }
     } else {
       // 단일 파일
@@ -292,16 +294,12 @@ export function WagesTab({
     setBatchFiles([]);
     setShowMappingModal(false);
 
-    // 상세 결과 메시지
-    let message = `일괄 임포트 완료!\n\n`;
-    message += `📁 처리: ${batchFiles.length}개 파일\n`;
-    message += `✅ 성공: ${totalImported}건\n`;
-    if (totalSkipped > 0) {
-      message += `⚠️ 건너뜀: ${totalSkipped}건\n`;
-      if (noWorkerCount > 0) message += `   - 미등록 근로자: ${noWorkerCount}건\n`;
-      if (noEmploymentCount > 0) message += `   - 타사업장 소속: ${noEmploymentCount}건\n`;
-    }
-    alert(message);
+    // 결과 메시지 (toast용으로 단순화)
+    const hasIssues = totalSkipped > 0;
+    const toastType = hasIssues ? 'info' : 'success';
+    let message = `일괄 임포트 완료! ${batchFiles.length}개 파일, ${totalImported}건 성공`;
+    if (totalSkipped > 0) message += `, ${totalSkipped}건 스킵`;
+    toast.show(message, toastType);
   };
 
   // 매칭 상태 타입
@@ -316,7 +314,7 @@ export function WagesTab({
     const wageIdx = excel.fieldMapping.wage;
 
     if (nameIdx == null || residentNoIdx == null) {
-      alert('이름과 주민번호 헤더를 선택해주세요.');
+      toast.show('이름과 주민번호 헤더를 선택해주세요.', 'error');
       return;
     }
 
@@ -406,13 +404,13 @@ export function WagesTab({
       businessId,
       ...mappingData,
     });
-    alert('매핑 저장 완료! 다음부터 자동 적용됩니다.');
+    toast.show('매핑 저장 완료! 다음부터 자동 적용됩니다.', 'success');
   };
 
   // Import 실행
   const executeImport = () => {
     if (!importMonth || importPreview.length === 0) {
-      alert('임포트할 월을 선택하고 데이터를 확인하세요.');
+      toast.show('임포트할 월을 선택하고 데이터를 확인하세요.', 'error');
       return;
     }
 
@@ -461,11 +459,11 @@ export function WagesTab({
 
     if (newWages.length > 0) {
       addMonthlyWages(newWages);
-      alert(`임포트 완료! ${matchedCount}명의 급여가 저장되었습니다.`);
+      toast.show(`임포트 완료! ${matchedCount}명의 급여가 저장되었습니다.`, 'success');
       setImportPreview([]);
       setImportMonth('');
     } else {
-      alert('저장할 데이터가 없습니다.');
+      toast.show('저장할 데이터가 없습니다.', 'info');
     }
   };
 

@@ -4,6 +4,7 @@ import { useState, useMemo } from 'react';
 import { MonthlyWage, Worker, Employment, RetirementCalculation, Business } from '@/types';
 import { calculateFullRetirement, formatCurrency, isEligible } from '@/lib/retirement';
 import { downloadRetirementPDF } from '@/lib/retirement-pdf';
+import { useToast } from '@/components/ui/Toast';
 
 export interface RetirementTabProps {
   businessId: string;
@@ -24,6 +25,7 @@ export function RetirementTab({
   retirementCalculations,
   addRetirementCalculation,
 }: RetirementTabProps) {
+  const toast = useToast();
   const [selectedWorkerId, setSelectedWorkerId] = useState<string>('');
   const [calculationResult, setCalculationResult] = useState<RetirementCalculation | null>(null);
   const [calculating, setCalculating] = useState(false);
@@ -92,7 +94,7 @@ export function RetirementTab({
   const handleSaveCalculation = () => {
     if (!calculationResult) return;
     addRetirementCalculation(calculationResult);
-    alert('퇴직금 계산 결과가 저장되었습니다.');
+    toast.show('퇴직금 계산 결과가 저장되었습니다.', 'success');
   };
 
   // PDF 다운로드

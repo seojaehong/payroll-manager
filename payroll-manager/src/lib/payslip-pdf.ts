@@ -201,6 +201,7 @@ export async function downloadPayslipPDF(data: PayslipData, filename?: string): 
     URL.revokeObjectURL(url);
   } catch (error) {
     console.error('PDF 생성 오류:', error);
-    alert('PDF 생성 중 오류가 발생했습니다.');
+    // Note: toast는 호출하는 컴포넌트에서 처리해야 합니다
+    throw new Error('PDF 생성 중 오류가 발생했습니다.');
   }
 }

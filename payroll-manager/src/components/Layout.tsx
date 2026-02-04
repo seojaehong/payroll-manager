@@ -6,6 +6,7 @@ import { useEffect } from 'react';
 import { useStore } from '@/store/useStore';
 import { BusinessSelector } from './BusinessSelector';
 import { Toast } from './ui/Toast';
+import AIChatButton from './ai/AIChatButton';
 
 // 사업장 컨텍스트 기반 네비게이션
 const navItems = [
@@ -96,6 +97,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </p>
         </div>
       </aside>
+
+      {/* 메인 콘텐츠 */}
+            {/* AI 챗 버튼 */}
+      <AIChatButton />
 
       {/* 메인 콘텐츠 */}
       <main className="ml-72 pt-16 p-10 animate-fade-in">

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { CodeSelect } from './CodeSelect';
+import { useToast } from './Toast';
 
 interface RetireModalProps {
   workerName: string;
@@ -11,6 +12,7 @@ interface RetireModalProps {
 }
 
 export function RetireModal({ workerName, isOpen, onClose, onConfirm }: RetireModalProps) {
+  const toast = useToast();
   const [leaveDate, setLeaveDate] = useState(new Date().toISOString().slice(0, 10));
   const [leaveReason, setLeaveReason] = useState('11'); // 기본값: 개인사정 자진퇴사
 
@@ -18,11 +20,11 @@ export function RetireModal({ workerName, isOpen, onClose, onConfirm }: RetireMo
 
   const handleConfirm = () => {
     if (!leaveDate) {
-      alert('퇴사일을 입력하세요.');
+      toast.show('퇴사일을 입력하세요.', 'error');
       return;
     }
     if (!leaveReason) {
-      alert('퇴사사유를 선택하세요.');
+      toast.show('퇴사사유를 선택하세요.', 'error');
       return;
     }
     onConfirm(leaveDate, leaveReason);

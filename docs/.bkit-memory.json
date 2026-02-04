@@ -1,7 +1,7 @@
 {
-  "sessionCount": 53,
+  "sessionCount": 59,
   "lastSession": {
-    "startedAt": "2026-02-03T15:05:30.443Z",
+    "startedAt": "2026-02-04T02:27:35.950Z",
     "platform": "claude",
     "level": "Dynamic"
   },
@@ -11,6 +11,38 @@
       "matchRate": 98,
       "completedAt": "2026-02-03",
       "reportPath": "docs/04-report/ux-refactoring.report.md"
+    },
+    "gemini-integration": {
+      "phase": "check",
+      "createdAt": "2026-02-04",
+      "planPath": "docs/01-plan/features/gemini-integration.plan.md",
+      "designPath": "docs/02-design/features/gemini-integration.design.md",
+      "implementedAt": "2026-02-04",
+      "analysisPath": "docs/03-analysis/gemini-integration.analysis.md",
+      "matchRate": 92
+    },
+    "code-cleanup": {
+      "phase": "completed",
+      "createdAt": "2026-02-04",
+      "completedAt": "2026-02-04",
+      "planPath": "docs/01-plan/features/code-cleanup.plan.md",
+      "designPath": "docs/02-design/features/code-cleanup.design.md",
+      "analysisPath": "docs/03-analysis/code-cleanup.analysis.md",
+      "reportPath": "docs/04-report/code-cleanup.report.md",
+      "matchRate": 87,
+      "progress": {
+        "phase1": "completed",
+        "phase2": "completed",
+        "phase3": "design-changed",
+        "codeReduction": 1211,
+        "alertsRemoved": 36
+      }
+    },
+    "dashboard-restructure": {
+      "phase": "design",
+      "createdAt": "2026-02-04",
+      "planPath": "docs/01-plan/features/dashboard-restructure.plan.md",
+      "designPath": "docs/02-design/features/dashboard-restructure.design.md"
     }
   }
 }
