@@ -4,25 +4,18 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect } from 'react';
 import { useStore } from '@/store/useStore';
-import { BusinessSelector } from './BusinessSelector';
 import { Toast } from './ui/Toast';
 import AIChatButton from './ai/AIChatButton';
 
-// 사업장 컨텍스트 기반 네비게이션
+// 간소화된 네비게이션 (2개 메뉴)
 const navItems = [
   { href: '/', label: '대시보드', icon: '📊' },
-  { href: '/workers', label: '근로자 관리', icon: '👥' },
-  { href: '/wages', label: '급여 관리', icon: '💰' },
-  { href: '/reports', label: '신고서 생성', icon: '📝' },
-  { href: '/payslip', label: '명세서 발송', icon: '📧' },
-  { href: '/import', label: '엑셀 Import', icon: '📥' },
   { href: '/settings', label: '설정', icon: '⚙️' },
 ];
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const initializeData = useStore((state) => state.initializeData);
-  const selectedBusinessId = useStore((state) => state.selectedBusinessId);
   const businesses = useStore((state) => state.businesses);
 
   // 앱 시작 시 초기 데이터 로드
@@ -36,33 +29,37 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     return pathname.startsWith(href);
   };
 
-  // 사업장 선택이 필요 없는 페이지 (전역 관리 페이지)
-  const isGlobalPage = pathname.startsWith('/businesses') || pathname.startsWith('/settings') || pathname.startsWith('/payslip/');
-
   return (
     <div className="min-h-screen">
       <Toast />
-      {/* 헤더 - 사업장 선택기 */}
+
+      {/* 헤더 - 심플 */}
       <header className="fixed top-0 left-72 right-0 h-16 bg-slate-900/80 backdrop-blur-xl border-b border-white/5 z-40 flex items-center px-8">
-        <BusinessSelector />
+        {/* 현재 페이지 경로 표시 */}
+        <div className="text-white/40 text-sm">
+          {pathname === '/' && '전체 사업장 현황'}
+          {pathname.startsWith('/businesses/') && pathname !== '/businesses' && '사업장 상세'}
+          {pathname === '/businesses' && '사업장 관리'}
+          {pathname === '/settings' && '설정'}
+        </div>
 
         {/* 우측 정보 */}
         <div className="ml-auto flex items-center gap-4">
-          {selectedBusinessId && (
-            <span className="text-xs text-white/30">
-              {businesses.length}개 사업장 관리 중
-            </span>
-          )}
+          <span className="text-xs text-white/30">
+            {businesses.length}개 사업장 관리 중
+          </span>
         </div>
       </header>
 
       {/* 사이드바 - Liquid Glass */}
       <aside className="fixed left-0 top-0 h-full w-72 sidebar-glass z-50">
         <div className="p-8 border-b border-white/5">
-          <h1 className="text-2xl font-semibold text-white tracking-tight">
-            급여관리
-          </h1>
-          <p className="text-sm text-white/40 mt-1 font-light">Payroll Manager</p>
+          <Link href="/">
+            <h1 className="text-2xl font-semibold text-white tracking-tight hover:text-white/80 transition-colors">
+              급여관리
+            </h1>
+            <p className="text-sm text-white/40 mt-1 font-light">Payroll Manager</p>
+          </Link>
         </div>
         <nav className="p-4 mt-4">
           <ul className="space-y-1">
@@ -90,7 +87,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             href="/businesses"
             className="block text-center text-xs text-white/30 hover:text-white/60 transition-colors"
           >
-            사업장 관리
+            사업장 관리 (추가/삭제)
           </Link>
           <p className="text-xs text-white/30 text-center mt-2">
             Winners Payroll v1.0
@@ -98,31 +95,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         </div>
       </aside>
 
-      {/* 메인 콘텐츠 */}
-            {/* AI 챗 버튼 */}
+      {/* AI 챗 버튼 */}
       <AIChatButton />
 
-      {/* 메인 콘텐츠 */}
+      {/* 메인 콘텐츠 - 항상 렌더링 */}
       <main className="ml-72 pt-16 p-10 animate-fade-in">
-        {/* 전역 페이지이거나 사업장이 선택된 경우 컨텐츠 표시 */}
-        {isGlobalPage || selectedBusinessId ? (
-          children
-        ) : businesses.length === 0 ? (
-          <div className="flex flex-col items-center justify-center min-h-[60vh]">
-            <div className="text-6xl mb-6">📋</div>
-            <h2 className="text-2xl font-semibold text-white mb-2">사업장을 등록하세요</h2>
-            <p className="text-white/40 mb-6">급여관리를 시작하려면 먼저 사업장을 등록해주세요</p>
-            <Link href="/businesses/new" className="btn-primary">
-              사업장 등록하기
-            </Link>
-          </div>
-        ) : (
-          <div className="flex flex-col items-center justify-center min-h-[60vh]">
-            <div className="text-6xl mb-6">🏢</div>
-            <h2 className="text-2xl font-semibold text-white mb-2">사업장을 선택하세요</h2>
-            <p className="text-white/40 mb-6">상단의 사업장 선택기에서 작업할 사업장을 선택해주세요</p>
-          </div>
-        )}
+        {children}
       </main>
     </div>
   );

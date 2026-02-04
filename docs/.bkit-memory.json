@@ -39,10 +39,11 @@
       }
     },
     "dashboard-restructure": {
-      "phase": "design",
+      "phase": "do",
       "createdAt": "2026-02-04",
       "planPath": "docs/01-plan/features/dashboard-restructure.plan.md",
-      "designPath": "docs/02-design/features/dashboard-restructure.design.md"
+      "designPath": "docs/02-design/features/dashboard-restructure.design.md",
+      "implementedAt": "2026-02-04"
     }
   }
 }
