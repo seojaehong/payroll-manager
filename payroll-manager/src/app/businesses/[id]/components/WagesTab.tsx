@@ -2,17 +2,11 @@
 
 import { useState, useMemo } from 'react';
 import * as XLSX from 'xlsx';
-import { MonthlyWage, Worker, Employment, FieldGroups } from '@/types';
+import { MonthlyWage, Worker, Employment, ExcelMapping, FieldGroups } from '@/types';
 import { useExcelImport, parseExcelNumber, indexToColumnLetter, normalizeResidentNo } from '@/hooks/useExcelImport';
 import { getYearRange } from '@/lib/constants';
+import { cleanUndefined } from '@/lib/format';
 import { useToast } from '@/components/ui/Toast';
-
-// undefined 필드 제거 (Firestore는 undefined 허용 안함)
-function removeUndefined<T extends Record<string, any>>(obj: T): T {
-  return Object.fromEntries(
-    Object.entries(obj).filter(([_, v]) => v !== undefined)
-  ) as T;
-}
 
 interface WagesTabProps {
   businessId: string;
@@ -21,10 +15,86 @@ interface WagesTabProps {
   selectedYear: number;
   setSelectedYear: (year: number) => void;
   addMonthlyWages: (wages: MonthlyWage[]) => void;
-  excelMappings: any[];
+  excelMappings: ExcelMapping[];
   workers: Worker[];
-  setExcelMapping: (mapping: any) => void;
+  setExcelMapping: (mapping: ExcelMapping) => void;
 }
+
+// 엑셀 행에서 MonthlyWage 빌드 (중복 코드 통합)
+function buildWageFromRow(
+  fm: Record<string, number | null>,
+  row: unknown[],
+  employmentId: string,
+  yearMonth: string,
+  totalWage: number,
+): MonthlyWage {
+  return cleanUndefined({
+    id: `${employmentId}-${yearMonth}`,
+    employmentId,
+    yearMonth,
+    totalWage,
+    basicWage: parseExcelNumber(row[fm.basicWage!]),
+    overtimeWeekday: parseExcelNumber(row[fm.overtimeWeekday!]),
+    overtimeWeekend: parseExcelNumber(row[fm.overtimeWeekend!]),
+    nightWage: parseExcelNumber(row[fm.nightWage!]),
+    holidayWage: parseExcelNumber(row[fm.holidayWage!]),
+    annualLeaveWage: parseExcelNumber(row[fm.annualLeaveWage!]),
+    bonusWage: parseExcelNumber(row[fm.bonusWage!]),
+    mealAllowance: parseExcelNumber(row[fm.mealAllowance!]),
+    carAllowance: parseExcelNumber(row[fm.carAllowance!]),
+    otherWage: parseExcelNumber(row[fm.otherWage!]),
+    incomeTax: parseExcelNumber(row[fm.incomeTax!]),
+    localTax: parseExcelNumber(row[fm.localTax!]),
+    nps: parseExcelNumber(row[fm.nps!]),
+    nhic: parseExcelNumber(row[fm.nhic!]),
+    ltc: parseExcelNumber(row[fm.ltc!]),
+    ei: parseExcelNumber(row[fm.ei!]),
+    advancePayment: parseExcelNumber(row[fm.advancePayment!]),
+    otherDeduction: parseExcelNumber(row[fm.otherDeduction!]),
+    totalDeduction: parseExcelNumber(row[fm.totalDeduction!]),
+    netWage: parseExcelNumber(row[fm.netWage!]),
+    workDays: parseExcelNumber(row[fm.workDays!]),
+    deductionDays: parseExcelNumber(row[fm.deductionDays!]),
+    deductionHours: parseExcelNumber(row[fm.deductionHours!]),
+    createdAt: new Date(),
+  }) as MonthlyWage;
+}
+
+// 미리보기 행 타입 (any 제거)
+interface WagePreviewRow {
+  name: string;
+  residentNo: string;
+  matched: boolean;
+  matchStatus: MatchStatus;
+  matchReason: string;
+  totalWage: number;
+  basicWage?: number;
+  overtimeWeekday?: number;
+  overtimeWeekend?: number;
+  nightWage?: number;
+  holidayWage?: number;
+  annualLeaveWage?: number;
+  bonusWage?: number;
+  mealAllowance?: number;
+  carAllowance?: number;
+  otherWage?: number;
+  incomeTax?: number;
+  localTax?: number;
+  nps?: number;
+  nhic?: number;
+  ltc?: number;
+  ei?: number;
+  advancePayment?: number;
+  otherDeduction?: number;
+  totalDeduction?: number;
+  netWage?: number;
+  workDays?: number;
+  deductionDays?: number;
+  deductionHours?: number;
+}
+
+// 매칭 상태 타입
+type MatchStatus = 'matched' | 'no_worker' | 'no_employment';
 
 // 필드 정의 - 지급내역, 공제내역 포함
 const FIELD_GROUPS: FieldGroups = {
@@ -77,7 +147,7 @@ export function WagesTab({
 }: WagesTabProps) {
   const toast = useToast();
   const [importMonth, setImportMonth] = useState('');
-  const [importPreview, setImportPreview] = useState<any[]>([]);
+  const [importPreview, setImportPreview] = useState<WagePreviewRow[]>([]);
   const [showMappingModal, setShowMappingModal] = useState(false);
 
   // 다중 파일 일괄 업로드
@@ -89,6 +159,15 @@ export function WagesTab({
   const excel = useExcelImport({ defaultHeaderRow: 4, defaultDataStartRow: 6 });
 
   const months = Array.from({ length: 12 }, (_, i) => `${selectedYear}-${String(i + 1).padStart(2, '0')}`);
+
+  // 급여 인덱스 (O(1) 조회용)
+  const wageIndex = useMemo(() => {
+    const idx = new Set<string>();
+    for (const mw of monthlyWages) {
+      idx.add(`${mw.employmentId}-${mw.yearMonth}`);
+    }
+    return idx;
+  }, [monthlyWages]);
 
   // 급여 데이터 현황
   const wageStats = useMemo(() => {
@@ -108,18 +187,24 @@ export function WagesTab({
         if (leaveDate && leaveDate < monthStart) return;
 
         total++;
-        if (monthlyWages.find((mw) => mw.employmentId === employment.id && mw.yearMonth === ym)) {
+        if (wageIndex.has(`${employment.id}-${ym}`)) {
           filled++;
         }
       });
     });
 
     return { total, filled, percent: total > 0 ? Math.round((filled / total) * 100) : 100 };
-  }, [businessEmployments, months, monthlyWages]);
+  }, [businessEmployments, months, wageIndex]);
+
+  // 정규화된 주민번호 → Worker 매핑 (중복 생성 방지)
+  const workerByNormalizedRN = useMemo(() =>
+    new Map(workers.map(w => [normalizeResidentNo(w.residentNo), w])),
+    [workers]
+  );
 
   // 기존 매핑 로드 (workbook을 직접 전달하여 비동기 상태 문제 해결)
   const loadExistingMapping = (wb?: XLSX.WorkBook) => {
-    const existing = excelMappings.find((m: any) => m.businessId === businessId);
+    const existing = excelMappings.find((m) => m.businessId === businessId);
     if (existing) {
       excel.applyMapping({
         sheetName: existing.sheetName,
@@ -202,7 +287,7 @@ export function WagesTab({
       });
 
       const wb = XLSX.read(data, { type: 'binary' });
-      const savedSheet = excelMappings.find((m: any) => m.businessId === businessId)?.sheetName || wb.SheetNames[0];
+      const savedSheet = excelMappings.find((m) => m.businessId === businessId)?.sheetName || wb.SheetNames[0];
       const ws = wb.Sheets[savedSheet];
       if (!ws) {
         fileResults.push({ yearMonth, imported: 0, skipped: 0 });
@@ -219,16 +304,11 @@ export function WagesTab({
         continue;
       }
 
-      // 정규화된 주민번호로 Worker Map 생성
-      const workerByNormalizedRN = new Map(
-        workers.map(w => [normalizeResidentNo(w.residentNo), w])
-      );
-
       const newWages: MonthlyWage[] = [];
       let fileSkipped = 0;
 
       for (let i = excel.dataStartRow - 1; i < jsonData.length; i++) {
-        const row = jsonData[i] as any[];
+        const row = jsonData[i] as unknown[];
         if (!row || !row[nameIdx]) continue;
 
         const name = String(row[nameIdx] || '').trim();
@@ -251,36 +331,7 @@ export function WagesTab({
           continue;
         }
 
-        newWages.push(removeUndefined({
-          id: `${matchedEmp.employment.id}-${yearMonth}`,
-          employmentId: matchedEmp.employment.id,
-          yearMonth,
-          totalWage,
-          basicWage: parseExcelNumber(row[fm.basicWage!]),
-          overtimeWeekday: parseExcelNumber(row[fm.overtimeWeekday!]),
-          overtimeWeekend: parseExcelNumber(row[fm.overtimeWeekend!]),
-          nightWage: parseExcelNumber(row[fm.nightWage!]),
-          holidayWage: parseExcelNumber(row[fm.holidayWage!]),
-          annualLeaveWage: parseExcelNumber(row[fm.annualLeaveWage!]),
-          bonusWage: parseExcelNumber(row[fm.bonusWage!]),
-          mealAllowance: parseExcelNumber(row[fm.mealAllowance!]),
-          carAllowance: parseExcelNumber(row[fm.carAllowance!]),
-          otherWage: parseExcelNumber(row[fm.otherWage!]),
-          incomeTax: parseExcelNumber(row[fm.incomeTax!]),
-          localTax: parseExcelNumber(row[fm.localTax!]),
-          nps: parseExcelNumber(row[fm.nps!]),
-          nhic: parseExcelNumber(row[fm.nhic!]),
-          ltc: parseExcelNumber(row[fm.ltc!]),
-          ei: parseExcelNumber(row[fm.ei!]),
-          advancePayment: parseExcelNumber(row[fm.advancePayment!]),
-          otherDeduction: parseExcelNumber(row[fm.otherDeduction!]),
-          totalDeduction: parseExcelNumber(row[fm.totalDeduction!]),
-          netWage: parseExcelNumber(row[fm.netWage!]),
-          workDays: parseExcelNumber(row[fm.workDays!]),
-          deductionDays: parseExcelNumber(row[fm.deductionDays!]),
-          deductionHours: parseExcelNumber(row[fm.deductionHours!]),
-          createdAt: new Date(),
-        }));
+        newWages.push(buildWageFromRow(fm, row, matchedEmp.employment.id, yearMonth, totalWage));
       }
 
       if (newWages.length > 0) {
@@ -304,9 +355,6 @@ export function WagesTab({
     toast.show(message, toastType);
   };
 
-  // 매칭 상태 타입
-  type MatchStatus = 'matched' | 'no_worker' | 'no_employment';
-
   // 미리보기 로드
   const loadPreview = () => {
     if (!excel.workbook || !excel.selectedSheet) return;
@@ -323,15 +371,11 @@ export function WagesTab({
     const ws = excel.workbook.Sheets[excel.selectedSheet];
     const jsonData = XLSX.utils.sheet_to_json(ws, { header: 1 }) as unknown[][];
 
-    // 정규화된 주민번호로 Worker Map 생성 (빠른 매칭)
-    const workerByNormalizedRN = new Map(
-      workers.map(w => [normalizeResidentNo(w.residentNo), w])
-    );
-
-    const preview: any[] = [];
+    const preview: WagePreviewRow[] = [];
+    const fm = excel.fieldMapping;
 
     for (let i = excel.dataStartRow - 1; i < jsonData.length; i++) {
-      const row = jsonData[i] as any[];
+      const row = jsonData[i] as unknown[];
       if (!row || !row[nameIdx]) continue;
 
       const name = String(row[nameIdx] || '').trim();
@@ -360,7 +404,6 @@ export function WagesTab({
         matchReason = `다른 사업장 소속 (${matchedWorker.name})`;
       }
 
-      const fm = excel.fieldMapping;
       preview.push({
         name,
         residentNo,
@@ -368,7 +411,6 @@ export function WagesTab({
         matchStatus,
         matchReason,
         totalWage,
-        // 지급내역
         basicWage: parseExcelNumber(row[fm.basicWage!]),
         overtimeWeekday: parseExcelNumber(row[fm.overtimeWeekday!]),
         overtimeWeekend: parseExcelNumber(row[fm.overtimeWeekend!]),
@@ -379,7 +421,6 @@ export function WagesTab({
         mealAllowance: parseExcelNumber(row[fm.mealAllowance!]),
         carAllowance: parseExcelNumber(row[fm.carAllowance!]),
         otherWage: parseExcelNumber(row[fm.otherWage!]),
-        // 공제내역
         incomeTax: parseExcelNumber(row[fm.incomeTax!]),
         localTax: parseExcelNumber(row[fm.localTax!]),
         nps: parseExcelNumber(row[fm.nps!]),
@@ -390,7 +431,6 @@ export function WagesTab({
         otherDeduction: parseExcelNumber(row[fm.otherDeduction!]),
         totalDeduction: parseExcelNumber(row[fm.totalDeduction!]),
         netWage: parseExcelNumber(row[fm.netWage!]),
-        // 근무정보
         workDays: parseExcelNumber(row[fm.workDays!]),
         deductionDays: parseExcelNumber(row[fm.deductionDays!]),
         deductionHours: parseExcelNumber(row[fm.deductionHours!]),
@@ -407,7 +447,7 @@ export function WagesTab({
     setExcelMapping({
       businessId,
       ...mappingData,
-    });
+    } as ExcelMapping);
     toast.show('매핑 저장 완료! 다음부터 자동 적용됩니다.', 'success');
   };
 
@@ -417,11 +457,6 @@ export function WagesTab({
       toast.show('임포트할 월을 선택하고 데이터를 확인하세요.', 'error');
       return;
     }
-
-    // 정규화된 주민번호로 Worker Map 생성
-    const workerByNormalizedRN = new Map(
-      workers.map(w => [normalizeResidentNo(w.residentNo), w])
-    );
 
     const newWages: MonthlyWage[] = [];
     let matchedCount = 0;
@@ -433,7 +468,7 @@ export function WagesTab({
       const matchedEmp = businessEmployments.find(({ worker }) => worker.id === matchedWorker.id);
       if (!matchedEmp) return;
 
-      newWages.push(removeUndefined({
+      newWages.push(cleanUndefined({
         id: `${matchedEmp.employment.id}-${importMonth}`,
         employmentId: matchedEmp.employment.id,
         yearMonth: importMonth,
@@ -462,7 +497,7 @@ export function WagesTab({
         deductionDays: row.deductionDays,
         deductionHours: row.deductionHours,
         createdAt: new Date(),
-      }));
+      }) as MonthlyWage);
       matchedCount++;
     });
 

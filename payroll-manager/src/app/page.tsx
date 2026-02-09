@@ -29,6 +29,15 @@ export default function Dashboard() {
     return { totalBusinesses, totalActiveWorkers, thisMonthJoins, thisMonthLeaves };
   }, [businesses, employments, thisMonth]);
 
+  // 급여 인덱스 (O(1) 조회용)
+  const wageIndex = useMemo(() => {
+    const idx = new Set<string>();
+    for (const mw of monthlyWages) {
+      idx.add(`${mw.employmentId}-${mw.yearMonth}`);
+    }
+    return idx;
+  }, [monthlyWages]);
+
   // 각 사업장별 통계
   const businessStats = useMemo(() => {
     return businesses.map((biz) => {
@@ -42,7 +51,6 @@ export default function Dashboard() {
       ).length;
 
       // 전년도 급여 입력 현황
-      const prevYearWages = monthlyWages.filter((mw) => mw.yearMonth.startsWith(String(prevYear)));
       let totalPrevYearSlots = 0;
       let filledPrevYearSlots = 0;
 
@@ -64,7 +72,7 @@ export default function Dashboard() {
           if (leaveYear < prevYear) continue;
 
           totalPrevYearSlots++;
-          if (prevYearWages.find((w) => w.employmentId === emp.id && w.yearMonth === ym)) {
+          if (wageIndex.has(`${emp.id}-${ym}`)) {
             filledPrevYearSlots++;
           }
         }
@@ -88,7 +96,7 @@ export default function Dashboard() {
         },
       };
     });
-  }, [businesses, employments, monthlyWages, thisMonth, prevYear]);
+  }, [businesses, employments, wageIndex, thisMonth, prevYear]);
 
   // 신고 필요한 사업장 수
   const businessesWithPendingReports = businessStats.filter(

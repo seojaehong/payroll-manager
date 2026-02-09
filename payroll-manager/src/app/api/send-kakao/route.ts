@@ -13,6 +13,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createPayslipToken, generatePayslipUrl } from '@/lib/payslip-token';
 import { savePayslipToken, saveSendHistory } from '@/lib/firestore';
 import type { PayslipData } from '@/types';
+import { formatNumber } from '@/lib/format';
 
 interface SendKakaoRequest {
   payslipData: PayslipData;
@@ -171,7 +172,6 @@ export async function POST(request: NextRequest) {
     const webLink = generatePayslipUrl(tokenData.token);
 
     // 알림톡 템플릿 변수
-    const formatNumber = (num: number) => num.toLocaleString('ko-KR');
     const yearMonth = payslipData.yearMonth.replace('-', '년 ') + '월';
 
     const templateVariables = {

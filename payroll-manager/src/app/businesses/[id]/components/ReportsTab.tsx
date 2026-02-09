@@ -76,6 +76,15 @@ export function ReportsTab({
     }
   };
 
+  // 급여 인덱스 (employmentId-yearMonth → MonthlyWage, O(1) 조회)
+  const wageByKey = useMemo(() => {
+    const idx = new Map<string, MonthlyWage>();
+    for (const mw of monthlyWages) {
+      idx.set(`${mw.employmentId}-${mw.yearMonth}`, mw);
+    }
+    return idx;
+  }, [monthlyWages]);
+
   // 보수 계산 함수
   const calculateWages = (employmentId: string, leaveDate: string, joinDate: string) => {
     const leaveYear = parseInt(leaveDate.slice(0, 4));
@@ -84,13 +93,11 @@ export function ReportsTab({
     const joinMonth = parseInt(joinDate.slice(5, 7));
     const prevYear = leaveYear - 1;
 
-    const empWages = monthlyWages.filter((mw) => mw.employmentId === employmentId);
-
     let currentYearTotal = 0, currentYearMonths = 0;
     for (let m = 1; m <= leaveMonth; m++) {
       if (leaveYear === joinYear && m < joinMonth) continue;
       const ym = `${leaveYear}-${String(m).padStart(2, '0')}`;
-      const wage = empWages.find((w) => w.yearMonth === ym);
+      const wage = wageByKey.get(`${employmentId}-${ym}`);
       if (wage) { currentYearTotal += wage.totalWage; currentYearMonths++; }
     }
 
@@ -99,7 +106,7 @@ export function ReportsTab({
       const prevStartMonth = prevYear === joinYear ? joinMonth : 1;
       for (let m = prevStartMonth; m <= 12; m++) {
         const ym = `${prevYear}-${String(m).padStart(2, '0')}`;
-        const wage = empWages.find((w) => w.yearMonth === ym);
+        const wage = wageByKey.get(`${employmentId}-${ym}`);
         if (wage) { prevYearTotal += wage.totalWage; prevYearMonths++; }
       }
     }
@@ -116,19 +123,18 @@ export function ReportsTab({
     const prevYear = leaveYear - 1;
 
     const missing: string[] = [];
-    const empWages = monthlyWages.filter((mw) => mw.employmentId === employmentId);
 
     for (let m = 1; m <= leaveMonth; m++) {
       if (leaveYear === joinYear && m < joinMonth) continue;
       const ym = `${leaveYear}-${String(m).padStart(2, '0')}`;
-      if (!empWages.find((w) => w.yearMonth === ym)) missing.push(ym);
+      if (!wageByKey.has(`${employmentId}-${ym}`)) missing.push(ym);
     }
 
     if (joinYear <= prevYear) {
       const prevStartMonth = prevYear === joinYear ? joinMonth : 1;
       for (let m = prevStartMonth; m <= 12; m++) {
         const ym = `${prevYear}-${String(m).padStart(2, '0')}`;
-        if (!empWages.find((w) => w.yearMonth === ym)) missing.push(ym);
+        if (!wageByKey.has(`${employmentId}-${ym}`)) missing.push(ym);
       }
     }
 

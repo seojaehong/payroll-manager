@@ -12,6 +12,7 @@ import { downloadPayslipPDF } from '@/lib/payslip-pdf';
 import { SendHistoryList } from '@/components/ui/SendHistoryList';
 import { useToast } from '@/components/ui/Toast';
 import type { PayslipData, SendChannel, MonthlyWage, Worker, Employment, Business } from '@/types';
+import { formatNumber } from '@/lib/format';
 
 interface BusinessEmployment {
   employment: Employment;
@@ -31,12 +32,6 @@ interface WorkerSendState {
   status: SendStatus;
   message?: string;
   channels?: SendChannel[];
-}
-
-// 숫자 포맷
-function formatNumber(num: number | undefined | null): string {
-  if (num === undefined || num === null || isNaN(num)) return '0';
-  return num.toLocaleString('ko-KR');
 }
 
 export function PayslipTab({

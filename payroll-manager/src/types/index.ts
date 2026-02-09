@@ -324,6 +324,7 @@ export interface FieldDef {
   key: string;
   label: string;
   required?: boolean;
+  aliases?: string[];
 }
 
 // 필드 그룹 (그룹화된 필드 정의)

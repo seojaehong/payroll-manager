@@ -6,12 +6,7 @@
 import { jsPDF } from 'jspdf';
 import html2canvas from 'html2canvas';
 import type { PayslipData } from '@/types';
-
-// 숫자 포맷팅
-function formatNumber(num: number | undefined | null): string {
-  if (num === undefined || num === null || isNaN(num)) return '0';
-  return num.toLocaleString('ko-KR');
-}
+import { formatNumber } from '@/lib/format';
 
 // 급여명세서 HTML 생성
 function createPayslipHtml(data: PayslipData): string {

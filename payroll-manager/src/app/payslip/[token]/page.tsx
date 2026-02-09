@@ -8,11 +8,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import type { PayslipData } from '@/types';
-
-// 숫자 포맷팅
-function formatNumber(num: number): string {
-  return num.toLocaleString('ko-KR');
-}
+import { formatNumber } from '@/lib/format';
 
 // 날짜 포맷팅
 function formatYearMonth(yearMonth: string): string {

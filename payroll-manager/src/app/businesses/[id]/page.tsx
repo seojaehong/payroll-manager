@@ -20,12 +20,20 @@ export default function BusinessDetailPage() {
   const searchParams = useSearchParams();
   const businessId = params.id as string;
 
-  const {
-    businesses, workers, employments, monthlyWages, reports, excelMappings,
-    retirementCalculations, addRetirementCalculation,
-    addWorker, addEmployment, addMonthlyWages, addReport, updateBusiness, setExcelMapping,
-    selectedBusinessId, setSelectedBusiness,
-  } = useStore();
+  const businesses = useStore((s) => s.businesses);
+  const workers = useStore((s) => s.workers);
+  const employments = useStore((s) => s.employments);
+  const monthlyWages = useStore((s) => s.monthlyWages);
+  const reports = useStore((s) => s.reports);
+  const excelMappings = useStore((s) => s.excelMappings);
+  const retirementCalculations = useStore((s) => s.retirementCalculations);
+  const addRetirementCalculation = useStore((s) => s.addRetirementCalculation);
+  const addMonthlyWages = useStore((s) => s.addMonthlyWages);
+  const addReport = useStore((s) => s.addReport);
+  const updateBusiness = useStore((s) => s.updateBusiness);
+  const setExcelMapping = useStore((s) => s.setExcelMapping);
+  const selectedBusinessId = useStore((s) => s.selectedBusinessId);
+  const setSelectedBusiness = useStore((s) => s.setSelectedBusiness);
 
   // 사업장 상세 진입 시 selectedBusinessId 동기화
   useEffect(() => {
@@ -40,8 +48,20 @@ export default function BusinessDetailPage() {
   const validTabs: TabType[] = ['workers', 'wages', 'retirement', 'reports'];
   const isPayslipParam = urlTab === 'payslip';
   const initialTab: TabType = isPayslipParam ? 'wages' : (urlTab && validTabs.includes(urlTab as TabType) ? urlTab as TabType : 'workers');
-  const [activeTab, setActiveTab] = useState<TabType>(initialTab);
-  const [wagesSubTab, setWagesSubTab] = useState<WagesSubTab>(isPayslipParam ? 'payslip' : 'history');
+  const [activeTab, setActiveTabState] = useState<TabType>(initialTab);
+  const [wagesSubTab, setWagesSubTabState] = useState<WagesSubTab>(isPayslipParam ? 'payslip' : 'history');
+
+  // 탭 변경 시 URL searchParams 동기화
+  const setActiveTab = useCallback((tab: TabType) => {
+    setActiveTabState(tab);
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('tab', tab);
+    router.replace(`/businesses/${businessId}?${params.toString()}`, { scroll: false });
+  }, [searchParams, router, businessId]);
+
+  const setWagesSubTab = useCallback((subTab: WagesSubTab) => {
+    setWagesSubTabState(subTab);
+  }, []);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear() - 1);
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState({

@@ -9,6 +9,7 @@ import { generatePayslipPDF } from '@/lib/payslip-pdf';
 import { createPayslipToken, generatePayslipUrl } from '@/lib/payslip-token';
 import { savePayslipToken, saveSendHistory } from '@/lib/firestore';
 import type { PayslipData } from '@/types';
+import { formatNumber } from '@/lib/format';
 
 interface SendEmailRequest {
   payslipData: PayslipData;
@@ -25,8 +26,6 @@ interface SendEmailRequest {
 
 // 이메일 HTML 템플릿
 function generateEmailHtml(data: PayslipData, webLink?: string): string {
-  const formatNumber = (num: number) => num.toLocaleString('ko-KR');
-
   return `
 <!DOCTYPE html>
 <html>

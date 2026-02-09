@@ -8,6 +8,7 @@ import { PageHeader } from '@/components/ui/PageHeader';
 import { useToast } from '@/components/ui/Toast';
 import { normalizeResidentNo } from '@/hooks/useExcelImport';
 import { getDefaultMonthlyWage, DEFAULTS } from '@/lib/constants';
+import type { HeaderInfo } from '@/types';
 
 interface ImportRow {
   name: string;
@@ -17,11 +18,6 @@ interface ImportRow {
   wage: number;
   phone?: string;   // 명세서 발송용
   email?: string;   // 명세서 발송용
-}
-
-interface HeaderInfo {
-  index: number;  // 0-indexed
-  name: string;
 }
 
 // 필드 그룹 정의

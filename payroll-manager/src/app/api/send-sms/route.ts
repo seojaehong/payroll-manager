@@ -7,6 +7,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createPayslipToken, generatePayslipUrl } from '@/lib/payslip-token';
 import { savePayslipToken, saveSendHistory } from '@/lib/firestore';
 import type { PayslipData } from '@/types';
+import { formatNumber } from '@/lib/format';
 
 interface SendSmsRequest {
   payslipData: PayslipData;
@@ -71,7 +72,6 @@ async function sendCoolSms(to: string, text: string): Promise<{ success: boolean
 
 // SMS 메시지 생성 (90자 제한 고려)
 function generateSmsMessage(data: PayslipData, webLink: string): string {
-  const formatNumber = (num: number) => num.toLocaleString('ko-KR');
   const yearMonth = data.yearMonth.replace('-', '년 ') + '월';
 
   // 기본 SMS (90자 이내)

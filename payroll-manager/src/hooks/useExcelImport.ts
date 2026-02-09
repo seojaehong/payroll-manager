@@ -2,19 +2,9 @@
 
 import { useState, useCallback } from 'react';
 import * as XLSX from 'xlsx';
+import type { HeaderInfo, FieldDef } from '@/types';
 
-// 공통 타입 정의
-export interface HeaderInfo {
-  index: number;  // 0-indexed
-  name: string;
-}
-
-export interface FieldDef {
-  key: string;
-  label: string;
-  required?: boolean;
-  aliases?: string[];  // 대체 이름들
-}
+export type { HeaderInfo, FieldDef };
 
 export interface ExcelImportState {
   workbook: XLSX.WorkBook | null;

@@ -11,6 +11,7 @@ import {
   Timestamp,
 } from 'firebase/firestore';
 import { Business, Worker, Employment, Report, MonthlyWage, ExcelMapping, RetirementCalculation, PayslipToken, SendHistory } from '@/types';
+import { cleanUndefined } from '@/lib/format';
 
 // Firestore writeBatch 500건 제한 처리를 위한 청크 유틸리티
 const BATCH_LIMIT = 500;
@@ -22,7 +23,6 @@ function chunkArray<T>(array: T[], size: number): T[][] {
   }
   return chunks;
 }
-
 
 // 컬렉션 이름
 const COLLECTIONS = {
@@ -49,13 +49,6 @@ const fromTimestamp = (ts: Timestamp | undefined) => {
     return new Date();
   }
   return ts.toDate();
-};
-
-// undefined 값 제거 (Firestore는 undefined를 허용하지 않음)
-const cleanUndefined = <T extends Record<string, unknown>>(obj: T): T => {
-  return Object.fromEntries(
-    Object.entries(obj).filter(([, v]) => v !== undefined)
-  ) as T;
 };
 
 // === 사업장 ===
