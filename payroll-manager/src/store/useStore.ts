@@ -2,268 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { Business, Worker, Employment, Report, ExcelMapping, MonthlyWage, RetirementCalculation } from '@/types';
 import * as firestore from '@/lib/firestore';
-import { sampleTestWorker, sampleTestEmployment, sampleTestWages } from '@/lib/initialData';
-
-// 초기 사업장 데이터
-const initialBusinesses: Business[] = [
-  {
-    id: 'biz-kukuku-bupyeong',
-    name: '쿠우쿠우 부평점',
-    bizNo: '630-40-91109',
-    gwanriNo: '79516010160',
-    gyGwanriNo: '79516010160',
-    sjGwanriNo: '79516010160',
-    npsGwanriNo: '20008864199',
-    nhicGwanriNo: '77588907',
-    address: '인천 부평구 부흥로 264, 9층 (부평동, 동아웰빙타운)',
-    tel: '010-9959-2647',
-    defaultJikjong: '532',
-    defaultWorkHours: 40,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-  {
-    id: 'biz-kukuku-gangdong',
-    name: '쿠우쿠우 강동점',
-    bizNo: '',
-    gwanriNo: '',
-    gyGwanriNo: '',
-    sjGwanriNo: '',
-    npsGwanriNo: '',
-    nhicGwanriNo: '',
-    address: '',
-    tel: '',
-    defaultJikjong: '532',
-    defaultWorkHours: 40,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-  {
-    id: 'biz-kukuku-geomdan',
-    name: '쿠우쿠우 검단점',
-    bizNo: '',
-    gwanriNo: '',
-    gyGwanriNo: '',
-    sjGwanriNo: '',
-    npsGwanriNo: '',
-    nhicGwanriNo: '',
-    address: '',
-    tel: '',
-    defaultJikjong: '532',
-    defaultWorkHours: 40,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-  {
-    id: 'biz-kukuku-godeok',
-    name: '쿠우쿠우 고덕점',
-    bizNo: '',
-    gwanriNo: '',
-    gyGwanriNo: '',
-    sjGwanriNo: '',
-    npsGwanriNo: '',
-    nhicGwanriNo: '',
-    address: '',
-    tel: '',
-    defaultJikjong: '532',
-    defaultWorkHours: 40,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-  {
-    id: 'biz-kukuku-masan',
-    name: '쿠우쿠우 마산점',
-    bizNo: '',
-    gwanriNo: '',
-    gyGwanriNo: '',
-    sjGwanriNo: '',
-    npsGwanriNo: '',
-    nhicGwanriNo: '',
-    address: '',
-    tel: '',
-    defaultJikjong: '532',
-    defaultWorkHours: 40,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-  {
-    id: 'biz-kukuku-bundang',
-    name: '쿠우쿠우 분당점 (유빛)',
-    bizNo: '',
-    gwanriNo: '',
-    gyGwanriNo: '',
-    sjGwanriNo: '',
-    npsGwanriNo: '',
-    nhicGwanriNo: '',
-    address: '',
-    tel: '',
-    defaultJikjong: '532',
-    defaultWorkHours: 40,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-  {
-    id: 'biz-kukuku-sangbong',
-    name: '쿠우쿠우 상봉점 (누리에프앤비)',
-    bizNo: '',
-    gwanriNo: '',
-    gyGwanriNo: '',
-    sjGwanriNo: '',
-    npsGwanriNo: '',
-    nhicGwanriNo: '',
-    address: '',
-    tel: '',
-    defaultJikjong: '532',
-    defaultWorkHours: 40,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-  {
-    id: 'biz-kukuku-songtan',
-    name: '쿠우쿠우 송탄점',
-    bizNo: '',
-    gwanriNo: '',
-    gyGwanriNo: '',
-    sjGwanriNo: '',
-    npsGwanriNo: '',
-    nhicGwanriNo: '',
-    address: '',
-    tel: '',
-    defaultJikjong: '532',
-    defaultWorkHours: 40,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-  {
-    id: 'biz-kukuku-yangju',
-    name: '쿠우쿠우 양주옥정점',
-    bizNo: '',
-    gwanriNo: '',
-    gyGwanriNo: '',
-    sjGwanriNo: '',
-    npsGwanriNo: '',
-    nhicGwanriNo: '',
-    address: '',
-    tel: '',
-    defaultJikjong: '532',
-    defaultWorkHours: 40,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-  {
-    id: 'biz-kukuku-yeonsinne',
-    name: '쿠우쿠우 연신내점',
-    bizNo: '',
-    gwanriNo: '',
-    gyGwanriNo: '',
-    sjGwanriNo: '',
-    npsGwanriNo: '',
-    nhicGwanriNo: '',
-    address: '',
-    tel: '',
-    defaultJikjong: '532',
-    defaultWorkHours: 40,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-  {
-    id: 'biz-kukuku-chuncheon',
-    name: '쿠우쿠우 춘천점',
-    bizNo: '',
-    gwanriNo: '',
-    gyGwanriNo: '',
-    sjGwanriNo: '',
-    npsGwanriNo: '',
-    nhicGwanriNo: '',
-    address: '',
-    tel: '',
-    defaultJikjong: '532',
-    defaultWorkHours: 40,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-  {
-    id: 'biz-kukuku-uijeongbu',
-    name: '쿠우쿠우 의정부민락점',
-    bizNo: '',
-    gwanriNo: '',
-    gyGwanriNo: '',
-    sjGwanriNo: '',
-    npsGwanriNo: '',
-    nhicGwanriNo: '',
-    address: '',
-    tel: '',
-    defaultJikjong: '532',
-    defaultWorkHours: 40,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-  {
-    id: 'biz-diningone',
-    name: '다이닝원',
-    bizNo: '',
-    gwanriNo: '',
-    gyGwanriNo: '',
-    sjGwanriNo: '',
-    npsGwanriNo: '',
-    nhicGwanriNo: '',
-    address: '',
-    tel: '',
-    defaultJikjong: '532',
-    defaultWorkHours: 40,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-  {
-    id: 'biz-bluerail',
-    name: '블루레일 (건대/의정부)',
-    bizNo: '',
-    gwanriNo: '',
-    gyGwanriNo: '',
-    sjGwanriNo: '',
-    npsGwanriNo: '',
-    nhicGwanriNo: '',
-    address: '',
-    tel: '',
-    defaultJikjong: '532',
-    defaultWorkHours: 40,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-  {
-    id: 'biz-always-shabu',
-    name: '올웨이즈샤브',
-    bizNo: '',
-    gwanriNo: '',
-    gyGwanriNo: '',
-    sjGwanriNo: '',
-    npsGwanriNo: '',
-    nhicGwanriNo: '',
-    address: '',
-    tel: '',
-    defaultJikjong: '532',
-    defaultWorkHours: 40,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-];
-
-// 엑셀 매핑 초기 데이터
-const initialMappings: ExcelMapping[] = [
-  {
-    businessId: 'biz-kukuku-bupyeong',
-    sheetName: '임금대장',
-    headerRow: 4,
-    dataStartRow: 6,
-    columns: {
-      name: 2,
-      residentNo: 4,
-      joinDate: 5,
-      leaveDate: 6,
-      wage: 7,
-    },
-  },
-];
+import { initialBusinesses, initialMappings, getTestData } from '@/lib/initialData';
 
 interface AppState {
   // 초기화 및 동기화
@@ -345,32 +84,31 @@ export const useStore = create<AppState>()(
 
       initializeData: () => {
         const state = get();
+        const testData = getTestData(); // null in production
+
         if (!state.initialized && state.businesses.length === 0) {
           set({
             initialized: true,
             businesses: initialBusinesses,
             excelMappings: initialMappings,
-            // 테스트 퇴사자 추가
-            workers: [sampleTestWorker],
-            employments: [sampleTestEmployment],
-            monthlyWages: sampleTestWages,
+            workers: testData ? [testData.worker] : [],
+            employments: testData ? [testData.employment] : [],
+            monthlyWages: testData ? testData.wages : [],
           });
         } else if (!state.initialized) {
           const existingIds = new Set(state.businesses.map((b) => b.id));
           const newBusinesses = initialBusinesses.filter((b) => !existingIds.has(b.id));
-
-          // 테스트 퇴사자가 없으면 추가
-          const hasTestWorker = state.workers.some((w) => w.id === 'worker-test-retirement');
           const updates: Partial<typeof state> = { initialized: true };
 
           if (newBusinesses.length > 0) {
             updates.businesses = [...state.businesses, ...newBusinesses];
           }
 
-          if (!hasTestWorker) {
-            updates.workers = [...state.workers, sampleTestWorker];
-            updates.employments = [...state.employments, sampleTestEmployment];
-            updates.monthlyWages = [...state.monthlyWages, ...sampleTestWages];
+          // 테스트 데이터 (개발환경에서만)
+          if (testData && !state.workers.some((w) => w.id === 'worker-test-retirement')) {
+            updates.workers = [...state.workers, testData.worker];
+            updates.employments = [...state.employments, testData.employment];
+            updates.monthlyWages = [...state.monthlyWages, ...testData.wages];
           }
 
           set(updates);

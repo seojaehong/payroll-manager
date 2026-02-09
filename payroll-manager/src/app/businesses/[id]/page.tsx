@@ -2,7 +2,7 @@
 
 import { useStore } from '@/store/useStore';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import Link from 'next/link';
 import { WorkersTab } from './components/WorkersTab';
 import { WagesTab } from './components/WagesTab';
@@ -24,7 +24,15 @@ export default function BusinessDetailPage() {
     businesses, workers, employments, monthlyWages, reports, excelMappings,
     retirementCalculations, addRetirementCalculation,
     addWorker, addEmployment, addMonthlyWages, addReport, updateBusiness, setExcelMapping,
+    selectedBusinessId, setSelectedBusiness,
   } = useStore();
+
+  // 사업장 상세 진입 시 selectedBusinessId 동기화
+  useEffect(() => {
+    if (businessId && businessId !== selectedBusinessId) {
+      setSelectedBusiness(businessId);
+    }
+  }, [businessId, selectedBusinessId, setSelectedBusiness]);
 
   // URL query param으로 기본 탭 지정 지원 (?tab=wages, ?tab=reports 등)
   // 'payslip' param은 wages 탭의 payslip 서브탭으로 변환 (하위 호환성)

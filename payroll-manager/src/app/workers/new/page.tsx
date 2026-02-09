@@ -7,6 +7,7 @@ import { useState } from 'react';
 import { Worker, Employment } from '@/types';
 import { CodeSelect } from '@/components/ui/CodeSelect';
 import { useToast } from '@/components/ui/Toast';
+import { getDefaultMonthlyWage, DEFAULTS } from '@/lib/constants';
 
 export default function NewWorkerPage() {
   const router = useRouter();
@@ -23,10 +24,10 @@ export default function NewWorkerPage() {
     name: '',
     residentNo: '',
     phone: '',
-    nationality: '100',
+    nationality: DEFAULTS.NATIONALITY as string,
     joinDate: new Date().toISOString().slice(0, 10),
-    monthlyWage: 2060740,
-    jikjongCode: '532',
+    monthlyWage: getDefaultMonthlyWage(),
+    jikjongCode: DEFAULTS.JIKJONG_CODE as string,
     workHours: 40,
     isContract: false,
     contractEndDate: '',

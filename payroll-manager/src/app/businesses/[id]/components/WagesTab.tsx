@@ -1,10 +1,10 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import Link from 'next/link';
 import * as XLSX from 'xlsx';
 import { MonthlyWage, Worker, Employment, FieldGroups } from '@/types';
-import { useExcelImport, parseExcelNumber, indexToColumnLetter } from '@/hooks/useExcelImport';
+import { useExcelImport, parseExcelNumber, indexToColumnLetter, normalizeResidentNo } from '@/hooks/useExcelImport';
+import { getYearRange } from '@/lib/constants';
 import { useToast } from '@/components/ui/Toast';
 
 // undefined 필드 제거 (Firestore는 undefined 허용 안함)
@@ -219,6 +219,11 @@ export function WagesTab({
         continue;
       }
 
+      // 정규화된 주민번호로 Worker Map 생성
+      const workerByNormalizedRN = new Map(
+        workers.map(w => [normalizeResidentNo(w.residentNo), w])
+      );
+
       const newWages: MonthlyWage[] = [];
       let fileSkipped = 0;
 
@@ -227,15 +232,12 @@ export function WagesTab({
         if (!row || !row[nameIdx]) continue;
 
         const name = String(row[nameIdx] || '').trim();
-        let residentNo = String(row[residentNoIdx] || '').replace(/-/g, '').trim();
-        if (residentNo.length < 13 && !isNaN(Number(residentNo))) {
-          residentNo = residentNo.padStart(13, '0');
-        }
+        const residentNo = normalizeResidentNo(String(row[residentNoIdx] || ''));
 
         const totalWage = parseExcelNumber(row[fm.wage!]) || 0;
         if (!name || totalWage === 0) continue;
 
-        const matchedWorker = workers.find((w) => w.residentNo === residentNo);
+        const matchedWorker = workerByNormalizedRN.get(residentNo);
         if (!matchedWorker) {
           noWorkerCount++;
           fileSkipped++;
@@ -321,6 +323,11 @@ export function WagesTab({
     const ws = excel.workbook.Sheets[excel.selectedSheet];
     const jsonData = XLSX.utils.sheet_to_json(ws, { header: 1 }) as unknown[][];
 
+    // 정규화된 주민번호로 Worker Map 생성 (빠른 매칭)
+    const workerByNormalizedRN = new Map(
+      workers.map(w => [normalizeResidentNo(w.residentNo), w])
+    );
+
     const preview: any[] = [];
 
     for (let i = excel.dataStartRow - 1; i < jsonData.length; i++) {
@@ -328,16 +335,13 @@ export function WagesTab({
       if (!row || !row[nameIdx]) continue;
 
       const name = String(row[nameIdx] || '').trim();
-      let residentNo = String(row[residentNoIdx] || '').replace(/-/g, '').trim();
-      if (residentNo.length < 13 && !isNaN(Number(residentNo))) {
-        residentNo = residentNo.padStart(13, '0');
-      }
+      const residentNo = normalizeResidentNo(String(row[residentNoIdx] || ''));
 
       const totalWage = parseExcelNumber(row[wageIdx!]) || 0;
       if (!name || totalWage === 0) continue;
 
-      // 매칭 상태 판단
-      const matchedWorker = workers.find((w) => w.residentNo === residentNo);
+      // 매칭 상태 판단 (정규화된 주민번호로 비교)
+      const matchedWorker = workerByNormalizedRN.get(residentNo);
       const matchedEmp = matchedWorker
         ? businessEmployments.find(({ worker }) => worker.id === matchedWorker.id)
         : null;
@@ -414,11 +418,16 @@ export function WagesTab({
       return;
     }
 
+    // 정규화된 주민번호로 Worker Map 생성
+    const workerByNormalizedRN = new Map(
+      workers.map(w => [normalizeResidentNo(w.residentNo), w])
+    );
+
     const newWages: MonthlyWage[] = [];
     let matchedCount = 0;
 
     importPreview.forEach((row) => {
-      const matchedWorker = workers.find((w) => w.residentNo === row.residentNo);
+      const matchedWorker = workerByNormalizedRN.get(normalizeResidentNo(row.residentNo));
       if (!matchedWorker) return;
 
       const matchedEmp = businessEmployments.find(({ worker }) => worker.id === matchedWorker.id);
@@ -476,7 +485,7 @@ export function WagesTab({
           onChange={(e) => setSelectedYear(Number(e.target.value))}
           className="input-glass px-4 py-2"
         >
-          {[2023, 2024, 2025, 2026].map((y) => (
+          {getYearRange(-3, 0).map((y) => (
             <option key={y} value={y}>{y}년</option>
           ))}
         </select>
@@ -619,10 +628,7 @@ export function WagesTab({
         )}
       </div>
 
-      {/* 상세 편집 링크 */}
-      <Link href="/wages" className="btn-secondary inline-block">
-        상세 편집 (전체 사업장)
-      </Link>
+      {/* 연도 하드코딩 → 동적 생성은 CRITICAL #5에서 처리 */}
 
       {/* 매핑 모달 */}
       {showMappingModal && (

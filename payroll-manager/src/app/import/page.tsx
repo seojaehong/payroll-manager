@@ -6,6 +6,8 @@ import * as XLSX from 'xlsx';
 import { Worker, Employment } from '@/types';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { useToast } from '@/components/ui/Toast';
+import { normalizeResidentNo } from '@/hooks/useExcelImport';
+import { getDefaultMonthlyWage, DEFAULTS } from '@/lib/constants';
 
 interface ImportRow {
   name: string;
@@ -233,11 +235,7 @@ export default function ImportPage() {
       if (!row || !row[nameIdx]) continue;
 
       const name = String(row[nameIdx] || '').trim();
-      let residentNo = String(row[residentNoIdx] || '').replace(/-/g, '').trim();
-
-      if (residentNo.length < 13 && !isNaN(Number(residentNo))) {
-        residentNo = residentNo.padStart(13, '0');
-      }
+      const residentNo = normalizeResidentNo(String(row[residentNoIdx] || ''));
 
       const joinDateRaw = fieldMapping.joinDate !== null ? row[fieldMapping.joinDate] : null;
       const leaveDateRaw = fieldMapping.leaveDate !== null ? row[fieldMapping.leaveDate] : null;
@@ -362,8 +360,8 @@ export default function ImportPage() {
             status: row.leaveDate ? 'INACTIVE' : 'ACTIVE',
             joinDate: row.joinDate || new Date().toISOString().slice(0, 10),
             leaveDate: row.leaveDate,
-            monthlyWage: row.wage || 2060740,
-            jikjongCode: business?.defaultJikjong || '532',
+            monthlyWage: row.wage || getDefaultMonthlyWage(),
+            jikjongCode: business?.defaultJikjong || DEFAULTS.JIKJONG_CODE,
             workHours: business?.defaultWorkHours || 40,
             gyYn: true,
             sjYn: true,
@@ -394,8 +392,8 @@ export default function ImportPage() {
             status: row.leaveDate ? 'INACTIVE' : 'ACTIVE',
             joinDate: row.joinDate || new Date().toISOString().slice(0, 10),
             leaveDate: row.leaveDate,
-            monthlyWage: row.wage || 2060740,
-            jikjongCode: business?.defaultJikjong || '532',
+            monthlyWage: row.wage || getDefaultMonthlyWage(),
+            jikjongCode: business?.defaultJikjong || DEFAULTS.JIKJONG_CODE,
             workHours: business?.defaultWorkHours || 40,
             gyYn: true,
             sjYn: true,

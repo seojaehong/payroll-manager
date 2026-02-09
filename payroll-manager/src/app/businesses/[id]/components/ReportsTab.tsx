@@ -1,18 +1,18 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
-import { MonthlyWage, Worker, Employment } from '@/types';
+import { Business, MonthlyWage, Worker, Employment, Report } from '@/types';
 import { useToast } from '@/components/ui/Toast';
 
 export interface ReportsTabProps {
   businessId: string;
-  business: any;
+  business: Business;
   businessEmployments: { employment: Employment; worker: Worker }[];
   monthlyWages: MonthlyWage[];
-  reports: any[];
-  addReport: (report: any) => void;
+  reports: Report[];
+  addReport: (report: Report) => void;
   addMonthlyWages?: (wages: MonthlyWage[]) => void;
 }
 
@@ -53,7 +53,7 @@ export function ReportsTab({
   const displayWorkers = showAllWorkers ? businessEmployments : autoFilteredWorkers;
 
   // 자동 선택 (필터 변경 시)
-  useMemo(() => {
+  useEffect(() => {
     setSelectedIds(new Set(autoFilteredWorkers.map(({ worker }) => worker.id)));
   }, [autoFilteredWorkers]);
 

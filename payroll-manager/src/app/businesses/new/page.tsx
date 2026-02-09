@@ -91,7 +91,7 @@ export default function NewBusinessPage() {
                   value={form.name}
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
                   className="w-full input-glass px-4 py-3"
-                  placeholder="쿠우쿠우 부평점"
+                  placeholder="사업장명 입력"
                 />
               </div>
               <div>
@@ -113,7 +113,7 @@ export default function NewBusinessPage() {
                   value={form.address}
                   onChange={(e) => setForm({ ...form, address: e.target.value })}
                   className="w-full input-glass px-4 py-3"
-                  placeholder="인천 부평구 부흥로 264"
+                  placeholder="사업장 주소 입력"
                 />
               </div>
               <div>

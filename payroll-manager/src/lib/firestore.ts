@@ -493,11 +493,16 @@ export async function getSendHistoryByWorker(workerId: string, yearMonth?: strin
 
 export async function saveSendHistory(history: Omit<SendHistory, 'id'>): Promise<string> {
   const id = doc(collection(db, COLLECTIONS.sendHistory)).id;
-  await setDoc(doc(db, COLLECTIONS.sendHistory, id), cleanUndefined({
+  const data: Record<string, unknown> = {
     ...history,
     sentAt: toTimestamp(history.sentAt),
-    deliveredAt: history.deliveredAt ? toTimestamp(history.deliveredAt) : undefined,
-  }));
+  };
+  if (history.deliveredAt) {
+    data.deliveredAt = toTimestamp(history.deliveredAt);
+  } else {
+    delete data.deliveredAt;
+  }
+  await setDoc(doc(db, COLLECTIONS.sendHistory, id), cleanUndefined(data as Record<string, unknown>));
   return id;
 }
 

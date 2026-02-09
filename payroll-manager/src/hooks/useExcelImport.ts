@@ -427,6 +427,17 @@ export function parseExcelNumber(val: unknown): number | undefined {
 }
 
 /**
+ * 주민번호 정규화 (모든 비숫자 문자 제거 + 13자리 패딩)
+ */
+export function normalizeResidentNo(raw: string): string {
+  let rn = String(raw || '').replace(/[^0-9]/g, '');
+  if (rn.length < 13 && rn.length > 0 && !isNaN(Number(rn))) {
+    rn = rn.padStart(13, '0');
+  }
+  return rn;
+}
+
+/**
  * 컬럼 인덱스를 엑셀 문자로 변환 (0=A, 25=Z, 26=AA)
  */
 export function indexToColumnLetter(index: number): string {
