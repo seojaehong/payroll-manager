@@ -32,6 +32,8 @@ export default function BusinessDetailPage() {
   const addReport = useStore((s) => s.addReport);
   const updateBusiness = useStore((s) => s.updateBusiness);
   const setExcelMapping = useStore((s) => s.setExcelMapping);
+  const addWorkers = useStore((s) => s.addWorkers);
+  const addEmployments = useStore((s) => s.addEmployments);
   const selectedBusinessId = useStore((s) => s.selectedBusinessId);
   const setSelectedBusiness = useStore((s) => s.setSelectedBusiness);
 
@@ -385,6 +387,9 @@ export default function BusinessDetailPage() {
                 excelMappings={excelMappings}
                 workers={workers}
                 setExcelMapping={setExcelMapping}
+                addWorkers={addWorkers}
+                addEmployments={addEmployments}
+                business={business}
               />
             )}
             {wagesSubTab === 'payslip' && (

@@ -2,9 +2,9 @@
 
 import { useState, useMemo } from 'react';
 import * as XLSX from 'xlsx';
-import { MonthlyWage, Worker, Employment, ExcelMapping, FieldGroups } from '@/types';
+import { MonthlyWage, Worker, Employment, Business, ExcelMapping, FieldGroups } from '@/types';
 import { useExcelImport, parseExcelNumber, indexToColumnLetter, normalizeResidentNo } from '@/hooks/useExcelImport';
-import { getYearRange } from '@/lib/constants';
+import { getYearRange, getDefaultMonthlyWage, DEFAULTS } from '@/lib/constants';
 import { cleanUndefined } from '@/lib/format';
 import { useToast } from '@/components/ui/Toast';
 
@@ -18,6 +18,9 @@ interface WagesTabProps {
   excelMappings: ExcelMapping[];
   workers: Worker[];
   setExcelMapping: (mapping: ExcelMapping) => void;
+  addWorkers: (workers: Worker[]) => void;
+  addEmployments: (employments: Employment[]) => void;
+  business: Business;
 }
 
 // 엑셀 행에서 MonthlyWage 빌드 (중복 코드 통합)
@@ -60,10 +63,30 @@ function buildWageFromRow(
   }) as MonthlyWage;
 }
 
+// 엑셀 날짜 파싱 (숫자/문자열 모두 지원)
+function parseExcelDate(val: unknown): string {
+  if (!val) return '';
+  if (typeof val === 'number') {
+    const date = XLSX.SSF.parse_date_code(val);
+    return `${date.y}-${String(date.m).padStart(2, '0')}-${String(date.d).padStart(2, '0')}`;
+  }
+  const str = String(val).trim();
+  if (/^\d{4}-\d{2}-\d{2}$/.test(str)) return str;
+  if (/^\d{8}$/.test(str)) return `${str.slice(0, 4)}-${str.slice(4, 6)}-${str.slice(6, 8)}`;
+  const dotMatch = str.match(/^(\d{2})\.(\d{1,2})\.(\d{1,2})$/);
+  if (dotMatch) {
+    const [, yy, mm, dd] = dotMatch;
+    const year = parseInt(yy) < 50 ? `20${yy}` : `19${yy}`;
+    return `${year}-${mm.padStart(2, '0')}-${dd.padStart(2, '0')}`;
+  }
+  return str;
+}
+
 // 미리보기 행 타입 (any 제거)
 interface WagePreviewRow {
   name: string;
   residentNo: string;
+  joinDate?: string;
   matched: boolean;
   matchStatus: MatchStatus;
   matchReason: string;
@@ -101,6 +124,7 @@ const FIELD_GROUPS: FieldGroups = {
   '기본정보': [
     { key: 'name', label: '이름', required: true },
     { key: 'residentNo', label: '주민번호', required: true },
+    { key: 'joinDate', label: '입사일' },
   ],
   '지급내역': [
     { key: 'basicWage', label: '기본급' },
@@ -144,6 +168,9 @@ export function WagesTab({
   excelMappings,
   workers,
   setExcelMapping,
+  addWorkers,
+  addEmployments,
+  business,
 }: WagesTabProps) {
   const toast = useToast();
   const [importMonth, setImportMonth] = useState('');
@@ -207,6 +234,106 @@ export function WagesTab({
     new Map(workers.map(w => [normalizeResidentNo(w.residentNo), w])),
     [workers]
   );
+
+  // 미등록 근로자 일괄 등록 (Worker + Employment 생성)
+  const handleAutoRegisterWorkers = () => {
+    const noWorkerRows = importPreview.filter(p => p.matchStatus === 'no_worker');
+    if (noWorkerRows.length === 0) return;
+
+    const newWorkers: Worker[] = [];
+    const newEmployments: Employment[] = [];
+    const fallbackDate = importMonth ? `${importMonth}-01` : new Date().toISOString().slice(0, 10);
+
+    for (const row of noWorkerRows) {
+      const workerId = crypto.randomUUID();
+      const employmentId = crypto.randomUUID();
+
+      newWorkers.push({
+        id: workerId,
+        name: row.name,
+        residentNo: row.residentNo,
+        nationality: '100',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+
+      newEmployments.push({
+        id: employmentId,
+        workerId,
+        businessId,
+        status: 'ACTIVE' as const,
+        joinDate: row.joinDate || fallbackDate,
+        monthlyWage: row.totalWage || getDefaultMonthlyWage(),
+        jikjongCode: business.defaultJikjong || DEFAULTS.JIKJONG_CODE,
+        workHours: business.defaultWorkHours || 40,
+        gyYn: true,
+        sjYn: true,
+        npsYn: true,
+        nhicYn: true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+    }
+
+    addWorkers(newWorkers);
+    addEmployments(newEmployments);
+
+    // 미리보기 재매칭: 등록된 근로자들을 매칭 성공으로 업데이트
+    const registeredRNs = new Set(noWorkerRows.map(r => normalizeResidentNo(r.residentNo)));
+    setImportPreview(prev => prev.map(row => {
+      if (registeredRNs.has(normalizeResidentNo(row.residentNo)) && row.matchStatus === 'no_worker') {
+        return { ...row, matched: true, matchStatus: 'matched' as MatchStatus, matchReason: '자동 등록 완료' };
+      }
+      return row;
+    }));
+
+    toast.show(`미등록 근로자 ${noWorkerRows.length}명이 자동 등록되었습니다.`, 'success');
+  };
+
+  // 타사업장 소속 근로자 → 이 사업장 고용관계 추가
+  const handleAddEmployments = () => {
+    const noEmpRows = importPreview.filter(p => p.matchStatus === 'no_employment');
+    if (noEmpRows.length === 0) return;
+
+    const newEmployments: Employment[] = [];
+    const fallbackDate = importMonth ? `${importMonth}-01` : new Date().toISOString().slice(0, 10);
+
+    for (const row of noEmpRows) {
+      const matchedWorker = workerByNormalizedRN.get(normalizeResidentNo(row.residentNo));
+      if (!matchedWorker) continue;
+
+      const employmentId = crypto.randomUUID();
+      newEmployments.push({
+        id: employmentId,
+        workerId: matchedWorker.id,
+        businessId,
+        status: 'ACTIVE' as const,
+        joinDate: row.joinDate || fallbackDate,
+        monthlyWage: row.totalWage || getDefaultMonthlyWage(),
+        jikjongCode: business.defaultJikjong || DEFAULTS.JIKJONG_CODE,
+        workHours: business.defaultWorkHours || 40,
+        gyYn: true,
+        sjYn: true,
+        npsYn: true,
+        nhicYn: true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+    }
+
+    addEmployments(newEmployments);
+
+    // 미리보기 재매칭
+    const addedRNs = new Set(noEmpRows.map(r => normalizeResidentNo(r.residentNo)));
+    setImportPreview(prev => prev.map(row => {
+      if (addedRNs.has(normalizeResidentNo(row.residentNo)) && row.matchStatus === 'no_employment') {
+        return { ...row, matched: true, matchStatus: 'matched' as MatchStatus, matchReason: '고용관계 추가 완료' };
+      }
+      return row;
+    }));
+
+    toast.show(`${noEmpRows.length}명의 고용관계가 추가되었습니다.`, 'success');
+  };
 
   // 기존 매핑 로드 (workbook을 직접 전달하여 비동기 상태 문제 해결)
   const loadExistingMapping = (wb?: XLSX.WorkBook) => {
@@ -273,19 +400,32 @@ export function WagesTab({
     e.target.value = '';
   };
 
-  // 다중 파일 일괄 처리
+  // 다중 파일 일괄 처리 (미등록 근로자 자동 등록 포함)
   const executeBatchImport = async () => {
     if (batchFiles.length === 0) return;
 
     setBatchProcessing(true);
     let totalImported = 0;
-    let totalSkipped = 0;
-    let noWorkerCount = 0;
-    let noEmploymentCount = 0;
-    const fileResults: { yearMonth: string; imported: number; skipped: number }[] = [];
+    // 가장 이른 파일의 yearMonth 1일을 취득일로 사용
+    const earliestYM = batchFiles[0]?.yearMonth || new Date().toISOString().slice(0, 7);
+    const batchJoinDate = `${earliestYM}-01`;
+
+    // 1단계: 모든 파일에서 미등록 근로자 수집 (중복 제거)
+    const unmatchedByRN = new Map<string, { name: string; residentNo: string; totalWage: number; joinDate: string }>();
+    const noEmpByRN = new Map<string, { residentNo: string; totalWage: number; joinDate: string }>();
+    const allFileData: { yearMonth: string; jsonData: unknown[][]; }[] = [];
+
+    const fm = excel.fieldMapping;
+    const nameIdx = fm.name;
+    const residentNoIdx = fm.residentNo;
+
+    if (nameIdx == null || residentNoIdx == null) {
+      setBatchProcessing(false);
+      toast.show('이름과 주민번호 매핑이 필요합니다.', 'error');
+      return;
+    }
 
     for (const { file, yearMonth } of batchFiles) {
-      // 파일 읽기
       const data = await new Promise<string>((resolve) => {
         const reader = new FileReader();
         reader.onload = (e) => resolve(e.target?.result as string);
@@ -295,23 +435,10 @@ export function WagesTab({
       const wb = XLSX.read(data, { type: 'binary' });
       const savedSheet = excelMappings.find((m) => m.businessId === businessId)?.sheetName || wb.SheetNames[0];
       const ws = wb.Sheets[savedSheet];
-      if (!ws) {
-        fileResults.push({ yearMonth, imported: 0, skipped: 0 });
-        continue;
-      }
+      if (!ws) { allFileData.push({ yearMonth, jsonData: [] }); continue; }
 
       const jsonData = XLSX.utils.sheet_to_json(ws, { header: 1 }) as unknown[][];
-      const fm = excel.fieldMapping;
-      const nameIdx = fm.name;
-      const residentNoIdx = fm.residentNo;
-
-      if (nameIdx == null || residentNoIdx == null) {
-        fileResults.push({ yearMonth, imported: 0, skipped: 0 });
-        continue;
-      }
-
-      const newWages: MonthlyWage[] = [];
-      let fileSkipped = 0;
+      allFileData.push({ yearMonth, jsonData });
 
       for (let i = excel.dataStartRow - 1; i < jsonData.length; i++) {
         const row = jsonData[i] as unknown[];
@@ -319,23 +446,99 @@ export function WagesTab({
 
         const name = String(row[nameIdx] || '').trim();
         const residentNo = normalizeResidentNo(String(row[residentNoIdx] || ''));
-
         const totalWage = parseExcelNumber(row[fm.wage!]) || 0;
         if (!name || totalWage === 0) continue;
 
+        const joinDateRaw = fm.joinDate != null ? row[fm.joinDate] : null;
+        const joinDate = parseExcelDate(joinDateRaw) || batchJoinDate;
+
         const matchedWorker = workerByNormalizedRN.get(residentNo);
         if (!matchedWorker) {
-          noWorkerCount++;
-          fileSkipped++;
-          continue;
+          if (!unmatchedByRN.has(residentNo)) {
+            unmatchedByRN.set(residentNo, { name, residentNo, totalWage, joinDate });
+          }
+        } else if (!businessEmployments.find(({ worker }) => worker.id === matchedWorker.id)) {
+          if (!noEmpByRN.has(residentNo)) {
+            noEmpByRN.set(residentNo, { residentNo, totalWage, joinDate });
+          }
         }
+      }
+    }
 
-        const matchedEmp = businessEmployments.find(({ worker }) => worker.id === matchedWorker.id);
-        if (!matchedEmp) {
-          noEmploymentCount++;
-          fileSkipped++;
-          continue;
-        }
+    // 2단계: 미등록 근로자 자동 등록
+    const newWorkers: Worker[] = [];
+    const newEmployments: Employment[] = [];
+    // 로컬 매칭용 임시 맵 (workerByNormalizedRN은 memo이므로 즉시 갱신 안됨)
+    const localWorkerMap = new Map(workerByNormalizedRN);
+    const localEmpWorkerIds = new Set(businessEmployments.map(({ worker }) => worker.id));
+
+    for (const [rn, info] of unmatchedByRN) {
+      const workerId = crypto.randomUUID();
+      const employmentId = crypto.randomUUID();
+      newWorkers.push({
+        id: workerId, name: info.name, residentNo: info.residentNo,
+        nationality: '100', createdAt: new Date(), updatedAt: new Date(),
+      });
+      newEmployments.push({
+        id: employmentId, workerId, businessId, status: 'ACTIVE' as const,
+        joinDate: info.joinDate, monthlyWage: info.totalWage || getDefaultMonthlyWage(),
+        jikjongCode: business.defaultJikjong || DEFAULTS.JIKJONG_CODE,
+        workHours: business.defaultWorkHours || 40,
+        gyYn: true, sjYn: true, npsYn: true, nhicYn: true,
+        createdAt: new Date(), updatedAt: new Date(),
+      });
+      localWorkerMap.set(rn, { id: workerId, name: info.name, residentNo: info.residentNo, nationality: '100', createdAt: new Date(), updatedAt: new Date() });
+      localEmpWorkerIds.add(workerId);
+    }
+
+    // 타사업장 근로자 고용관계 추가
+    for (const [rn, info] of noEmpByRN) {
+      const existingWorker = localWorkerMap.get(rn);
+      if (!existingWorker) continue;
+      const employmentId = crypto.randomUUID();
+      newEmployments.push({
+        id: employmentId, workerId: existingWorker.id, businessId, status: 'ACTIVE' as const,
+        joinDate: info.joinDate, monthlyWage: info.totalWage || getDefaultMonthlyWage(),
+        jikjongCode: business.defaultJikjong || DEFAULTS.JIKJONG_CODE,
+        workHours: business.defaultWorkHours || 40,
+        gyYn: true, sjYn: true, npsYn: true, nhicYn: true,
+        createdAt: new Date(), updatedAt: new Date(),
+      });
+      localEmpWorkerIds.add(existingWorker.id);
+    }
+
+    if (newWorkers.length > 0) addWorkers(newWorkers);
+    if (newEmployments.length > 0) addEmployments(newEmployments);
+
+    // 3단계: employmentId 매핑 (새로 등록된 것 포함)
+    const allEmployments = [...businessEmployments.map(be => be), ...newEmployments.map(emp => {
+      const w = localWorkerMap.get(normalizeResidentNo(
+        newWorkers.find(nw => nw.id === emp.workerId)?.residentNo || ''
+      )) || localWorkerMap.get(
+        [...localWorkerMap.entries()].find(([, w]) => w.id === emp.workerId)?.[0] || ''
+      );
+      return w ? { employment: emp, worker: w } : null;
+    }).filter(Boolean)] as { employment: Employment; worker: Worker }[];
+
+    // 4단계: 모든 파일에서 급여 임포트
+    for (const { yearMonth, jsonData } of allFileData) {
+      if (jsonData.length === 0) continue;
+
+      const newWages: MonthlyWage[] = [];
+      for (let i = excel.dataStartRow - 1; i < jsonData.length; i++) {
+        const row = jsonData[i] as unknown[];
+        if (!row || !row[nameIdx]) continue;
+
+        const name = String(row[nameIdx] || '').trim();
+        const residentNo = normalizeResidentNo(String(row[residentNoIdx] || ''));
+        const totalWage = parseExcelNumber(row[fm.wage!]) || 0;
+        if (!name || totalWage === 0) continue;
+
+        const matchedWorker = localWorkerMap.get(residentNo);
+        if (!matchedWorker) continue;
+
+        const matchedEmp = allEmployments.find(({ worker }) => worker.id === matchedWorker.id);
+        if (!matchedEmp) continue;
 
         newWages.push(buildWageFromRow(fm, row, matchedEmp.employment.id, yearMonth, totalWage));
       }
@@ -344,8 +547,6 @@ export function WagesTab({
         addMonthlyWages(newWages);
         totalImported += newWages.length;
       }
-      totalSkipped += fileSkipped;
-      fileResults.push({ yearMonth, imported: newWages.length, skipped: fileSkipped });
     }
 
     setBatchProcessing(false);
@@ -353,12 +554,10 @@ export function WagesTab({
     setBatchFiles([]);
     setShowMappingModal(false);
 
-    // 결과 메시지 (toast용으로 단순화)
-    const hasIssues = totalSkipped > 0;
-    const toastType = hasIssues ? 'info' : 'success';
+    const autoRegCount = unmatchedByRN.size + noEmpByRN.size;
     let message = `일괄 임포트 완료! ${batchFiles.length}개 파일, ${totalImported}건 성공`;
-    if (totalSkipped > 0) message += `, ${totalSkipped}건 스킵`;
-    toast.show(message, toastType);
+    if (autoRegCount > 0) message += ` (자동 등록 ${autoRegCount}명)`;
+    toast.show(message, 'success');
   };
 
   // 미리보기 로드
@@ -390,6 +589,10 @@ export function WagesTab({
       const totalWage = parseExcelNumber(row[wageIdx!]) || 0;
       if (!name || totalWage === 0) continue;
 
+      // 입사일 파싱
+      const joinDateRaw = fm.joinDate != null ? row[fm.joinDate] : null;
+      const joinDate = parseExcelDate(joinDateRaw);
+
       // 매칭 상태 판단 (정규화된 주민번호로 비교)
       const matchedWorker = workerByNormalizedRN.get(residentNo);
       const matchedEmp = matchedWorker
@@ -413,6 +616,7 @@ export function WagesTab({
       preview.push({
         name,
         residentNo,
+        joinDate: joinDate || undefined,
         matched: matchStatus === 'matched',
         matchStatus,
         matchReason,
@@ -610,23 +814,37 @@ export function WagesTab({
               </button>
             </div>
 
-            {/* 매칭 실패 요약 */}
+            {/* 매칭 실패 요약 + 자동등록 버튼 */}
             {importPreview.filter(p => !p.matched).length > 0 && (
               <div className="mb-3 p-3 bg-yellow-500/10 border border-yellow-500/30 rounded text-sm">
                 <div className="text-yellow-400 font-medium mb-2">매칭 실패 원인:</div>
-                <div className="space-y-1 text-white/70">
+                <div className="space-y-2 text-white/70">
                   {importPreview.filter(p => p.matchStatus === 'no_worker').length > 0 && (
-                    <div className="flex items-center gap-2">
-                      <span className="text-red-400">●</span>
-                      <span>미등록 근로자: {importPreview.filter(p => p.matchStatus === 'no_worker').length}명</span>
-                      <span className="text-xs text-white/50">→ 근로자 등록 필요</span>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span className="text-red-400">●</span>
+                        <span>미등록 근로자: {importPreview.filter(p => p.matchStatus === 'no_worker').length}명</span>
+                      </div>
+                      <button
+                        onClick={handleAutoRegisterWorkers}
+                        className="px-3 py-1 bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 rounded text-xs transition-all"
+                      >
+                        일괄 등록 ({importPreview.filter(p => p.matchStatus === 'no_worker').length}명)
+                      </button>
                     </div>
                   )}
                   {importPreview.filter(p => p.matchStatus === 'no_employment').length > 0 && (
-                    <div className="flex items-center gap-2">
-                      <span className="text-orange-400">●</span>
-                      <span>다른 사업장 소속: {importPreview.filter(p => p.matchStatus === 'no_employment').length}명</span>
-                      <span className="text-xs text-white/50">→ 고용관계 확인 필요</span>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span className="text-orange-400">●</span>
+                        <span>다른 사업장 소속: {importPreview.filter(p => p.matchStatus === 'no_employment').length}명</span>
+                      </div>
+                      <button
+                        onClick={handleAddEmployments}
+                        className="px-3 py-1 bg-orange-500/20 hover:bg-orange-500/30 text-orange-400 rounded text-xs transition-all"
+                      >
+                        고용관계 추가 ({importPreview.filter(p => p.matchStatus === 'no_employment').length}명)
+                      </button>
                     </div>
                   )}
                 </div>
