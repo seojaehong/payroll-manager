@@ -40,6 +40,7 @@ except ImportError:
 
 # ============ 설정 ============
 CONFIG_FILE = Path(__file__).parent / "tistory_config.json"
+ICON_FILE = Path(__file__).parent / "tistory_uploader.ico"
 BLOG_URL = "https://labor-engineer.tistory.com"
 WRITE_URL = f"{BLOG_URL}/manage/newpost"
 LOGIN_URL = "https://www.tistory.com/auth/login"
@@ -52,6 +53,13 @@ class TistoryUploader:
         self.root.title("티스토리 블로그 업로더")
         self.root.geometry("700x600")
         self.root.resizable(True, True)
+
+        # 아이콘 설정
+        if ICON_FILE.exists():
+            try:
+                self.root.iconbitmap(str(ICON_FILE))
+            except:
+                pass
 
         self.config = self.load_config()
         self.md_files = []
@@ -373,7 +381,7 @@ class TistoryUploader:
         """글 발행"""
         try:
             self.driver.get(write_url)
-            time.sleep(3)
+            time.sleep(4)
 
             # 임시저장 알림 처리
             try:
@@ -384,48 +392,239 @@ class TistoryUploader:
             except:
                 pass
 
-            time.sleep(2)
-            wait = WebDriverWait(self.driver, 20)
+            time.sleep(3)
+            wait = WebDriverWait(self.driver, 30)
 
             # 제목
             title_inp = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "#post-title-inp")))
             title_inp.clear()
             title_inp.send_keys(title)
             time.sleep(1)
+            self.log(f"   - 제목 입력 완료: {title[:30]}...")
 
-            # 본문 (iframe)
-            iframe = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "#editor-tistory_ifr")))
-            self.driver.switch_to.frame(iframe)
-            body = wait.until(EC.presence_of_element_located((By.TAG_NAME, "body")))
-            self.driver.execute_script("arguments[0].innerHTML = arguments[1];", body, html_content)
-            self.driver.switch_to.default_content()
-            time.sleep(1)
+            # 본문 입력 (여러 방법 시도)
+            body_inserted = False
+
+            # 에디터 로딩 충분히 대기
+            time.sleep(3)
+
+            # 방법 1: TinyMCE API 직접 호출 (가장 권장 - 티스토리 기본)
+            try:
+                result = self.driver.execute_script("""
+                    // tinyMCE (대문자) 먼저 시도
+                    if (typeof tinyMCE !== 'undefined' && tinyMCE.activeEditor) {
+                        tinyMCE.activeEditor.setContent(arguments[0]);
+                        tinyMCE.activeEditor.save();
+                        return 'tinyMCE';
+                    }
+                    // tinymce (소문자) 시도
+                    if (typeof tinymce !== 'undefined' && tinymce.activeEditor) {
+                        tinymce.activeEditor.setContent(arguments[0]);
+                        tinymce.activeEditor.save();
+                        return 'tinymce';
+                    }
+                    return false;
+                """, html_content)
+                if result:
+                    body_inserted = True
+                    self.log(f"   - 본문 입력 완료 ({result} API)")
+            except Exception as e:
+                self.log(f"   - TinyMCE API 방법 실패: {e}")
+
+            # 방법 2: 티스토리 iframe 직접 접근 (정확한 구조)
+            # iframe ID: editor-tistory_ifr
+            # 내부 body ID: tinymce, class: mce-content-body
+            if not body_inserted:
+                try:
+                    iframe = self.driver.find_element(By.ID, "editor-tistory_ifr")
+                    self.driver.switch_to.frame(iframe)
+
+                    # 내부 body (ID: tinymce)
+                    body = wait.until(EC.presence_of_element_located((By.ID, "tinymce")))
+
+                    # innerHTML 직접 설정 + 이벤트
+                    self.driver.execute_script("""
+                        var body = arguments[0];
+                        var content = arguments[1];
+                        body.innerHTML = content;
+                        body.dispatchEvent(new Event('input', { bubbles: true }));
+                        body.dispatchEvent(new Event('change', { bubbles: true }));
+                        body.focus();
+                    """, body, html_content)
+
+                    self.driver.switch_to.default_content()
+                    body_inserted = True
+                    self.log("   - 본문 입력 완료 (iframe #editor-tistory_ifr → #tinymce)")
+                except Exception as e:
+                    self.driver.switch_to.default_content()
+                    self.log(f"   - iframe 직접 접근 실패: {e}")
+
+            # 방법 3: 다른 iframe 셀렉터 시도
+            if not body_inserted:
+                try:
+                    iframe_selectors = [
+                        "iframe.tox-edit-area__iframe",
+                        "iframe[id*='editor']",
+                        "iframe[id*='ifr']",
+                        "iframe[id*='mce']",
+                    ]
+                    for sel in iframe_selectors:
+                        try:
+                            iframe = self.driver.find_element(By.CSS_SELECTOR, sel)
+                            self.driver.switch_to.frame(iframe)
+                            body = wait.until(EC.presence_of_element_located((By.TAG_NAME, "body")))
+
+                            self.driver.execute_script("""
+                                arguments[0].innerHTML = arguments[1];
+                                arguments[0].dispatchEvent(new Event('input', { bubbles: true }));
+                            """, body, html_content)
+
+                            self.driver.switch_to.default_content()
+                            body_inserted = True
+                            self.log(f"   - 본문 입력 완료 (iframe: {sel})")
+                            break
+                        except:
+                            self.driver.switch_to.default_content()
+                            continue
+                except Exception as e:
+                    self.log(f"   - 대체 iframe 방법 실패: {e}")
+                    self.driver.switch_to.default_content()
+
+            # 방법 4: CodeMirror (HTML 모드)
+            if not body_inserted:
+                try:
+                    # HTML 모드로 전환
+                    try:
+                        html_btn = self.driver.find_element(By.CSS_SELECTOR, "button[data-mode='html'], .btn-html, button[title='HTML']")
+                        html_btn.click()
+                        time.sleep(1)
+                        self.log("   - HTML 모드 전환")
+                    except:
+                        pass
+
+                    cm_editor = self.driver.find_element(By.CSS_SELECTOR, ".CodeMirror")
+                    self.driver.execute_script("""
+                        var cm = arguments[0].CodeMirror;
+                        if (cm) {
+                            cm.setValue(arguments[1]);
+                            cm.save();
+                        }
+                    """, cm_editor, html_content)
+                    body_inserted = True
+                    self.log("   - 본문 입력 완료 (CodeMirror)")
+                except Exception as e:
+                    self.log(f"   - CodeMirror 방법 실패: {e}")
+
+            # 방법 4: contenteditable div (새 에디터)
+            if not body_inserted:
+                try:
+                    editor_selectors = [
+                        ".mce-content-body",
+                        "[contenteditable='true']",
+                        ".editor-content",
+                        "#editor-content",
+                        "[data-placeholder]",
+                        ".ProseMirror",
+                    ]
+                    for sel in editor_selectors:
+                        try:
+                            editor = self.driver.find_element(By.CSS_SELECTOR, sel)
+                            self.driver.execute_script("""
+                                var el = arguments[0];
+                                el.innerHTML = arguments[1];
+                                el.focus();
+                                ['input', 'change', 'keyup', 'blur'].forEach(function(eventType) {
+                                    el.dispatchEvent(new Event(eventType, { bubbles: true }));
+                                });
+                            """, editor, html_content)
+                            body_inserted = True
+                            self.log(f"   - 본문 입력 완료 (contenteditable: {sel})")
+                            break
+                        except:
+                            continue
+                except Exception as e:
+                    self.log(f"   - contenteditable 방법 실패: {e}")
+
+            # 방법 5: 클립보드 붙여넣기
+            if not body_inserted:
+                try:
+                    import pyperclip
+                    pyperclip.copy(html_content)
+
+                    # 에디터 영역 클릭
+                    editor_selectors = [".editor-wrapper", ".write-content", "#editor", ".mce-edit-area", "[contenteditable='true']"]
+                    for sel in editor_selectors:
+                        try:
+                            editor_area = self.driver.find_element(By.CSS_SELECTOR, sel)
+                            editor_area.click()
+                            break
+                        except:
+                            continue
+
+                    time.sleep(0.5)
+
+                    # Ctrl+V
+                    from selenium.webdriver.common.action_chains import ActionChains
+                    actions = ActionChains(self.driver)
+                    actions.key_down(Keys.CONTROL).send_keys('v').key_up(Keys.CONTROL).perform()
+                    body_inserted = True
+                    self.log("   - 본문 입력 완료 (클립보드)")
+                except Exception as e:
+                    self.log(f"   - 클립보드 방법 실패: {e}")
+
+            if not body_inserted:
+                self.log("   ⚠️ 본문 입력 실패 - 수동 입력 필요")
+
+            time.sleep(2)
 
             # 완료 버튼
-            complete_btn = self.driver.find_element(By.XPATH, "//button[contains(text(), '완료')]")
-            complete_btn.click()
-            time.sleep(2)
+            complete_btn = None
+            btn_selectors = [
+                "//button[contains(text(), '완료')]",
+                "//button[contains(text(), '발행')]",
+                "//button[contains(@class, 'publish')]",
+                "//button[contains(@class, 'btn-publish')]",
+            ]
+            for sel in btn_selectors:
+                try:
+                    complete_btn = self.driver.find_element(By.XPATH, sel)
+                    break
+                except:
+                    continue
+
+            if complete_btn:
+                complete_btn.click()
+                self.log("   - 완료 버튼 클릭")
+                time.sleep(2)
 
             # 비공개/공개 발행
             if self.private_var.get():
                 try:
                     private_btn = self.driver.find_element(By.XPATH, "//button[contains(text(), '비공개')]")
                     private_btn.click()
+                    self.log("   - 비공개 발행")
                 except:
-                    publish_btn = self.driver.find_element(By.XPATH, "//button[contains(text(), '발행')]")
-                    publish_btn.click()
+                    try:
+                        publish_btn = self.driver.find_element(By.XPATH, "//button[contains(text(), '발행')]")
+                        publish_btn.click()
+                        self.log("   - 발행 버튼 클릭")
+                    except:
+                        pass
             else:
                 try:
                     public_btn = self.driver.find_element(By.XPATH, "//button[contains(text(), '공개발행')]")
                     public_btn.click()
+                    self.log("   - 공개 발행")
                 except:
                     pass
 
             time.sleep(2)
-            return True
+            return body_inserted
 
         except Exception as e:
             self.log(f"   오류: {e}")
+            import traceback
+            self.log(f"   상세: {traceback.format_exc()}")
             return False
 
     def on_close(self):

@@ -1,0 +1,95 @@
+# EDI 자동화 설정 파일
+
+# 로그인 설정
+login:
+  # 공동인증서 비밀번호 (보안을 위해 환경변수 사용 권장)
+  # 또는 .env 파일에 CERT_PASSWORD=your_password 형식으로 저장
+  cert_password: ""
+
+  # 공동인증서 경로 (자동 탐색하려면 비워두세요)
+  cert_path: ""
+
+  # 로그인 대기 시간 (초)
+  login_timeout: 60
+
+# Selenium 설정
+selenium:
+  # 헤드리스 모드 (True: 브라우저 창 숨김, False: 브라우저 창 표시)
+  headless: false
+
+  # 암묵적 대기 시간 (초)
+  implicit_wait: 10
+
+  # 페이지 로드 대기 시간 (초)
+  page_load_timeout: 30
+
+# 다운로드 설정
+download:
+  # 다운로드 디렉토리
+  directory: "data/downloads"
+
+  # 파일 형식 (excel, pdf, csv)
+  default_format: "excel"
+
+# 업로드 설정
+upload:
+  # 업로드할 파일이 있는 디렉토리
+  directory: "data/uploads"
+
+  # 업로드 전 파일 검증 여부
+  validate_before_upload: true
+
+# 백업 설정
+backup:
+  # 백업 디렉토리
+  directory: "data/backups"
+
+  # 백업 보관 기간 (일)
+  retention_days: 30
+
+  # 백업할 보고서 유형
+  report_types:
+    - "청구현황"
+    - "심사결과"
+    - "수납현황"
+
+# 스케줄러 설정
+scheduler:
+  # 일일 백업 사용 여부
+  daily_backup:
+    enabled: true
+    time: "02:00"  # HH:MM 형식
+    type: "full"   # full, claim, report
+
+  # 주간 백업 사용 여부
+  weekly_backup:
+    enabled: false
+    day: "monday"  # monday, tuesday, ..., sunday
+    time: "03:00"
+    type: "full"
+
+  # 월간 백업 사용 여부
+  monthly_backup:
+    enabled: true
+    day: 1  # 1-31
+    time: "04:00"
+    type: "full"
+
+# 로그 설정
+logging:
+  # 로그 레벨 (DEBUG, INFO, WARNING, ERROR, CRITICAL)
+  level: "INFO"
+
+  # 로그 디렉토리
+  directory: "logs"
+
+  # 로그 보관 기간 (일)
+  retention_days: 30
+
+# 기타 설정
+misc:
+  # 작업 간 대기 시간 (초)
+  delay_between_tasks: 2
+
+  # 스크린샷 저장 (오류 발생 시)
+  save_screenshot_on_error: true

@@ -1,0 +1,21 @@
+[32m2026-01-29 17:16:12.312[0m | [1mINFO    [0m | [36m__main__[0m:[36mload_config[0m:[36m34[0m - [1m¼³Á¤ ÆÄÀÏ ·Îµå ¼º°ø: config/config.yaml[0m
+[32m2026-01-29 17:16:12[0m | [1mINFO    [0m | [36msrc.utils.logger[0m:[36msetup_logger[0m - [1m·Î°Å ¼³Á¤ ¿Ï·á[0m
+[32m2026-01-29 17:16:12[0m | [1mINFO    [0m | [36m__main__[0m:[36mtest_login[0m - [1m============================================================[0m
+[32m2026-01-29 17:16:12[0m | [1mINFO    [0m | [36m__main__[0m:[36mtest_login[0m - [1m·Î±×ÀÎ Å×½ºÆ® ½ÃÀÛ[0m
+[32m2026-01-29 17:16:12[0m | [1mINFO    [0m | [36m__main__[0m:[36mtest_login[0m - [1m============================================================[0m
+[32m2026-01-29 17:16:30[0m | [1mINFO    [0m | [36msrc.utils.selenium_helper[0m:[36minitialize_driver[0m - [1mChrome µå¶óÀÌ¹ö ÃÊ±âÈ­ ¼º°ø[0m
+[32m2026-01-29 17:16:30[0m | [1mINFO    [0m | [36msrc.automation.login[0m:[36mnavigate_to_edi[0m - [1mEDI »çÀÌÆ® Á¢¼Ó: https://edi.nhis.or.kr/homeapp/wep/m/retrieveMain.xx[0m
+[32m2026-01-29 17:16:37[0m | [1mINFO    [0m | [36msrc.automation.login[0m:[36mclick_certificate_login[0m - [1m°øµ¿ÀÎÁõ¼­ ·Î±×ÀÎ ¹öÆ° Ã£´Â Áß...[0m
+[32m2026-01-29 17:17:11[0m | [33m[1mWARNING [0m | [36msrc.automation.login[0m:[36mclick_certificate_login[0m - [33m[1m°øµ¿ÀÎÁõ¼­ ·Î±×ÀÎ ¹öÆ°À» Ã£À» ¼ö ¾ø½À´Ï´Ù.[0m
+[32m2026-01-29 17:17:11[0m | [1mINFO    [0m | [36msrc.automation.login[0m:[36mhandle_certificate_selection[0m - [1mÀÎÁõ¼­ ¼±ÅÃ Ã¢ Ã³¸® Áß...[0m
+[32m2026-01-29 17:17:14[0m | [1mINFO    [0m | [36msrc.automation.login[0m:[36mhandle_certificate_selection[0m - [1mÀÎÁõ¼­ ¼±ÅÃ ÆË¾÷À¸·Î ÀüÈ¯[0m
+[32m2026-01-29 17:18:41[0m | [31m[1mERROR   [0m | [36msrc.automation.login[0m:[36mhandle_certificate_selection[0m - [31m[1mÀÎÁõ¼­ ¼±ÅÃ Ã³¸® ½ÇÆÐ: HTTPConnectionPool(host='localhost', port=49672): Max retries exceeded with url: /session/18eaffd9e4f8948ff6bbcb238f317d58/window (Caused by NewConnectionError("HTTPConnection(host='localhost', port=49672): Failed to establish a new connection: [WinError 10061] ´ë»ó ÄÄÇ»ÅÍ¿¡¼­ ¿¬°áÀ» °ÅºÎÇßÀ¸¹Ç·Î ¿¬°áÇÏÁö ¸øÇß½À´Ï´Ù"))[0m
+[32m2026-01-29 17:18:41[0m | [1mINFO    [0m | [36msrc.automation.login[0m:[36mlogin[0m - [1m============================================================[0m
+[32m2026-01-29 17:18:41[0m | [1mINFO    [0m | [36msrc.automation.login[0m:[36mlogin[0m - [1m¼öµ¿À¸·Î ÀÎÁõ¼­¸¦ ¼±ÅÃÇÏ°í ·Î±×ÀÎÀ» ¿Ï·áÇØÁÖ¼¼¿ä.[0m
+[32m2026-01-29 17:18:41[0m | [1mINFO    [0m | [36msrc.automation.login[0m:[36mlogin[0m - [1m·Î±×ÀÎ ¿Ï·á ÈÄ ÀÚµ¿À¸·Î ´ÙÀ½ ´Ü°è·Î ÁøÇàµË´Ï´Ù.[0m
+[32m2026-01-29 17:18:41[0m | [1mINFO    [0m | [36msrc.automation.login[0m:[36mlogin[0m - [1m============================================================[0m
+[32m2026-01-29 17:18:41[0m | [1mINFO    [0m | [36msrc.automation.login[0m:[36mwait_for_login_success[0m - [1m·Î±×ÀÎ ¿Ï·á ´ë±â Áß...[0m
+[32m2026-01-29 17:19:47[0m | [33m[1mWARNING [0m | [36msrc.automation.login[0m:[36mwait_for_login_success[0m - [33m[1m·Î±×ÀÎ ¼º°øÀ» 60ÃÊ ³»¿¡ È®ÀÎÇÏÁö ¸øÇß½À´Ï´Ù.[0m
+[32m2026-01-29 17:19:47[0m | [31m[1mERROR   [0m | [36msrc.automation.login[0m:[36mlogin[0m - [31m[1m·Î±×ÀÎ ½ÇÆÐ ¶Ç´Â ½Ã°£ ÃÊ°ú[0m
+[32m2026-01-29 17:19:47[0m | [31m[1mERROR   [0m | [36m__main__[0m:[36mtest_login[0m - [31m[1m·Î±×ÀÎ ½ÇÆÐ[0m
+[32m2026-01-29 17:20:03[0m | [1mINFO    [0m | [36msrc.utils.selenium_helper[0m:[36mclose[0m - [1mµå¶óÀÌ¹ö Á¾·á[0m
