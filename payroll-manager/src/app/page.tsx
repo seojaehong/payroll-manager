@@ -38,10 +38,31 @@ export default function Dashboard() {
     return idx;
   }, [monthlyWages]);
 
+  // employments를 businessId로 인덱싱 (O(1) 조회)
+  const employmentsByBusiness = useMemo(() => {
+    const map = new Map<string, typeof employments>();
+    for (const e of employments) {
+      const list = map.get(e.businessId) || [];
+      list.push(e);
+      map.set(e.businessId, list);
+    }
+    return map;
+  }, [employments]);
+
+  // 전년도 월 경계 사전 계산 (Date 객체 12개만 생성)
+  const prevYearMonths = useMemo(() =>
+    Array.from({ length: 12 }, (_, i) => ({
+      ym: `${prevYear}-${String(i + 1).padStart(2, '0')}`,
+      start: new Date(prevYear, i, 1),
+      end: new Date(prevYear, i + 1, 0),
+    })),
+    [prevYear]
+  );
+
   // 각 사업장별 통계
   const businessStats = useMemo(() => {
     return businesses.map((biz) => {
-      const bizEmployments = employments.filter((e) => e.businessId === biz.id);
+      const bizEmployments = employmentsByBusiness.get(biz.id) || [];
       const activeWorkers = bizEmployments.filter((e) => e.status === 'ACTIVE').length;
       const thisMonthJoins = bizEmployments.filter(
         (e) => e.joinDate?.startsWith(thisMonth) && e.status === 'ACTIVE'
@@ -57,19 +78,14 @@ export default function Dashboard() {
       bizEmployments.forEach((emp) => {
         const joinYear = emp.joinDate ? parseInt(emp.joinDate.slice(0, 4)) : 9999;
         const leaveYear = emp.leaveDate ? parseInt(emp.leaveDate.slice(0, 4)) : 9999;
+        if (joinYear > prevYear || leaveYear < prevYear) return;
 
-        for (let m = 1; m <= 12; m++) {
-          const ym = `${prevYear}-${String(m).padStart(2, '0')}`;
-          const monthStart = new Date(prevYear, m - 1, 1);
-          const monthEnd = new Date(prevYear, m, 0);
+        const empJoinDate = emp.joinDate ? new Date(emp.joinDate) : null;
+        const empLeaveDate = emp.leaveDate ? new Date(emp.leaveDate) : null;
 
-          const empJoinDate = emp.joinDate ? new Date(emp.joinDate) : null;
-          const empLeaveDate = emp.leaveDate ? new Date(emp.leaveDate) : null;
-
-          if (empJoinDate && empJoinDate > monthEnd) continue;
-          if (empLeaveDate && empLeaveDate < monthStart) continue;
-          if (joinYear > prevYear) continue;
-          if (leaveYear < prevYear) continue;
+        for (const { ym, start, end } of prevYearMonths) {
+          if (empJoinDate && empJoinDate > end) continue;
+          if (empLeaveDate && empLeaveDate < start) continue;
 
           totalPrevYearSlots++;
           if (wageIndex.has(`${emp.id}-${ym}`)) {
@@ -96,7 +112,7 @@ export default function Dashboard() {
         },
       };
     });
-  }, [businesses, employments, wageIndex, thisMonth, prevYear]);
+  }, [businesses, employmentsByBusiness, wageIndex, thisMonth, prevYear, prevYearMonths]);
 
   // 신고 필요한 사업장 수
   const businessesWithPendingReports = businessStats.filter(

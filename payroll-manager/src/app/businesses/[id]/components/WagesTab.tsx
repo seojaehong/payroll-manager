@@ -160,6 +160,16 @@ export function WagesTab({
 
   const months = Array.from({ length: 12 }, (_, i) => `${selectedYear}-${String(i + 1).padStart(2, '0')}`);
 
+  // 월 경계 사전 계산 (Date 객체 12개만 생성)
+  const monthBoundaries = useMemo(() =>
+    Array.from({ length: 12 }, (_, i) => ({
+      ym: `${selectedYear}-${String(i + 1).padStart(2, '0')}`,
+      start: new Date(selectedYear, i, 1),
+      end: new Date(selectedYear, i + 1, 0),
+    })),
+    [selectedYear]
+  );
+
   // 급여 인덱스 (O(1) 조회용)
   const wageIndex = useMemo(() => {
     const idx = new Set<string>();
@@ -175,26 +185,22 @@ export function WagesTab({
     let filled = 0;
 
     businessEmployments.forEach(({ employment }) => {
-      months.forEach((ym) => {
-        const [year, month] = ym.split('-').map(Number);
-        const monthEnd = new Date(year, month, 0);
-        const monthStart = new Date(year, month - 1, 1);
+      const joinDate = employment.joinDate ? new Date(employment.joinDate) : null;
+      const leaveDate = employment.leaveDate ? new Date(employment.leaveDate) : null;
 
-        const joinDate = employment.joinDate ? new Date(employment.joinDate) : null;
-        const leaveDate = employment.leaveDate ? new Date(employment.leaveDate) : null;
-
-        if (joinDate && joinDate > monthEnd) return;
-        if (leaveDate && leaveDate < monthStart) return;
+      for (const { ym, start, end } of monthBoundaries) {
+        if (joinDate && joinDate > end) continue;
+        if (leaveDate && leaveDate < start) continue;
 
         total++;
         if (wageIndex.has(`${employment.id}-${ym}`)) {
           filled++;
         }
-      });
+      }
     });
 
     return { total, filled, percent: total > 0 ? Math.round((filled / total) * 100) : 100 };
-  }, [businessEmployments, months, wageIndex]);
+  }, [businessEmployments, monthBoundaries, wageIndex]);
 
   // 정규화된 주민번호 → Worker 매핑 (중복 생성 방지)
   const workerByNormalizedRN = useMemo(() =>
