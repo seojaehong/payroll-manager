@@ -119,8 +119,17 @@ export default function BusinessDetailPage() {
       .filter(({ worker }) => worker);
   }, [employments, workers, businessId]);
 
-  const activeWorkers = businessEmployments.filter(({ employment }) => employment.status === 'ACTIVE');
-  const inactiveWorkers = businessEmployments.filter(({ employment }) => employment.status === 'INACTIVE');
+  const activeWorkers = useMemo(() =>
+    businessEmployments.filter(({ employment }) => employment.status === 'ACTIVE'),
+    [businessEmployments]
+  );
+  const inactiveWorkers = useMemo(() =>
+    businessEmployments.filter(({ employment }) => employment.status === 'INACTIVE'),
+    [businessEmployments]
+  );
+
+  // 이번달 YYYY-MM (렌더링마다 재생성 방지)
+  const thisYearMonth = useMemo(() => new Date().toISOString().slice(0, 7), []);
 
   if (!business) {
     return (
@@ -298,7 +307,7 @@ export default function BusinessDetailPage() {
           <p className="text-white/50 text-xs">이번달 입사</p>
           <p className="text-2xl font-bold text-blue-400">
             {businessEmployments.filter(({ employment }) =>
-              employment.joinDate?.startsWith(new Date().toISOString().slice(0, 7)) && employment.status === 'ACTIVE'
+              employment.joinDate?.startsWith(thisYearMonth) && employment.status === 'ACTIVE'
             ).length}
           </p>
         </div>
@@ -306,7 +315,7 @@ export default function BusinessDetailPage() {
           <p className="text-white/50 text-xs">이번달 퇴사</p>
           <p className="text-2xl font-bold text-red-400">
             {businessEmployments.filter(({ employment }) =>
-              employment.leaveDate?.startsWith(new Date().toISOString().slice(0, 7))
+              employment.leaveDate?.startsWith(thisYearMonth)
             ).length}
           </p>
         </div>

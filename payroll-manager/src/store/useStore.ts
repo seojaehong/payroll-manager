@@ -230,12 +230,13 @@ export const useStore = create<AppState>()(
         // 1. 해당 사업장의 employments 찾기
         const businessEmployments = state.employments.filter((e) => e.businessId === id);
         const employmentIds = businessEmployments.map((e) => e.id);
+        const employmentIdSet = new Set(employmentIds);
 
         // 2. Store에서 cascade 삭제
         set((state) => ({
           businesses: state.businesses.filter((b) => b.id !== id),
           employments: state.employments.filter((e) => e.businessId !== id),
-          monthlyWages: state.monthlyWages.filter((mw) => !employmentIds.includes(mw.employmentId)),
+          monthlyWages: state.monthlyWages.filter((mw) => !employmentIdSet.has(mw.employmentId)),
           retirementCalculations: state.retirementCalculations.filter((r) => r.businessId !== id),
           excelMappings: state.excelMappings.filter((m) => m.businessId !== id),
         }));
@@ -280,12 +281,13 @@ export const useStore = create<AppState>()(
         // 1. 해당 근로자의 employments 찾기
         const workerEmployments = state.employments.filter((e) => e.workerId === id);
         const employmentIds = workerEmployments.map((e) => e.id);
+        const employmentIdSet = new Set(employmentIds);
 
         // 2. Store에서 cascade 삭제
         set((state) => ({
           workers: state.workers.filter((w) => w.id !== id),
           employments: state.employments.filter((e) => e.workerId !== id),
-          monthlyWages: state.monthlyWages.filter((mw) => !employmentIds.includes(mw.employmentId)),
+          monthlyWages: state.monthlyWages.filter((mw) => !employmentIdSet.has(mw.employmentId)),
         }));
 
         // 3. Firestore에서 cascade 삭제 (비동기)

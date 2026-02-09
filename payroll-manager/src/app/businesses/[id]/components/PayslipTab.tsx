@@ -58,6 +58,15 @@ export function PayslipTab({
   // 미리보기 상태
   const [previewData, setPreviewData] = useState<PayslipData | null>(null);
 
+  // 급여 인덱스 (O(1) 조회)
+  const wageByKey = useMemo(() => {
+    const idx = new Map<string, MonthlyWage>();
+    for (const mw of monthlyWages) {
+      idx.set(`${mw.employmentId}-${mw.yearMonth}`, mw);
+    }
+    return idx;
+  }, [monthlyWages]);
+
   // 해당 월의 급여 데이터가 있는 근로자 목록
   const workersWithWages = useMemo(() => {
     return businessEmployments
@@ -68,13 +77,11 @@ export function PayslipTab({
         return joinYM <= yearMonth && yearMonth <= leaveYM;
       })
       .map(({ employment, worker }) => {
-        const wage = monthlyWages.find(
-          (w) => w.employmentId === employment.id && w.yearMonth === selectedYearMonth
-        );
+        const wage = wageByKey.get(`${employment.id}-${selectedYearMonth}`);
         return { employment, worker, wage };
       })
       .filter(({ wage }) => wage);
-  }, [businessEmployments, monthlyWages, selectedYearMonth]);
+  }, [businessEmployments, wageByKey, selectedYearMonth]);
 
   // 급여명세서 데이터 생성
   const createPayslipData = (worker: Worker, wage: MonthlyWage): PayslipData => {
