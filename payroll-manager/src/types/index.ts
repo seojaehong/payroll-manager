@@ -329,3 +329,15 @@ export interface FieldDef {
 
 // 필드 그룹 (그룹화된 필드 정의)
 export type FieldGroups = Record<string, FieldDef[]>;
+
+// ========================================
+// 사업장별 급여 설정 (Config 기반 아키텍처)
+// ========================================
+export type {
+  BusinessPayrollConfig,
+  ExcelStructure,
+  WageClassification,
+  TaxExemptItem,
+  BonusInfo,
+  BonusCycle,
+} from './config';
