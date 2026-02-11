@@ -1,8 +1,8 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { Business, Worker, Employment, Report, ExcelMapping, MonthlyWage, RetirementCalculation } from '@/types';
+import { Business, Worker, Employment, Report, ExcelMapping, MonthlyWage, RetirementCalculation, BusinessPayrollConfig } from '@/types';
 import * as firestore from '@/lib/firestore';
-import { initialBusinesses, initialMappings, getTestData } from '@/lib/initialData';
+import { initialBusinesses, initialMappings, initialBusinessConfigs, getTestData } from '@/lib/initialData';
 
 interface AppState {
   // 초기화 및 동기화
@@ -55,6 +55,10 @@ interface AppState {
   excelMappings: ExcelMapping[];
   setExcelMapping: (mapping: ExcelMapping) => void;
 
+  // 사업장별 급여 설정 (BusinessPayrollConfig)
+  businessConfigs: BusinessPayrollConfig[];
+  setBusinessConfig: (config: BusinessPayrollConfig) => void;
+
   // 퇴직금 계산
   retirementCalculations: RetirementCalculation[];
   addRetirementCalculation: (calculation: RetirementCalculation) => void;
@@ -91,6 +95,7 @@ export const useStore = create<AppState>()(
             initialized: true,
             businesses: initialBusinesses,
             excelMappings: initialMappings,
+            businessConfigs: initialBusinessConfigs,
             workers: testData ? [testData.worker] : [],
             employments: testData ? [testData.employment] : [],
             monthlyWages: testData ? testData.wages : [],
@@ -139,6 +144,7 @@ export const useStore = create<AppState>()(
               reports: data.reports,
               monthlyWages: data.monthlyWages,
               excelMappings: data.excelMappings.length > 0 ? data.excelMappings : get().excelMappings,
+              businessConfigs: data.businessPayrollConfigs || [],
               retirementCalculations: data.retirementCalculations || [],
               syncing: false,
               lastSyncAt: new Date(),
@@ -197,6 +203,11 @@ export const useStore = create<AppState>()(
             savePromises.push(firestore.saveExcelMapping(mapping));
           });
 
+          // 사업장별 급여 설정 저장
+          state.businessConfigs.forEach((config) => {
+            savePromises.push(firestore.saveBusinessPayrollConfig(config));
+          });
+
           await Promise.all(savePromises);
 
           set({ syncing: false, lastSyncAt: new Date(), syncError: null });
@@ -239,6 +250,7 @@ export const useStore = create<AppState>()(
           monthlyWages: state.monthlyWages.filter((mw) => !employmentIdSet.has(mw.employmentId)),
           retirementCalculations: state.retirementCalculations.filter((r) => r.businessId !== id),
           excelMappings: state.excelMappings.filter((m) => m.businessId !== id),
+          businessConfigs: state.businessConfigs.filter((c) => c.businessId !== id),
         }));
 
         // 3. Firestore에서 cascade 삭제 (비동기)
@@ -248,6 +260,7 @@ export const useStore = create<AppState>()(
             firestore.deleteEmploymentsByBusiness(id),
             firestore.deleteRetirementCalculationsByBusiness(id),
             firestore.deleteExcelMapping(id).catch(() => {}), // 매핑 없을 수도 있음
+            firestore.deleteBusinessPayrollConfig(id).catch(() => {}), // config 없을 수도 있음
             firestore.deleteBusiness(id),
           ]);
         } catch (error) {
@@ -411,6 +424,18 @@ export const useStore = create<AppState>()(
           ],
         }));
         firestore.saveExcelMapping(mapping).catch(console.error);
+      },
+
+      // 사업장별 급여 설정
+      businessConfigs: [],
+      setBusinessConfig: (config) => {
+        set((state) => ({
+          businessConfigs: [
+            ...state.businessConfigs.filter((c) => c.businessId !== config.businessId),
+            config,
+          ],
+        }));
+        firestore.saveBusinessPayrollConfig(config).catch(console.error);
       },
 
       // 퇴직금 계산

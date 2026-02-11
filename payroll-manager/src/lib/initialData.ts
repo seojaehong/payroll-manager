@@ -1,4 +1,5 @@
-import { Business, Worker, Employment, MonthlyWage, ExcelMapping } from '@/types';
+import { Business, Worker, Employment, MonthlyWage, ExcelMapping, BusinessPayrollConfig } from '@/types';
+import { CONFIG_VERSION, DEFAULT_WAGE_CLASSIFICATION } from '@/types/config';
 import { DEFAULTS } from './constants';
 
 // 사업장 생성 팩토리 함수
@@ -54,6 +55,36 @@ export const initialMappings: ExcelMapping[] = [
       joinDate: 5,
       leaveDate: 6,
       wage: 7,
+    },
+  },
+];
+
+// 사업장별 급여 설정 초기 데이터
+export const initialBusinessConfigs: BusinessPayrollConfig[] = [
+  {
+    businessId: 'biz-kukuku-bupyeong',
+    businessName: '쿠우쿠우 부평점',
+    version: CONFIG_VERSION,
+    updatedAt: '2026-02-12T00:00:00Z',
+    excel: {
+      filePattern: '쿠우쿠우부평점_*.xlsx',
+      sheetName: '임금대장',
+      sheetKeywords: ['임금대장', '급여대장'],
+      headerRow: 4,
+      dataStartRow: 6,
+      columns: {
+        name: 2,
+        residentNo: 4,
+        joinDate: 5,
+        leaveDate: 6,
+        wage: 7,
+      },
+    },
+    wageClassification: { ...DEFAULT_WAGE_CLASSIFICATION },
+    defaults: {
+      jikjongCode: DEFAULTS.JIKJONG_CODE,
+      workHours: DEFAULTS.WORK_HOURS,
+      nationality: DEFAULTS.NATIONALITY,
     },
   },
 ];

@@ -1,0 +1,35 @@
+{
+  "businessId": "biz-kukuku-bupyeong",
+  "businessName": "쿠우쿠우 부평점",
+  "version": 1,
+  "updatedAt": "2026-02-12T00:00:00Z",
+
+  "excel": {
+    "filePattern": "쿠우쿠우부평점_*.xlsx",
+    "sheetName": "임금대장",
+    "sheetKeywords": ["임금대장", "급여대장"],
+    "headerRow": 4,
+    "dataStartRow": 6,
+    "columns": {
+      "name": 2,
+      "residentNo": 4,
+      "joinDate": 5,
+      "leaveDate": 6,
+      "wage": 7
+    }
+  },
+
+  "wageClassification": {
+    "ordinaryWageItems": ["basicWage"],
+    "taxExemptItems": [
+      { "field": "mealAllowance", "label": "식대", "monthlyLimit": 200000 },
+      { "field": "carAllowance", "label": "차량유지비", "monthlyLimit": 200000 }
+    ]
+  },
+
+  "defaults": {
+    "jikjongCode": "532",
+    "workHours": 40,
+    "nationality": "100"
+  }
+}

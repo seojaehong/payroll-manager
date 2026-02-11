@@ -10,7 +10,7 @@ import {
   where,
   Timestamp,
 } from 'firebase/firestore';
-import { Business, Worker, Employment, Report, MonthlyWage, ExcelMapping, RetirementCalculation, PayslipToken, SendHistory } from '@/types';
+import { Business, Worker, Employment, Report, MonthlyWage, ExcelMapping, RetirementCalculation, PayslipToken, SendHistory, BusinessPayrollConfig } from '@/types';
 import { cleanUndefined } from '@/lib/format';
 
 // Firestore writeBatch 500건 제한 처리를 위한 청크 유틸리티
@@ -35,6 +35,7 @@ const COLLECTIONS = {
   retirementCalculations: 'retirementCalculations',
   payslipTokens: 'payslipTokens',
   sendHistory: 'sendHistory',
+  businessPayrollConfigs: 'businessPayrollConfigs',
 } as const;
 
 // Date <-> Timestamp 변환 (문자열도 처리)
@@ -518,9 +519,33 @@ export async function updateSendHistoryStatus(
   }
 }
 
+// === 사업장별 급여 설정 (BusinessPayrollConfig) ===
+export async function getBusinessPayrollConfigs(): Promise<BusinessPayrollConfig[]> {
+  const snapshot = await getDocs(collection(db, COLLECTIONS.businessPayrollConfigs));
+  return snapshot.docs.map((doc) => ({
+    ...doc.data(),
+    businessId: doc.id,
+  })) as BusinessPayrollConfig[];
+}
+
+export async function saveBusinessPayrollConfig(config: BusinessPayrollConfig): Promise<void> {
+  const cleaned = cleanUndefined({
+    ...config,
+    excel: cleanUndefined({
+      ...config.excel,
+      columns: cleanUndefined(config.excel.columns as Record<string, unknown>),
+    }),
+  });
+  await setDoc(doc(db, COLLECTIONS.businessPayrollConfigs, config.businessId), cleaned);
+}
+
+export async function deleteBusinessPayrollConfig(businessId: string): Promise<void> {
+  await deleteDoc(doc(db, COLLECTIONS.businessPayrollConfigs, businessId));
+}
+
 // === 전체 데이터 동기화 ===
 export async function syncAllData() {
-  const [businesses, workers, employments, reports, monthlyWages, excelMappings, retirementCalculations] = await Promise.all([
+  const [businesses, workers, employments, reports, monthlyWages, excelMappings, retirementCalculations, businessPayrollConfigs] = await Promise.all([
     getBusinesses(),
     getWorkers(),
     getEmployments(),
@@ -528,7 +553,8 @@ export async function syncAllData() {
     getMonthlyWages(),
     getExcelMappings(),
     getRetirementCalculations(),
+    getBusinessPayrollConfigs(),
   ]);
 
-  return { businesses, workers, employments, reports, monthlyWages, excelMappings, retirementCalculations };
+  return { businesses, workers, employments, reports, monthlyWages, excelMappings, retirementCalculations, businessPayrollConfigs };
 }

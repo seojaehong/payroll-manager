@@ -1,0 +1,60 @@
+{
+  "businessId": "",
+  "businessName": "",
+  "version": 1,
+  "updatedAt": "",
+
+  "excel": {
+    "filePattern": "",
+    "sheetName": "임금대장",
+    "sheetKeywords": ["임금대장", "급여대장", "급여"],
+    "headerRow": 4,
+    "dataStartRow": 6,
+    "columns": {
+      "name": null,
+      "residentNo": null,
+      "joinDate": null,
+      "leaveDate": null,
+      "wage": null,
+      "basicWage": null,
+      "overtimeWeekday": null,
+      "overtimeWeekend": null,
+      "nightWage": null,
+      "holidayWage": null,
+      "annualLeaveWage": null,
+      "bonusWage": null,
+      "mealAllowance": null,
+      "carAllowance": null,
+      "otherWage": null,
+      "incomeTax": null,
+      "localTax": null,
+      "nps": null,
+      "nhic": null,
+      "ltc": null,
+      "ei": null,
+      "advancePayment": null,
+      "otherDeduction": null,
+      "totalDeduction": null,
+      "netWage": null,
+      "workDays": null,
+      "deductionDays": null,
+      "deductionHours": null,
+      "phone": null,
+      "email": null
+    }
+  },
+
+  "wageClassification": {
+    "ordinaryWageItems": ["basicWage"],
+    "taxExemptItems": [
+      { "field": "mealAllowance", "label": "식대", "monthlyLimit": 200000 },
+      { "field": "carAllowance", "label": "차량유지비", "monthlyLimit": 200000 }
+    ]
+  },
+
+  "defaults": {
+    "jikjongCode": "532",
+    "workHours": 40,
+    "nationality": "100"
+  }
+}
