@@ -141,8 +141,18 @@ const HEADER_HINTS: Record<string, string[]> = {
   phone: ['전화번호', '연락처', '핸드폰', '휴대폰'],
 };
 
+/**
+ * 헤더 텍스트 정규화: 공백·특수문자·괄호 모두 제거 후 순수 한글/영문만 비교
+ */
+function normalizeHeader(text: string): string {
+  return text
+    .replace(/[\s\t\r\n]+/g, '')       // 모든 공백류 제거
+    .replace(/[\[\]\(\)\.\,\/\-\_]+/g, '') // 특수문자 제거
+    .toLowerCase();
+}
+
 function matchHeaderHint(headerText: string): string | null {
-  const normalized = headerText.replace(/\s+/g, '').toLowerCase();
+  const normalized = normalizeHeader(headerText);
   for (const [field, keywords] of Object.entries(HEADER_HINTS)) {
     for (const kw of keywords) {
       if (normalized.includes(kw)) return field;
@@ -203,8 +213,28 @@ export function detectColumns(
 
   if (dataStartRowIdx < 0) dataStartRowIdx = 2; // 최후 폴백
 
-  // 헤더 행 = 데이터 시작 바로 위
-  const headerRowIdx = Math.max(0, dataStartRowIdx - 1);
+  // 헤더 행 탐색: 데이터 시작 위로 최대 3줄 스캔, 키워드 매칭이 가장 많은 행 선정
+  // (급여대장은 결재란 때문에 헤더가 3~4번째 줄에 있는 경우가 많음)
+  let headerRowIdx = Math.max(0, dataStartRowIdx - 1);
+  {
+    let bestHitCount = 0;
+    const scanStart = Math.max(0, dataStartRowIdx - 3);
+    for (let r = scanStart; r < dataStartRowIdx; r++) {
+      const row = jsonData[r];
+      if (!row) continue;
+      let hitCount = 0;
+      for (let c = 0; c < maxCol; c++) {
+        const val = row[c];
+        if (val === undefined || val === null || val === '') continue;
+        const text = String(val).trim();
+        if (text && matchHeaderHint(text)) hitCount++;
+      }
+      if (hitCount > bestHitCount) {
+        bestHitCount = hitCount;
+        headerRowIdx = r;
+      }
+    }
+  }
 
   // Step 2: 데이터 행에서 각 컬럼 패턴 분석
   const scanRows = Math.min(dataStartRowIdx + 30, maxRow); // 최대 30행 샘플
@@ -255,19 +285,64 @@ export function detectColumns(
 
     const confidence = totalNonEmpty > 0 ? maxCount / totalNonEmpty : 0;
 
-    // 헤더 힌트 추출 (병합 고려: headerRowIdx와 그 위 행)
+    // 헤더 힌트 추출 (병합 셀 대응: 빈 셀이면 왼쪽/위쪽 상속)
     let headerHint = '';
-    const h1 = jsonData[Math.max(0, headerRowIdx - 1)]?.[c];
-    const h2 = jsonData[headerRowIdx]?.[c];
-    const parts = [h1, h2]
-      .filter(v => v !== undefined && v !== null && v !== '')
-      .map(v => String(v).replace(/\r?\n/g, ' ').trim());
-    headerHint = parts.join(' ').trim();
+    {
+      let hVal = jsonData[headerRowIdx]?.[c];
+      // 병합 셀: 현재 위치가 비어있으면 왼쪽에서 상속
+      if (hVal === undefined || hVal === null || hVal === '') {
+        for (let lc = c - 1; lc >= 0; lc--) {
+          const leftVal = jsonData[headerRowIdx]?.[lc];
+          if (leftVal !== undefined && leftVal !== null && leftVal !== '') {
+            hVal = leftVal;
+            break;
+          }
+        }
+      }
+      // 그래도 없으면 위쪽 행에서 상속
+      if (hVal === undefined || hVal === null || hVal === '') {
+        for (let ur = headerRowIdx - 1; ur >= Math.max(0, headerRowIdx - 2); ur--) {
+          const upVal = jsonData[ur]?.[c];
+          if (upVal !== undefined && upVal !== null && upVal !== '') {
+            hVal = upVal;
+            break;
+          }
+        }
+      }
+      // 헤더행 위 행도 포함해서 조합
+      const aboveVal = jsonData[Math.max(0, headerRowIdx - 1)]?.[c];
+      const parts = [aboveVal, hVal]
+        .filter(v => v !== undefined && v !== null && v !== '')
+        .map(v => String(v).replace(/\r?\n/g, ' ').trim());
+      headerHint = [...new Set(parts)].join(' ').trim();
+    }
+
+    // 신뢰도 보강: 헤더 텍스트 + 데이터 패턴이 둘 다 일치하면 가중치
+    let adjustedConfidence = confidence;
+    if (headerHint) {
+      const hintField = matchHeaderHint(headerHint);
+      if (hintField) {
+        // 헤더가 가리키는 필드와 데이터 패턴이 일치하는지 확인
+        const fieldTypeMap: Record<string, ColumnType[]> = {
+          name: ['KOREAN_NAME', 'TEXT'],
+          residentNo: ['RESIDENT_NO'],
+          joinDate: ['DATE'],
+          leaveDate: ['DATE'],
+          wage: ['LARGE_NUMBER'],
+          phone: ['PHONE'],
+        };
+        const expectedTypes = fieldTypeMap[hintField];
+        if (expectedTypes && expectedTypes.includes(dominant)) {
+          // 헤더 + 데이터 패턴 일치 → 신뢰도 20% 보너스 (최대 1.0)
+          adjustedConfidence = Math.min(1.0, confidence + 0.2);
+        }
+      }
+    }
 
     detections.push({
       colIndex: c,
       dominantType: dominant,
-      confidence,
+      confidence: adjustedConfidence,
       sampleValues: columnSamples.get(c) || [],
       headerHint: headerHint || undefined,
     });

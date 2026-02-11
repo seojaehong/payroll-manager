@@ -5,9 +5,12 @@
 """
 from __future__ import annotations
 
+import calendar
 import math
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import date, datetime, timedelta
+
+from dateutil.relativedelta import relativedelta
 
 
 @dataclass
@@ -68,51 +71,71 @@ class MonthlyWageData:
     total_wage: int
 
 
+def _days_in_month(year: int, month: int) -> int:
+    """해당 월의 총 달력 일수"""
+    return calendar.monthrange(year, month)[1]
+
+
 def get_last_3months_data(
     monthly_wages: list[MonthlyWageData],
     leave_date: str,
 ) -> tuple[int, int]:
     """
-    퇴직 전 3개월 급여 합계 및 일수.
+    평균임금 산정을 위한 퇴직 전 3개월 급여 합계 및 일수.
+
+    근로기준법 제2조 제1항 제6호:
+    - 산정 기간: 퇴직일(마지막 근로일) 전날(D-1)부터 역산 3개월
+    - 즉, period_end = 퇴직일 - 1일, period_start = period_end - 3개월 + 1일
+    - 총 일수: period_start ~ period_end 달력 일수
+    - 걸쳐 있는 월은 일할계산 (pro-rata)
+
+    예) 퇴직일 2026-01-31
+        period_end   = 2026-01-30
+        period_start = 2025-10-31 (1-30 에서 3개월 역산 → 10-31)
+        → 10월: 31일 중 1일(31일만), 11월: 30일 전체, 12월: 31일 전체, 1월: 30일 중 30일
+        실제로는 period_start=2025-10-31, period_end=2026-01-30 → 92일
+
     Returns (wages, days)
     """
-    leave = datetime.strptime(leave_date, "%Y-%m-%d")
-    leave_year = leave.year
-    leave_month = leave.month
-    leave_day = leave.day
+    leave_dt = datetime.strptime(leave_date, "%Y-%m-%d").date()
 
-    # 퇴직월 + 이전 2개월
-    target_months: list[str] = []
-    for i in range(3):
-        year = leave_year
-        month = leave_month - i
-        if month <= 0:
-            month += 12
-            year -= 1
-        target_months.append(f"{year}-{month:02d}")
+    # 산정 기간 종료일: 퇴직일 전날
+    period_end = leave_dt - timedelta(days=1)
+    # 산정 기간 시작일: 종료일에서 3개월 역산 + 1일
+    period_start = period_end - relativedelta(months=3) + timedelta(days=1)
+
+    # 총 달력 일수
+    total_days = (period_end - period_start).days + 1
 
     # 빠른 조회용 dict
     wage_map = {mw.year_month: mw.total_wage for mw in monthly_wages}
 
+    # 산정 기간에 걸치는 각 월별 일할계산
     total_wages = 0
-    total_days = 0
+    cursor = period_start
 
-    for idx, ym in enumerate(target_months):
-        total_wages += wage_map.get(ym, 0)
+    while cursor <= period_end:
+        ym = f"{cursor.year}-{cursor.month:02d}"
+        month_total_days = _days_in_month(cursor.year, cursor.month)
+        month_wage = wage_map.get(ym, 0)
 
-        year_val, month_val = map(int, ym.split("-"))
-        # 해당 월의 일수
-        if month_val == 12:
-            days_in_month = 31
+        # 이 월에서 산정 기간에 포함되는 첫째 날 / 마지막 날
+        month_first = max(cursor, date(cursor.year, cursor.month, 1))
+        month_last = min(period_end, date(cursor.year, cursor.month, month_total_days))
+        included_days = (month_last - month_first).days + 1
+
+        if included_days >= month_total_days:
+            # 해당 월 전체가 포함 → 월급여 그대로
+            total_wages += month_wage
         else:
-            next_month_first = datetime(year_val, month_val + 1, 1)
-            days_in_month = (next_month_first - datetime(year_val, month_val, 1)).days
+            # 일할계산: (월급여 / 월 총 일수) × 포함 일수
+            total_wages += round(month_wage * included_days / month_total_days)
 
-        if idx == 0:
-            # 퇴직월: 퇴직일까지만
-            total_days += leave_day
+        # 다음 월 1일로 이동
+        if cursor.month == 12:
+            cursor = date(cursor.year + 1, 1, 1)
         else:
-            total_days += days_in_month
+            cursor = date(cursor.year, cursor.month + 1, 1)
 
     return total_wages, total_days
 

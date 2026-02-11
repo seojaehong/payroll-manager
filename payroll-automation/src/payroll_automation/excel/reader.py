@@ -38,22 +38,36 @@ def read_payroll_excel(
 ) -> pd.DataFrame:
     """
     config 기반으로 엑셀 파일을 읽어 원시 DataFrame 반환.
-    header와 데이터 시작 행은 config.excel에서 결정.
+
+    - config.excel.headerRow / dataStartRow가 있으면 무조건 신뢰 (자동감지 안 함).
+    - 숨겨진 행/열을 포함하여 있는 그대로 읽음 (skipfooter, comment 없음).
+    - config.excel.columns 인덱스가 실제 범위를 벗어나도 에러 없이 빈값 처리.
     """
     filepath = str(filepath)
     sheet = sheet_name or _find_sheet(filepath, config)
 
-    # header=None으로 읽어서 수동으로 행 제어
+    # header=None: 수동 행 제어. 숨겨진 행/열 포함 전체 읽기.
     df = pd.read_excel(filepath, sheet_name=sheet, header=None)
 
-    # 데이터 시작 행 (0-indexed)
+    # config의 dataStartRow를 무조건 신뢰 (1-indexed → 0-indexed)
     data_start_idx = config.excel.dataStartRow - 1
 
-    # 데이터만 추출
     if data_start_idx < len(df):
         df = df.iloc[data_start_idx:].reset_index(drop=True)
     else:
         df = pd.DataFrame()
+
+    # 컬럼 범위 안전장치: config에 정의된 최대 컬럼 인덱스가
+    # 실제 DataFrame 컬럼 수를 넘는 경우, 빈 컬럼을 패딩
+    if len(df) > 0 and config.excel.columns:
+        max_col_1indexed = max(
+            (v for v in config.excel.columns.values() if v is not None),
+            default=0,
+        )
+        current_cols = len(df.columns)
+        if max_col_1indexed > current_cols:
+            for i in range(current_cols, max_col_1indexed):
+                df[i] = ""
 
     return df
 
