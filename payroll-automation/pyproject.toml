@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "payroll-automation"
+version = "0.1.0"
+description = "사업장별 급여 자동화 처리 엔진 (취득/상실신고, 퇴직금 산정)"
+requires-python = ">=3.10"
+dependencies = [
+    "pandas>=2.0",
+    "openpyxl>=3.1",
+    "pydantic>=2.0",
+]
+
+[project.scripts]
+payroll = "payroll_automation.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
