@@ -16,7 +16,24 @@ interface IntegrityReport {
 }
 
 export default function SettingsPage() {
-  const store = useStore();
+  const businesses = useStore((s) => s.businesses);
+  const workers = useStore((s) => s.workers);
+  const employments = useStore((s) => s.employments);
+  const monthlyWages = useStore((s) => s.monthlyWages);
+  const reports = useStore((s) => s.reports);
+  const excelMappings = useStore((s) => s.excelMappings);
+  const syncing = useStore((s) => s.syncing);
+  const syncError = useStore((s) => s.syncError);
+  const lastSyncAt = useStore((s) => s.lastSyncAt);
+  const addBusiness = useStore((s) => s.addBusiness);
+  const addWorker = useStore((s) => s.addWorker);
+  const addEmployment = useStore((s) => s.addEmployment);
+  const addReport = useStore((s) => s.addReport);
+  const setExcelMapping = useStore((s) => s.setExcelMapping);
+  const deleteEmployment = useStore((s) => s.deleteEmployment);
+  const deleteMonthlyWages = useStore((s) => s.deleteMonthlyWages);
+  const loadFromCloud = useStore((s) => s.loadFromCloud);
+  const syncToCloud = useStore((s) => s.syncToCloud);
   const toast = useToast();
   const [importPreview, setImportPreview] = useState<Partial<Business>[]>([]);
   const [showPreview, setShowPreview] = useState(false);
@@ -25,9 +42,9 @@ export default function SettingsPage() {
 
   // 데이터 정합성 검증
   const checkDataIntegrity = () => {
-    const workerIds = new Set(store.workers.map(w => w.id));
-    const businessIds = new Set(store.businesses.map(b => b.id));
-    const employmentIds = new Set(store.employments.map(e => e.id));
+    const workerIds = new Set(workers.map(w => w.id));
+    const businessIds = new Set(businesses.map(b => b.id));
+    const employmentIds = new Set(employments.map(e => e.id));
 
     const report: IntegrityReport = {
       orphanedEmployments: [],
@@ -37,7 +54,7 @@ export default function SettingsPage() {
     };
 
     // Employment 검증
-    store.employments.forEach(emp => {
+    employments.forEach(emp => {
       if (!workerIds.has(emp.workerId)) {
         report.missingWorkers.push({ employmentId: emp.id, workerId: emp.workerId });
       }
@@ -47,12 +64,12 @@ export default function SettingsPage() {
     });
 
     // 고아 Employment (Worker 또는 Business 없음)
-    report.orphanedEmployments = store.employments
+    report.orphanedEmployments = employments
       .filter(emp => !workerIds.has(emp.workerId) || !businessIds.has(emp.businessId))
       .map(emp => ({ id: emp.id, workerId: emp.workerId, businessId: emp.businessId }));
 
     // 고아 MonthlyWages (Employment 없음)
-    report.orphanedWages = store.monthlyWages
+    report.orphanedWages = monthlyWages
       .filter(mw => !employmentIds.has(mw.employmentId))
       .map(mw => ({ id: mw.id, employmentId: mw.employmentId, yearMonth: mw.yearMonth }));
 
@@ -77,13 +94,13 @@ export default function SettingsPage() {
 
     // 고아 Employment 삭제
     for (const emp of orphanedEmployments) {
-      await store.deleteEmployment(emp.id);
+      await deleteEmployment(emp.id);
     }
 
     // 고아 급여 삭제
     if (orphanedWages.length > 0) {
       const wageIds = orphanedWages.map(w => w.id);
-      await store.deleteMonthlyWages(wageIds);
+      await deleteMonthlyWages(wageIds);
     }
 
     toast.show(`고아 데이터 정리 완료 (고용관계 ${orphanedEmployments.length}건, 급여 ${orphanedWages.length}건 삭제)`, 'success');
@@ -163,12 +180,12 @@ export default function SettingsPage() {
   };
 
   const confirmBusinessImport = () => {
-    const existingNames = new Set(store.businesses.map((b) => b.name));
+    const existingNames = new Set(businesses.map((b) => b.name));
     let added = 0, skipped = 0;
 
     importPreview.forEach((biz) => {
       if (biz.name && !existingNames.has(biz.name)) {
-        store.addBusiness(biz as Business);
+        addBusiness(biz as Business);
         existingNames.add(biz.name);
         added++;
       } else {
@@ -183,11 +200,11 @@ export default function SettingsPage() {
 
   const handleExportData = () => {
     const data = {
-      businesses: store.businesses,
-      workers: store.workers,
-      employments: store.employments,
-      reports: store.reports,
-      excelMappings: store.excelMappings,
+      businesses,
+      workers,
+      employments,
+      reports,
+      excelMappings,
       exportedAt: new Date().toISOString(),
     };
 
@@ -209,11 +226,11 @@ export default function SettingsPage() {
         const data = JSON.parse(event.target?.result as string);
 
         if (confirm(`백업 데이터를 불러오시겠습니까?\n- 사업장: ${data.businesses?.length || 0}개\n- 근로자: ${data.workers?.length || 0}명\n\n기존 데이터가 덮어씌워집니다.`)) {
-          data.businesses?.forEach((b: unknown) => store.addBusiness(b as Parameters<typeof store.addBusiness>[0]));
-          data.workers?.forEach((w: unknown) => store.addWorker(w as Parameters<typeof store.addWorker>[0]));
-          data.employments?.forEach((e: unknown) => store.addEmployment(e as Parameters<typeof store.addEmployment>[0]));
-          data.reports?.forEach((r: unknown) => store.addReport(r as Parameters<typeof store.addReport>[0]));
-          data.excelMappings?.forEach((m: unknown) => store.setExcelMapping(m as Parameters<typeof store.setExcelMapping>[0]));
+          data.businesses?.forEach((b: unknown) => addBusiness(b as Parameters<typeof addBusiness>[0]));
+          data.workers?.forEach((w: unknown) => addWorker(w as Parameters<typeof addWorker>[0]));
+          data.employments?.forEach((e: unknown) => addEmployment(e as Parameters<typeof addEmployment>[0]));
+          data.reports?.forEach((r: unknown) => addReport(r as Parameters<typeof addReport>[0]));
+          data.excelMappings?.forEach((m: unknown) => setExcelMapping(m as Parameters<typeof setExcelMapping>[0]));
 
           toast.show('백업 데이터를 불러왔습니다.', 'success');
           window.location.reload();
@@ -247,19 +264,19 @@ export default function SettingsPage() {
           <div className="grid grid-cols-2 gap-4">
             <div className="flex justify-between p-4 bg-white/5 rounded-xl border border-white/10">
               <span className="text-white/60">사업장</span>
-              <span className="font-medium text-white">{store.businesses.length}개</span>
+              <span className="font-medium text-white">{businesses.length}개</span>
             </div>
             <div className="flex justify-between p-4 bg-white/5 rounded-xl border border-white/10">
               <span className="text-white/60">근로자</span>
-              <span className="font-medium text-white">{store.workers.length}명</span>
+              <span className="font-medium text-white">{workers.length}명</span>
             </div>
             <div className="flex justify-between p-4 bg-white/5 rounded-xl border border-white/10">
               <span className="text-white/60">고용관계</span>
-              <span className="font-medium text-white">{store.employments.length}건</span>
+              <span className="font-medium text-white">{employments.length}건</span>
             </div>
             <div className="flex justify-between p-4 bg-white/5 rounded-xl border border-white/10">
               <span className="text-white/60">신고이력</span>
-              <span className="font-medium text-white">{store.reports.length}건</span>
+              <span className="font-medium text-white">{reports.length}건</span>
             </div>
           </div>
         </div>
@@ -393,9 +410,9 @@ export default function SettingsPage() {
           <h2 className="text-lg font-semibold text-white mb-4">Firebase 클라우드 동기화</h2>
           <div className="space-y-4">
             <div className="flex items-center gap-4">
-              <div className={`w-3 h-3 rounded-full ${store.syncing ? 'bg-yellow-400 animate-pulse' : store.syncError ? 'bg-red-400' : 'bg-green-400'}`} />
+              <div className={`w-3 h-3 rounded-full ${syncing ? 'bg-yellow-400 animate-pulse' : syncError ? 'bg-red-400' : 'bg-green-400'}`} />
               <span className="text-white/60">
-                {store.syncing ? '동기화 중...' : store.syncError ? `오류: ${store.syncError}` : store.lastSyncAt ? `마지막 동기화: ${new Date(store.lastSyncAt).toLocaleString('ko-KR')}` : '동기화 필요'}
+                {syncing ? '동기화 중...' : syncError ? `오류: ${syncError}` : lastSyncAt ? `마지막 동기화: ${new Date(lastSyncAt).toLocaleString('ko-KR')}` : '동기화 필요'}
               </span>
             </div>
 
@@ -403,13 +420,13 @@ export default function SettingsPage() {
               <button
                 onClick={async () => {
                   try {
-                    await store.loadFromCloud();
+                    await loadFromCloud();
                     toast.show('클라우드에서 데이터를 불러왔습니다.', 'success');
                   } catch (e) {
                     toast.show('불러오기 실패: ' + String(e), 'error');
                   }
                 }}
-                disabled={store.syncing}
+                disabled={syncing}
                 className="btn-secondary disabled:opacity-50"
               >
                 클라우드에서 불러오기
@@ -417,13 +434,13 @@ export default function SettingsPage() {
               <button
                 onClick={async () => {
                   try {
-                    await store.syncToCloud();
+                    await syncToCloud();
                     toast.show('클라우드에 저장되었습니다.', 'success');
                   } catch (e) {
                     toast.show('저장 실패: ' + String(e), 'error');
                   }
                 }}
-                disabled={store.syncing}
+                disabled={syncing}
                 className="btn-primary disabled:opacity-50"
               >
                 클라우드에 저장하기

@@ -67,11 +67,11 @@ export async function getBusinesses(): Promise<Business[]> {
 }
 
 export async function saveBusiness(business: Business): Promise<void> {
-  await setDoc(doc(db, COLLECTIONS.businesses, business.id), {
+  await setDoc(doc(db, COLLECTIONS.businesses, business.id), cleanUndefined({
     ...business,
     createdAt: toTimestamp(business.createdAt),
     updatedAt: toTimestamp(business.updatedAt),
-  });
+  }));
 }
 
 export async function deleteBusiness(id: string): Promise<void> {
@@ -334,10 +334,10 @@ export async function getReports(): Promise<Report[]> {
 }
 
 export async function saveReport(report: Report): Promise<void> {
-  await setDoc(doc(db, COLLECTIONS.reports, report.id), {
+  await setDoc(doc(db, COLLECTIONS.reports, report.id), cleanUndefined({
     ...report,
     createdAt: toTimestamp(report.createdAt),
-  });
+  }));
 }
 
 // === 엑셀 매핑 ===

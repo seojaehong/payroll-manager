@@ -63,24 +63,8 @@ function buildWageFromRow(
   }) as MonthlyWage;
 }
 
-// 엑셀 날짜 파싱 (숫자/문자열 모두 지원)
-function parseExcelDate(val: unknown): string {
-  if (!val) return '';
-  if (typeof val === 'number') {
-    const date = XLSX.SSF.parse_date_code(val);
-    return `${date.y}-${String(date.m).padStart(2, '0')}-${String(date.d).padStart(2, '0')}`;
-  }
-  const str = String(val).trim();
-  if (/^\d{4}-\d{2}-\d{2}$/.test(str)) return str;
-  if (/^\d{8}$/.test(str)) return `${str.slice(0, 4)}-${str.slice(4, 6)}-${str.slice(6, 8)}`;
-  const dotMatch = str.match(/^(\d{2})\.(\d{1,2})\.(\d{1,2})$/);
-  if (dotMatch) {
-    const [, yy, mm, dd] = dotMatch;
-    const year = parseInt(yy) < 50 ? `20${yy}` : `19${yy}`;
-    return `${year}-${mm.padStart(2, '0')}-${dd.padStart(2, '0')}`;
-  }
-  return str;
-}
+// parseExcelDate는 useExcelImport.ts에서 import
+import { parseExcelDate } from '@/hooks/useExcelImport';
 
 // 미리보기 행 타입 (any 제거)
 interface WagePreviewRow {

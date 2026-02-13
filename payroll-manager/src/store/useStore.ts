@@ -402,8 +402,9 @@ export const useStore = create<AppState>()(
         if (ids.length === 0) return;
 
         // Store에서 삭제
+        const idSet = new Set(ids);
         set((state) => ({
-          monthlyWages: state.monthlyWages.filter((mw) => !ids.includes(mw.id)),
+          monthlyWages: state.monthlyWages.filter((mw) => !idSet.has(mw.id)),
         }));
 
         // Firestore에서 삭제

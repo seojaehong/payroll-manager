@@ -6,7 +6,9 @@ import { useState } from 'react';
 import { PageHeader } from '@/components/ui/PageHeader';
 
 export default function BusinessesPage() {
-  const { businesses, employments, deleteBusiness } = useStore();
+  const businesses = useStore((s) => s.businesses);
+  const employments = useStore((s) => s.employments);
+  const deleteBusiness = useStore((s) => s.deleteBusiness);
   const [search, setSearch] = useState('');
 
   const filteredBusinesses = businesses.filter(

@@ -10,7 +10,7 @@ import { useToast } from '@/components/ui/Toast';
 export default function NewBusinessPage() {
   const router = useRouter();
   const toast = useToast();
-  const { addBusiness } = useStore();
+  const addBusiness = useStore((s) => s.addBusiness);
 
   const [form, setForm] = useState({
     name: '',
