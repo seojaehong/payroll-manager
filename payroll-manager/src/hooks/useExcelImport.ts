@@ -561,6 +561,62 @@ export function useExcelImportWithDetection() {
     return true;
   }, [extractHeaders]);
 
+  // ─── 미리보기 생성 ───
+  // overrides: handleFileUpload/handleSheetChange에서 setState 직후 호출 시
+  // 아직 반영되지 않은 상태를 직접 전달하기 위한 파라미터
+  const loadPreview = useCallback((overrides?: {
+    wb?: XLSX.WorkBook; sheet?: string;
+    mapping?: Record<string, number | null>; startRow?: number;
+  }): { success: boolean; message?: string } => {
+    const wb = overrides?.wb ?? workbook;
+    const sheet = overrides?.sheet ?? selectedSheet;
+    const mapping = overrides?.mapping ?? fieldMapping;
+    const start = overrides?.startRow ?? dataStartRow;
+
+    if (!wb || !sheet) {
+      return { success: false, message: '파일을 먼저 업로드하세요.' };
+    }
+
+    const nameIdx = mapping.name;
+    const residentNoIdx = mapping.residentNo;
+
+    if (nameIdx === null || residentNoIdx === null) {
+      return { success: false, message: '이름과 주민번호를 지정해주세요.' };
+    }
+
+    const ws = wb.Sheets[sheet];
+    const jsonData = XLSX.utils.sheet_to_json(ws, { header: 1 }) as unknown[][];
+    const rows: ImportRow[] = [];
+
+    for (let i = start - 1; i < jsonData.length; i++) {
+      const row = jsonData[i];
+      if (!row || !row[nameIdx]) continue;
+
+      const name = String(row[nameIdx] || '').trim();
+      const residentNo = normalizeResidentNo(String(row[residentNoIdx] || ''));
+
+      const joinDateRaw = mapping.joinDate !== null ? row[mapping.joinDate] : null;
+      const leaveDateRaw = mapping.leaveDate !== null ? row[mapping.leaveDate] : null;
+      const wageRaw = mapping.wage !== null ? row[mapping.wage] : 0;
+      const phoneRaw = mapping.phone !== null ? row[mapping.phone] : null;
+
+      const joinDate = parseExcelDate(joinDateRaw);
+      const leaveDate = parseExcelDate(leaveDateRaw);
+      const wage = typeof wageRaw === 'number' ? wageRaw : parseInt(String(wageRaw).replace(/,/g, '')) || 0;
+      const phone = phoneRaw ? String(phoneRaw).replace(/[^0-9]/g, '') : undefined;
+
+      if (name && residentNo.length >= 6) {
+        rows.push({ name, residentNo, joinDate, leaveDate: leaveDate || undefined, wage, phone });
+      }
+    }
+
+    setPreviewData(rows);
+    if (rows.length === 0) {
+      return { success: false, message: '데이터를 찾지 못했습니다. 행 설정을 확인해주세요.' };
+    }
+    return { success: true };
+  }, [workbook, selectedSheet, fieldMapping, dataStartRow]);
+
   // ─── 파일 업로드 (감지 포함) ───
   const handleFileUpload = useCallback((
     file: File,
@@ -580,6 +636,18 @@ export function useExcelImportWithDetection() {
 
       // 1) 기존 저장 매핑 우선
       if (businessId && tryLoadSavedMapping(businessId, wb, excelMappings)) {
+        // 저장된 매핑의 필드값을 직접 계산하여 auto-preview
+        const existing = excelMappings.find((m) => m.businessId === businessId);
+        if (existing) {
+          const cols = existing.columns as Record<string, number | undefined>;
+          const savedMapping: Record<string, number | null> = {};
+          CORE_FIELD_KEYS.forEach(key => {
+            savedMapping[key] = cols[key] != null ? cols[key]! - 1 : null;
+          });
+          const sheetName = existing.sheetName && wb.SheetNames.includes(existing.sheetName)
+            ? existing.sheetName : wb.SheetNames[0];
+          loadPreview({ wb, sheet: sheetName, mapping: savedMapping, startRow: existing.dataStartRow || 2 });
+        }
         onResult({ type: 'saved-mapping', message: '저장된 매핑을 불러왔습니다.' });
         return;
       }
@@ -596,6 +664,17 @@ export function useExcelImportWithDetection() {
           result.mapping.joinDate !== null && '입사일',
           result.mapping.wage !== null && '급여',
         ].filter(Boolean);
+
+        // 이름 + 주민번호 감지 시 자동 미리보기
+        if (result.mapping.name !== null && result.mapping.residentNo !== null) {
+          const autoMapping: Record<string, number | null> = {
+            name: result.mapping.name, residentNo: result.mapping.residentNo,
+            joinDate: result.mapping.joinDate, leaveDate: result.mapping.leaveDate,
+            wage: result.mapping.wage, phone: result.mapping.phone,
+          };
+          loadPreview({ wb, sheet: bestSheet, mapping: autoMapping, startRow: result.dataStartRow });
+        }
+
         onResult({
           type: 'auto-detected',
           message: `자동 감지: ${detected.join(', ')} (헤더 ${result.headerRow}행, 데이터 ${result.dataStartRow}행)`,
@@ -608,15 +687,24 @@ export function useExcelImportWithDetection() {
       }
     };
     reader.readAsBinaryString(file);
-  }, [tryLoadSavedMapping, applyDetection]);
+  }, [tryLoadSavedMapping, applyDetection, loadPreview]);
 
-  // ─── 시트 변경 (재감지) ───
+  // ─── 시트 변경 (재감지 + 자동 미리보기) ───
   const handleSheetChange = useCallback((sheetName: string) => {
     setSelectedSheet(sheetName);
     setPreviewData([]);
     if (!workbook) return;
-    applyDetection(workbook, sheetName);
-  }, [workbook, applyDetection]);
+    const result = applyDetection(workbook, sheetName);
+    // 이름 + 주민번호 감지 시 자동 미리보기
+    if (result && result.mapping.name !== null && result.mapping.residentNo !== null) {
+      const autoMapping: Record<string, number | null> = {
+        name: result.mapping.name, residentNo: result.mapping.residentNo,
+        joinDate: result.mapping.joinDate, leaveDate: result.mapping.leaveDate,
+        wage: result.mapping.wage, phone: result.mapping.phone,
+      };
+      loadPreview({ wb: workbook, sheet: sheetName, mapping: autoMapping, startRow: result.dataStartRow });
+    }
+  }, [workbook, applyDetection, loadPreview]);
 
   // ─── 헤더행 변경 ───
   const handleHeaderRowChange = useCallback((newRow: number) => {
@@ -625,52 +713,6 @@ export function useExcelImportWithDetection() {
       setHeaders(extractHeaders(workbook, selectedSheet, newRow));
     }
   }, [workbook, selectedSheet, extractHeaders]);
-
-  // ─── 미리보기 생성 ───
-  const loadPreview = useCallback((): { success: boolean; message?: string } => {
-    if (!workbook || !selectedSheet) {
-      return { success: false, message: '파일을 먼저 업로드하세요.' };
-    }
-
-    const nameIdx = fieldMapping.name;
-    const residentNoIdx = fieldMapping.residentNo;
-
-    if (nameIdx === null || residentNoIdx === null) {
-      return { success: false, message: '이름과 주민번호를 지정해주세요.' };
-    }
-
-    const ws = workbook.Sheets[selectedSheet];
-    const jsonData = XLSX.utils.sheet_to_json(ws, { header: 1 }) as unknown[][];
-    const rows: ImportRow[] = [];
-
-    for (let i = dataStartRow - 1; i < jsonData.length; i++) {
-      const row = jsonData[i];
-      if (!row || !row[nameIdx]) continue;
-
-      const name = String(row[nameIdx] || '').trim();
-      const residentNo = normalizeResidentNo(String(row[residentNoIdx] || ''));
-
-      const joinDateRaw = fieldMapping.joinDate !== null ? row[fieldMapping.joinDate] : null;
-      const leaveDateRaw = fieldMapping.leaveDate !== null ? row[fieldMapping.leaveDate] : null;
-      const wageRaw = fieldMapping.wage !== null ? row[fieldMapping.wage] : 0;
-      const phoneRaw = fieldMapping.phone !== null ? row[fieldMapping.phone] : null;
-
-      const joinDate = parseExcelDate(joinDateRaw);
-      const leaveDate = parseExcelDate(leaveDateRaw);
-      const wage = typeof wageRaw === 'number' ? wageRaw : parseInt(String(wageRaw).replace(/,/g, '')) || 0;
-      const phone = phoneRaw ? String(phoneRaw).replace(/[^0-9]/g, '') : undefined;
-
-      if (name && residentNo.length >= 6) {
-        rows.push({ name, residentNo, joinDate, leaveDate: leaveDate || undefined, wage, phone });
-      }
-    }
-
-    setPreviewData(rows);
-    if (rows.length === 0) {
-      return { success: false, message: '데이터를 찾지 못했습니다. 행 설정을 확인해주세요.' };
-    }
-    return { success: true };
-  }, [workbook, selectedSheet, fieldMapping, dataStartRow]);
 
   // ─── 매핑 저장용 데이터 생성 ───
   const getMappingForSave = useCallback(() => {

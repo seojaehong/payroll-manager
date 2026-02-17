@@ -254,6 +254,13 @@ export default function ImportPage() {
                 </div>
               </details>
 
+              {/* 감지 실패 안내 */}
+              {!excel.detection && !excel.usingSavedMapping && (
+                <p className="text-sm text-yellow-400 mb-3">
+                  자동 감지에 실패했습니다. 아래 드롭다운에서 직접 컬럼을 선택해주세요.
+                </p>
+              )}
+
               {/* 핵심 필드 매핑 */}
               <div className="space-y-2">
                 {CORE_FIELDS.map(({ key, label, required }) => {
@@ -283,6 +290,9 @@ export default function ImportPage() {
                       </select>
                       {colIdx !== null && !excel.usingSavedMapping && (
                         <ConfidenceBadge confidence={confidence} />
+                      )}
+                      {colIdx === null && required && (
+                        <span className="text-xs text-red-400 shrink-0">수동 선택 필요</span>
                       )}
                     </div>
                   );
@@ -342,8 +352,8 @@ export default function ImportPage() {
 
           {excel.previewData.length === 0 ? (
             <div className="text-center py-16">
-              <p className="text-white/40">파일을 업로드하면 자동으로 컬럼을 감지합니다</p>
-              <p className="text-white/40 mt-1 text-sm">&quot;미리보기&quot; 버튼으로 결과를 확인하세요</p>
+              <p className="text-white/40">파일을 업로드하면 자동으로 감지 및 미리보기됩니다</p>
+              <p className="text-white/40 mt-1 text-sm">매핑 수정 후에는 &quot;미리보기&quot; 버튼으로 재확인하세요</p>
             </div>
           ) : (
             <div className="overflow-auto max-h-[600px]">
