@@ -30,12 +30,15 @@ build/
 # OS
 .DS_Store
 Thumbs.db
+nul
+_ul*
 
 # Python
 __pycache__/
 *.py[cod]
 venv/
 *.pkl
+*.egg-info/
 
 # Logs
 *.log

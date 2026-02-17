@@ -1,0 +1,42 @@
+# .codex/config.toml — payroll-manager 프로젝트 설정
+# Codex CLI 프로젝트 레벨 설정
+
+# 모델 설정
+model = "codex-mini"                    # 일상 작업용 (비용 효율)
+# model = "gpt-5-codex"                # 복잡한 아키텍처 작업 시 주석 해제
+
+# 승인 정책
+approval_policy = "on-request"          # 안전한 기본값 (읽기는 자동, 쓰기는 확인)
+# approval_policy = "never"            # 자율 모드 (숙련 후 사용)
+
+# 샌드박스 모드
+sandbox = "workspace-write"             # 프로젝트 디렉토리만 쓰기 허용
+
+# 웹 검색
+web_search_mode = "cached"              # Next.js 16, Firebase 최신 문서 검색 시
+
+# CLAUDE.md 호환성 — Codex가 CLAUDE.md도 읽도록 설정
+project_doc_fallback_filenames = ["CLAUDE.md", "COPILOT.md"]
+
+# MCP 서버 설정
+[mcp_servers.github]
+command = "npx"
+args = ["-y", "@modelcontextprotocol/server-github"]
+
+[mcp_servers.context7]
+command = "npx"
+args = ["-y", "@upstash/context7-mcp@latest"]
+
+# 프로필 정의
+[profiles.safe]
+approval_policy = "untrusted"
+sandbox = "read-only"
+
+[profiles.auto]
+approval_policy = "never"
+sandbox = "workspace-write"
+
+[profiles.review]
+model = "gpt-5-codex"
+approval_policy = "untrusted"
+sandbox = "read-only"
