@@ -10,7 +10,9 @@ approval_policy = "on-request"          # 안전한 기본값 (읽기는 자동,
 # approval_policy = "never"            # 자율 모드 (숙련 후 사용)
 
 # 샌드박스 모드
-sandbox = "workspace-write"             # 프로젝트 디렉토리만 쓰기 허용
+# "workspace-write"는 네트워크 차단 → npm install 타임아웃 유발
+# npm install이 필요한 작업에는 full-access 필요
+sandbox = "danger-full-access"          # npm install/build 허용 (주의: 네트워크 열림)
 
 # 웹 검색
 web_search_mode = "cached"              # Next.js 16, Firebase 최신 문서 검색 시
@@ -34,7 +36,7 @@ sandbox = "read-only"
 
 [profiles.auto]
 approval_policy = "never"
-sandbox = "workspace-write"
+sandbox = "danger-full-access"
 
 [profiles.review]
 model = "gpt-5-codex"
